@@ -1,0 +1,53 @@
+name: Bug report
+description: Report a reproducible ZEPVE runtime problem
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: "Please include only verified observations. Logs are especially useful for lifecycle, respawn and navigation problems."
+  - type: input
+    id: version
+    attributes:
+      label: ZEPVE version or commit
+      placeholder: "v0.x.x or commit SHA"
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include CS2 build, Metamod, CounterStrikeSharp and CS2Fixes versions.
+      placeholder: |
+        CS2 build:
+        Metamod:
+        CounterStrikeSharp:
+        CS2Fixes:
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      render: text
