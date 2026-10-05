@@ -1,0 +1,42 @@
+name: Feature request
+description: Propose a focused improvement to ZEPVE
+title: "[Feature] "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Describe the concrete ZE/PvE problem, not just the implementation idea.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Core
+        - Navigation
+        - Map / compatibility
+        - HUD
+        - Weapons
+        - Director
+        - Build / packaging
+        - Documentation
+        - Unsure
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives or existing plugins considered
+  - type: textarea
+    id: impact
+    attributes:
+      label: Runtime / compatibility impact
+      description: Note expected performance cost, map-specific behavior, new dependencies, or breaking changes if known.
