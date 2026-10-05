@@ -2,8 +2,6 @@
 
 **English | [简体中文](README.zh-CN.md)**
 
-> **Make ZE Playable Again.**
-
 CS2-ZE-PVE (ZEPVE) is a lightweight cooperative PvE runtime focused on keeping Counter-Strike 2 Zombie Escape maps playable with **1–6 players**.
 
 ## Goals
