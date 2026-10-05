@@ -18,15 +18,24 @@ Keep this file short. Detailed design belongs in `docs/` and component repositor
 
 ## Next
 
-### v0.2 — Core / integration ownership
+### v0.2 — Core + BotAI ownership
 
 Main repository:
 
 - [ ] Extract/stabilize `ZEPVE.Abstractions`
 - [ ] Stabilize human/Bot lifecycle and round authority
+- [ ] Create `ZEPVE.BotAI.dll` inside the main repository
+- [ ] Move authoritative `AssignedTarget` ownership into BotAI
+- [ ] Implement target validity, rebinding and multi-human distribution
+- [ ] Define narrow BotAI/Navigation contracts in Abstractions
+- [ ] Add `AwarenessAssist` / `TargetReacquireService` baseline
+- [ ] Add BotAI diagnostics for assigned target, Valve Enemy and reacquire state
 - [ ] Add status/debug commands
-- [ ] Define the capability boundary with Navigation
 - [ ] Add integration tests for component load/unload and map changes
+
+BotAI should preserve useful Valve native perception where possible. Start with bounded/event-triggered awareness assistance rather than permanent per-tick AI-state forcing.
+
+See `BOT_AI_DESIGN.md`.
 
 ### v0.3 — ZEPVE-Navigation component baseline
 
@@ -34,30 +43,39 @@ Navigation repository:
 
 - [ ] TrailRecorder + bounded Trail history
 - [ ] TrailSegment transitions
-- [ ] authoritative Bot-to-human `AssignedTarget` binding
-- [ ] multi-human target distribution and rebind rules
+- [ ] consume BotAI-owned `AssignedTarget` through a narrow target-provider interface
 - [ ] progress-based stuck detection
 - [ ] layered Recovery pipeline
 - [ ] native navigation / Trail mode switching
-- [ ] post-recovery target synchronization design
+- [ ] post-recovery BotAI reacquisition handshake
 - [ ] identify the first component revision suitable for suite pinning
 
 Integration repository:
 
 - [ ] pin the verified Navigation revision
-- [ ] validate it with the current Core
+- [ ] validate it with current Core + BotAI
 - [ ] record its commit/version in release metadata
 
-### v0.4 — No-NAV TrailDriver and aggro recovery
+### v0.4 — No-NAV TrailDriver + awareness recovery
 
 Lab first:
 
 - [ ] movement takeover PoC
 - [ ] UserCmd W/A/D/JUMP injection PoC
 - [ ] jump/duck/forced-movement edge-case tests
-- [ ] observe Valve enemy/visibility state before and after recovery teleport
+- [ ] record Valve enemy/visibility/alert/look-around state before and after recovery teleport
+- [ ] test look-around reset after teleport
+- [ ] test wake/allow-active + clear IgnoreEnemies + short Alert window
+- [ ] verify Valve native sound investigation remains useful
 - [ ] test whether temporary follow/goal-binding to `AssignedTarget` restores normal enemy acquisition
-- [ ] test explicit enemy reacquisition only if normal reacquisition remains unreliable
+- [ ] test explicit Enemy-state writes only if normal reacquisition remains unreliable
+
+BotAI production work after evidence:
+
+- [ ] event-triggered AwarenessAssist for spawn/respawn/recovery/rebind
+- [ ] smallest validated look-around/ignore-enemies/alert state reset
+- [ ] bounded reacquisition window with success/failure diagnostics
+- [ ] avoid custom footstep/gunshot hate tables unless native hearing proves insufficient
 
 Navigation production work after evidence:
 
@@ -65,11 +83,8 @@ Navigation production work after evidence:
 - [ ] jump assist
 - [ ] TrailSkip
 - [ ] segment-transition recovery
-- [ ] multi-Bot target distribution
-- [ ] Recovery TP -> navigation/route rebind -> short reacquisition window
-- [ ] diagnostics for `AssignedTarget`, Valve Enemy, visibility and reacquire state
-
-Navigation must continue pursuing `AssignedTarget` even when Valve's current enemy state is null or stale.
+- [ ] Recovery TP -> route/navigation rebind -> BotAI reacquire request
+- [ ] continue pursuing BotAI `AssignedTarget` while Valve Enemy is null/stale
 
 ### v0.5 — Recorded Routes and authoring tools
 
