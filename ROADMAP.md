@@ -2,6 +2,8 @@
 
 Keep this file short. Detailed design belongs in `docs/` and component repositories.
 
+Research-driven architecture priorities are summarized in `docs/CODE_RESEARCH_FINDINGS.md`.
+
 ## Current
 
 ### v0.1 — Integration baseline
@@ -18,36 +20,44 @@ Keep this file short. Detailed design belongs in `docs/` and component repositor
 
 ## Next
 
-### v0.2 — Core + BotAI ownership
+### v0.2 — Core + BotAI ownership + observability
 
 Main repository:
 
 - [ ] Extract/stabilize `ZEPVE.Abstractions`
 - [ ] Stabilize human/Bot lifecycle and round authority
+- [ ] Add Core-owned player/zombie runtime contexts with explicit invalidation on disconnect, replacement and map change
 - [ ] Create `ZEPVE.BotAI.dll` inside the main repository
 - [ ] Move authoritative `AssignedTarget` ownership into BotAI
 - [ ] Implement target validity, rebinding and multi-human distribution
 - [ ] Define narrow BotAI/Navigation contracts in Abstractions
 - [ ] Add `AwarenessAssist` / `TargetReacquireService` baseline
 - [ ] Add BotAI diagnostics for assigned target, Valve Enemy and reacquire state
-- [ ] Add status/debug commands
-- [ ] Add integration tests for component load/unload and map changes
+- [ ] Add a bounded diagnostic event buffer / per-Bot Flight Recorder
+- [ ] Add status/debug/dump commands for Core, BotAI and Navigation state
+- [ ] Add integration tests for component load/unload, hot reload and map changes
 
-BotAI should preserve useful Valve native perception where possible. Start with bounded/event-triggered awareness assistance rather than permanent per-tick AI-state forcing.
+Lab work:
 
-See `BOT_AI_DESIGN.md`.
+- [ ] Validate which Valve BotProfile fields materially improve ZE zombie behavior
+- [ ] Prove the minimum safe BotProfile adapter path and its failure behavior
+
+BotAI should preserve useful Valve native perception where possible. Start with bounded/event-triggered awareness assistance rather than permanent per-tick AI-state forcing. Engine-unstable Bot internals must remain optional and fail-soft behind adapters.
+
+See `BOT_AI_DESIGN.md` and `docs/CODE_RESEARCH_FINDINGS.md`.
 
 ### v0.3 — ZEPVE-Navigation component baseline
 
 Navigation repository:
 
 - [ ] TrailRecorder + bounded Trail history
-- [ ] TrailSegment transitions
+- [ ] TrailSegment transitions using explicit discontinuity signals plus movement-context heuristics
 - [ ] consume BotAI-owned `AssignedTarget` through a narrow target-provider interface
 - [ ] progress-based stuck detection
 - [ ] layered Recovery pipeline
 - [ ] native navigation / Trail mode switching
 - [ ] post-recovery BotAI reacquisition handshake
+- [ ] publish structured navigation state/events for suite diagnostics
 - [ ] identify the first component revision suitable for suite pinning
 
 Integration repository:
@@ -105,21 +115,25 @@ Main repository:
 
 Runtime Trail remains the default no-NAV route source. Recorded Routes are optional supplements for difficult sections and repeatable testing.
 
-### v0.6 — Map + CS2Fixes integration
+### v0.6 — MapPlan + CS2Fixes integration
 
+- [ ] introduce `MapConfig -> MapDefinition -> MapPlan -> MapRuntime`
+- [ ] add one reusable Map entity selector model for targetname / HammerID / class / relevant Entity I/O matching
+- [ ] add public map/Boss state contracts so HUD never owns entity discovery
 - [ ] preserve required ZR map semantics
 - [ ] prevent Bot knife infection of humans
 - [ ] synchronize respawn/nuke state with ZEPVE authority
 - [ ] add map signal API
+- [ ] add compatibility tests using real-world ZE configuration corpus data
 - [ ] create `ZEPVE-CS2Fixes` only if a maintained fork becomes necessary
 - [ ] pin any fork/compatibility component explicitly in suite releases
 
 ## Later
 
 ```text
-v0.7  HUD + Weapons
-v0.8  Director / difficulty
-v0.9  map compatibility matrix + packaging/update/rollback hardening
+v0.7  HUD + Weapons; HUD consumes stable Core/Map state APIs only
+v0.8  Director / difficulty through Core spawn pressure + BotAI profile policy
+v0.9  map compatibility matrix + offline MapAnalyzer + packaging/update/rollback hardening
 v1.0  stable ZE-first PvE suite
 ```
 
