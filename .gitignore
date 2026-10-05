@@ -1,0 +1,34 @@
+# .NET / Visual Studio
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# Build / package output
+artifacts/
+dist/
+release/
+
+# Runtime / debug output
+logs/
+*.log
+*.dmp
+*.mdmp
+
+# Local server/config secrets
+.env
+.env.*
+*.local.json
+secrets.json
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
