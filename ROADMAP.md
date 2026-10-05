@@ -34,9 +34,12 @@ Navigation repository:
 
 - [ ] TrailRecorder + bounded Trail history
 - [ ] TrailSegment transitions
+- [ ] authoritative Bot-to-human `AssignedTarget` binding
+- [ ] multi-human target distribution and rebind rules
 - [ ] progress-based stuck detection
 - [ ] layered Recovery pipeline
 - [ ] native navigation / Trail mode switching
+- [ ] post-recovery target synchronization design
 - [ ] identify the first component revision suitable for suite pinning
 
 Integration repository:
@@ -45,13 +48,16 @@ Integration repository:
 - [ ] validate it with the current Core
 - [ ] record its commit/version in release metadata
 
-### v0.4 — No-NAV TrailDriver
+### v0.4 — No-NAV TrailDriver and aggro recovery
 
 Lab first:
 
 - [ ] movement takeover PoC
 - [ ] UserCmd W/A/D/JUMP injection PoC
 - [ ] jump/duck/forced-movement edge-case tests
+- [ ] observe Valve enemy/visibility state before and after recovery teleport
+- [ ] test whether temporary follow/goal-binding to `AssignedTarget` restores normal enemy acquisition
+- [ ] test explicit enemy reacquisition only if normal reacquisition remains unreliable
 
 Navigation production work after evidence:
 
@@ -60,6 +66,10 @@ Navigation production work after evidence:
 - [ ] TrailSkip
 - [ ] segment-transition recovery
 - [ ] multi-Bot target distribution
+- [ ] Recovery TP -> navigation/route rebind -> short reacquisition window
+- [ ] diagnostics for `AssignedTarget`, Valve Enemy, visibility and reacquire state
+
+Navigation must continue pursuing `AssignedTarget` even when Valve's current enemy state is null or stale.
 
 ### v0.5 — Recorded Routes and authoring tools
 
