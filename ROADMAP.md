@@ -36,7 +36,7 @@ Navigation repository:
 - [ ] TrailSegment transitions
 - [ ] progress-based stuck detection
 - [ ] layered Recovery pipeline
-- [ ] Valve NAV / Trail mode switching
+- [ ] native navigation / Trail mode switching
 - [ ] identify the first component revision suitable for suite pinning
 
 Integration repository:
@@ -49,7 +49,7 @@ Integration repository:
 
 Lab first:
 
-- [ ] BotController movement takeover PoC
+- [ ] movement takeover PoC
 - [ ] UserCmd W/A/D/JUMP injection PoC
 - [ ] jump/duck/forced-movement edge-case tests
 
@@ -61,7 +61,26 @@ Navigation production work after evidence:
 - [ ] segment-transition recovery
 - [ ] multi-Bot target distribution
 
-### v0.5 — Map + CS2Fixes integration
+### v0.5 — Recorded Routes and authoring tools
+
+Navigation repository:
+
+- [ ] persistent `RecordedRoute` schema and validation
+- [ ] `RecordedRouteSource` compatible with TrailDriver
+- [ ] admin-only in-game route recording commands
+- [ ] route visualization and test mode
+- [ ] safe save/load, schema versioning and backup behavior
+- [ ] route simplification and segment preservation
+
+Main repository:
+
+- [ ] define curated map-route storage under `maps/routes/`
+- [ ] review/export flow from local recordings to version-controlled route data
+- [ ] include curated route schema/version in release validation
+
+Runtime Trail remains the default no-NAV route source. Recorded Routes are optional supplements for difficult sections and repeatable testing.
+
+### v0.6 — Map + CS2Fixes integration
 
 - [ ] preserve required ZR map semantics
 - [ ] prevent Bot knife infection of humans
@@ -73,10 +92,9 @@ Navigation production work after evidence:
 ## Later
 
 ```text
-v0.6  HUD + Weapons
-v0.7  Director / difficulty
-v0.8  map compatibility matrix + packaging polish
-v0.9  release/update/rollback hardening
+v0.7  HUD + Weapons
+v0.8  Director / difficulty
+v0.9  map compatibility matrix + packaging/update/rollback hardening
 v1.0  stable ZE-first PvE suite
 ```
 
