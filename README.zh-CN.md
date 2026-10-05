@@ -22,8 +22,8 @@ CS2-ZE-PVE（简称 ZEPVE）是一套面向 **Counter-Strike 2 Zombie Escape** �
 | 仓库 | 用途 |
 | --- | --- |
 | **CS2-ZE-PVE** | 主运行框架、整合、配置、文档与发布 |
-| **[ZEPVE-Navigation](https://github.com/kzen1023/ZEPVE-Navigation)** | 负责有 NAV / 无 NAV 地图中的僵尸 Bot 导航与移动 |
-| **[ZEPVE-Lab](https://github.com/kzen1023/ZEPVE-Lab)** | 用于隔离验证 Bot、移动和引擎行为的实验仓库 |
+| **[ZEPVE-Navigation](https://github.com/Kzen023/ZEPVE-Navigation)** | 负责有 NAV / 无 NAV 地图中的僵尸 Bot 导航与移动 |
+| **[ZEPVE-Lab](https://github.com/Kzen023/ZEPVE-Lab)** | 用于隔离验证 Bot、移动和引擎行为的实验仓库 |
 
 只有确实需要独立生命周期的组件才会拆成新的仓库。
 

@@ -1,8 +1,8 @@
 blank_issues_enabled: true
 contact_links:
   - name: ZEPVE-Navigation
-    url: https://github.com/kzen1023/ZEPVE-Navigation/issues
+    url: https://github.com/Kzen023/ZEPVE-Navigation/issues
     about: Report or discuss reusable navigation, TrailDriver, stuck detection and recovery work here.
   - name: ZEPVE-Lab
-    url: https://github.com/kzen1023/ZEPVE-Lab/issues
+    url: https://github.com/Kzen023/ZEPVE-Lab/issues
     about: Propose high-risk Bot, UserCmd, native hook or engine-behavior experiments here.

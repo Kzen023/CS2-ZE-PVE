@@ -22,8 +22,8 @@ The project is ZE-first: it aims to keep Zombie Escape maps playable with small 
 | Repository | Purpose |
 | --- | --- |
 | **CS2-ZE-PVE** | Main runtime, integration, configuration, documentation and releases |
-| **[ZEPVE-Navigation](https://github.com/kzen1023/ZEPVE-Navigation)** | Zombie navigation and movement component for NAV and no-NAV maps |
-| **[ZEPVE-Lab](https://github.com/kzen1023/ZEPVE-Lab)** | Isolated experiments for engine, Bot and movement behavior |
+| **[ZEPVE-Navigation](https://github.com/Kzen023/ZEPVE-Navigation)** | Zombie navigation and movement component for NAV and no-NAV maps |
+| **[ZEPVE-Lab](https://github.com/Kzen023/ZEPVE-Lab)** | Isolated experiments for engine, Bot and movement behavior |
 
 Additional repositories are created only when a component genuinely needs an independent lifecycle.
 
