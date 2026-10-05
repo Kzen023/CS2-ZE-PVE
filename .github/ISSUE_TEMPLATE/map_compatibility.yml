@@ -1,0 +1,66 @@
+name: Map compatibility
+description: Report a ZE map or stage that does not work correctly with ZEPVE
+title: "[Map] "
+body:
+  - type: input
+    id: map
+    attributes:
+      label: Map name
+      placeholder: "ze_example_v1"
+    validations:
+      required: true
+  - type: input
+    id: workshop
+    attributes:
+      label: Workshop ID or map source
+      placeholder: "Workshop ID / URL / server map source"
+  - type: dropdown
+    id: nav
+    attributes:
+      label: NAV status
+      options:
+        - NAV present and usable
+        - NAV present but appears unusable
+        - No NAV
+        - Unknown
+    validations:
+      required: true
+  - type: input
+    id: stage
+    attributes:
+      label: Stage / location
+      placeholder: "Stage 2, elevator room, final hold, etc."
+    validations:
+      required: true
+  - type: textarea
+    id: population
+    attributes:
+      label: Population
+      placeholder: |
+        Humans:
+        Zombie Bots:
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Versions
+      placeholder: |
+        ZEPVE:
+        CS2 build:
+        Metamod:
+        CounterStrikeSharp:
+        CS2Fixes:
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: What happened?
+      description: Describe expected behavior and actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / screenshots / video notes
