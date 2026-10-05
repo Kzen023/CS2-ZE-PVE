@@ -2,107 +2,49 @@
 
 **[English](README.md) | 简体中文**
 
-CS2-ZE-PVE（简称 ZEPVE）是一个面向 Counter-Strike 2 Zombie Escape 的 **整合与发布仓库**，目标是让 **1–6 名人类玩家**可以通过 Bot 僵尸获得稳定的 ZE PvE / Coop 体验。
+CS2-ZE-PVE（简称 ZEPVE）是一套面向 **Counter-Strike 2 Zombie Escape** 的轻量 PvE / Coop 运行框架，目标是让 **1–6 名人类玩家**可以和 Bot 僵尸进行稳定的 ZE 游戏。
 
-有可用 NAV 时优先使用 Valve 原生导航；无 NAV 或原生导航失效时，使用玩家 Trail 作为后备路径来源。
+项目始终以 ZE 为核心：尽量保留地图原有机制，同时减少服务器和地图作者需要额外维护的配置。
 
-## 项目族
+## 主要功能
 
-| 仓库 | 定位 | 是否进入正式 ZEPVE 发布 |
-| --- | --- | --- |
-| **CS2-ZE-PVE** | 套件整合、Core/runtime、配置、兼容、打包和 Release | 是 |
-| **[ZEPVE-Navigation](https://github.com/kzen1023/ZEPVE-Navigation)** | 独立导航组件：Trail、Valve NAV、卡住检测和 Recovery | 是，固定到明确 commit/version |
-| **[ZEPVE-Lab](https://github.com/kzen1023/ZEPVE-Lab)** | Bot/UserCmd/Native/引擎行为可复现实验 | 否 |
-| `ZEPVE-CS2Fixes` | 如有必要才建立的 CS2Fixes 专用兼容 fork | 只有明确固定版本时 |
-| `ZEPVE-MovementBridge` | 只有现有 Bot API 无法满足需求时才考虑的 Native bridge | 成熟后才可能进入 |
+- Bot-only 僵尸 PvE
+- 有可用 NAV 时使用 Valve 原生导航
+- 无可用 NAV 时使用玩家 Trail 导航
+- Bot 卡住检测与恢复
+- 与 CS2Fixes / ZombieReborn 协作
+- 面向小人数场景的低服务器开销
+- HUD、Weapons、Director 等可选模块
+- 为导航、地图和 Bot 集成保留扩展边界
 
-## 整合模式
+## 项目组成
 
-ZEPVE 借鉴 CS2-Bot-Improver 这类整合项目的核心做法：
+| 仓库 | 用途 |
+| --- | --- |
+| **CS2-ZE-PVE** | 主运行框架、整合、配置、文档与发布 |
+| **[ZEPVE-Navigation](https://github.com/kzen1023/ZEPVE-Navigation)** | 负责有 NAV / 无 NAV 地图中的僵尸 Bot 导航与移动 |
+| **[ZEPVE-Lab](https://github.com/kzen1023/ZEPVE-Lab)** | 用于隔离验证 Bot、移动和引擎行为的实验仓库 |
 
-```text
-独立组件仓库
-     │
-     │ 测试 / 合并 / 验证
-     ▼
-固定组件 commit
-     │
-     ▼
-CS2-ZE-PVE 整合仓库
-     │
-     │ 套件验证 / 打包
-     ▼
-可直接安装的 ZEPVE Release
-```
+只有确实需要独立生命周期的组件才会拆成新的仓库。
 
-正式组件不会让整合仓库自动追随其最新 `main`。主仓库通过 Git submodule 固定使用的具体组件 commit；组件升级本身是一项独立、可审查的整合变更。
+## 安装
 
-`ZEPVE-Lab` 不属于正式发布链。实验成功后，应先根据证据重新设计并实现到真正负责该功能的生产仓库，再进入套件。
+ZEPVE 目前仍处于私人早期开发阶段，暂时没有公开 Release。
 
-## 运行目标
+开始发布后，可直接安装的套件包会从本仓库提供，并按 `game/csgo` 的部署结构整理。
 
-- ZE 地图兼容优先
-- 人类保持 PvE 玩家身份，僵尸由 Bot 承担
-- 有 NAV 时优先 Valve NAV
-- 无 NAV 时使用玩家 Trail
-- 与 CS2Fixes / ZombieReborn 协作，但避免重复状态所有权
-- 低服务器开销，尽量减少逐图配置
-- HUD、Weapons、Director 等功能保持可选
-- 给 Bot/Nav 开发者提供稳定扩展边界
+## 当前状态
 
-## 主仓库职责
+现阶段主要工作是导入并稳定现有 PvE 原型、建立可复现构建，以及把独立 Navigation 组件正式接入主套件。
 
-```text
-CS2-ZE-PVE/
-├─ src/                         # Core / Map 等套件自有模块
-├─ components/
-│  └─ ZEPVE-Navigation/         # 固定版本的 Git submodule
-├─ configs/
-├─ maps/
-├─ integrations/
-├─ release/                     # 打包 / manifest 定义
-├─ docs/
-└─ .github/
-```
+里程碑见 [ROADMAP.md](ROADMAP.md)。
 
-已经拆成独立生产仓库的组件，不应再在 `src/` 下保留第二份实现。
+## 文档
 
-## 发布模式
+- [English README](README.md)
+- [开发路线](ROADMAP.md)
+- [贡献指南](CONTRIBUTING.md)
+- [仓库与发布管理](GITHUB_MANAGEMENT.md)
+- [架构决策](DECISIONS.md)
 
-服务器管理员最终应该只需要下载 **一个 ZEPVE Release**，而不是手工拼装多个仓库。
-
-Release 应记录：
-
-- ZEPVE suite version 与 commit
-- 所有第一方组件的精确 commit/version
-- 测试过的 CS2 build
-- Metamod 版本
-- CounterStrikeSharp 版本
-- 使用时的 CS2Fixes version/commit
-- Native 依赖和平台信息
-
-Release ZIP 应尽量整理成可以直接复制进 `game/csgo` 的结构。
-
-## 当前优先级
-
-1. 导入现有可工作的 PvE 源码到主仓库。
-2. 建立可复现构建和 Release staging。
-3. 在 `ZEPVE-Navigation` 独立开发导航，并把验证过的版本固定进主仓库。
-4. 高风险 Bot/UserCmd/Native 行为先在 `ZEPVE-Lab` 验证。
-5. 面向用户的文档保持英文 + 简体中文。
-
-## 修改流程
-
-README、仓库页面、管理说明和轻量模板在仓库所有者允许时可以直接修改 `main`。
-
-源码行为、构建、依赖、组件版本固定以及 Release 内容变更，默认走：
-
-```text
-agent/* / feat/* / fix/*
-        ↓
-       PR
-        ↓
-验证 / Review
-        ↓
-       main
-```
+实现细节和仓库管理流程不放在首页展开，避免 README 变成开发设计文档。
