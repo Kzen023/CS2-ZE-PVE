@@ -16,9 +16,10 @@ This repository is the **suite integration/release repository**, not the owner o
 4. Do not refactor unrelated code.
 5. Preserve working behavior unless the task explicitly changes it.
 
-## Repository Ownership
+## Repository / Module Ownership
 
-- `CS2-ZE-PVE`: Abstractions, Core lifecycle/round authority, Map/ZE integration, suite config, packaging, release metadata and end-user docs.
+- `CS2-ZE-PVE`: Abstractions, Core lifecycle/round authority, `ZEPVE.BotAI`, Map/ZE integration, suite config, packaging, release metadata and end-user docs.
+- `ZEPVE.BotAI`: `AssignedTarget`, target selection/distribution, awareness assistance, Valve combat-perception observation and target reacquisition policy.
 - `ZEPVE-Navigation`: Trail recording, Valve NAV integration, TrailDriver, stuck/progress detection, movement and Recovery.
 - `ZEPVE-Lab`: high-risk experiments and evidence only; never a runtime dependency.
 - Future `ZEPVE-CS2Fixes`: focused compatibility fork only when needed.
@@ -26,7 +27,21 @@ This repository is the **suite integration/release repository**, not the owner o
 
 Do not duplicate an independently owned production component under this repository's `src/` tree.
 
-Only one system should own a state. Do not create duplicate respawn, movement or round authorities.
+Only one system should own a state. Do not create duplicate respawn, target, movement or round authorities.
+
+## BotAI
+
+`ZEPVE.BotAI` owns **who a zombie pursues and how awareness/reacquisition is assisted**.
+
+`AssignedTarget` is authoritative ZEPVE state. Valve `Enemy`, visibility and attack state are transient engine perception and must not decide whether Navigation continues pursuing a valid human.
+
+BotAI may observe and, when validated, minimally assist states such as sleep/active state, alert state, ignore-enemies state and look-around bookkeeping.
+
+Prefer preserving Valve native hearing/sound investigation over building a custom footstep/gunshot threat table.
+
+Do not make broad direct AI-state writes the default solution. High-risk Enemy/perception writes must be proven in `ZEPVE-Lab` first.
+
+Read `BOT_AI_DESIGN.md` before changing BotAI ownership, targeting or awareness behavior.
 
 ## Component Integration
 
@@ -55,7 +70,9 @@ Preferred behavior:
 Valve NAV -> TrailDriver -> Recovery
 ```
 
-Teleport is recovery, not normal locomotion.
+Navigation consumes the BotAI-owned `AssignedTarget` through a narrow contract. It does not select combat targets or own Valve Enemy/awareness state.
+
+Teleport is recovery, not normal locomotion. After a recovery teleport, Navigation rebinds its route state and requests BotAI reacquisition assistance rather than modifying combat-perception state itself.
 
 If a suite change requires Navigation behavior, change the Navigation repository first, verify it, then bump the pinned component revision here.
 
