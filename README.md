@@ -16,13 +16,23 @@ CS2-ZE-PVE (ZEPVE) is a lightweight cooperative PvE runtime focused on keeping C
 - Optional HUD, weapons and Director modules
 - Extensible APIs for Bot/Nav and map developers
 
+## Project Family
+
+| Repository | Role |
+| --- | --- |
+| **CS2-ZE-PVE** | Main runtime, integration, documentation and releases |
+| **[ZEPVE-Navigation](https://github.com/kzen1023/ZEPVE-Navigation)** | Reusable zombie navigation, TrailDriver and recovery work |
+| **[ZEPVE-Lab](https://github.com/kzen1023/ZEPVE-Lab)** | Experimental CS2 Bot, UserCmd, native hook and engine PoCs |
+
+Stable functionality should move from **Lab → component/main repository** only after runtime verification.
+
 ## Status
 
 Private early-development repository.
 
 Current priorities:
 
-1. Stabilize the existing PVE core.
+1. Stabilize the existing PvE core.
 2. Split navigation responsibilities cleanly.
 3. Build a no-NAV TrailDriver.
 4. Preserve mature ZE map semantics through CS2Fixes compatibility.
