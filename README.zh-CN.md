@@ -2,10 +2,6 @@
 
 **[English](README.md) | 简体中文**
 
-> **Make ZE Playable Again.**
->
-> **让没人时也能玩 ZE。**
-
 CS2-ZE-PVE（简称 ZEPVE）是一套以 **1–6 人单机 / 合作体验 Zombie Escape 地图** 为核心目标的轻量 PvE 运行框架。
 
 ## 目标
