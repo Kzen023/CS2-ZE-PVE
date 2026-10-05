@@ -1,0 +1,4 @@
+[submodule "components/ZEPVE-Navigation"]
+	path = components/ZEPVE-Navigation
+	url = https://github.com/kzen1023/ZEPVE-Navigation.git
+	branch = main
