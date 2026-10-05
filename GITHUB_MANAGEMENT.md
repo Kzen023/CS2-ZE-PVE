@@ -2,139 +2,100 @@
 
 Repository and release rules for the ZEPVE project family. Coding rules belong in `AGENTS.md`.
 
-## Reference Model
-
-ZEPVE borrows the useful parts of the **CS2-Bot-Improver** repository model:
-
-- one integration repository is the user-facing entry point
-- independently useful production components live in separate repositories
-- the integration repository references production components as Git submodules
-- Git pins the exact component commit used by the suite
-- component updates are explicit, reviewable integration changes
-- releases are install-ready packages rather than a list of repositories users must assemble manually
-
-ZEPVE does **not** copy every implementation detail. Components are split only when responsibility and lifecycle are genuinely independent.
-
 ## Repository Roles
 
 ### `CS2-ZE-PVE`
 
-The suite/integration repository. It owns:
+Main product and integration repository. It owns:
 
-- `ZEPVE.Abstractions`
-- Core player/Bot lifecycle and round state
-- map/ZE integration owned by ZEPVE
+- Core runtime and shared abstractions
+- ZEPVE-owned map / ZE integration
 - suite configuration and compatibility data
-- component pinning
-- packaging and release manifests
+- production-component pinning
+- packaging, manifests and releases
 - end-user documentation
-- cross-component integration tests
+- cross-component integration validation
 
 ### `ZEPVE-Navigation`
 
-Independent production component. It owns:
+Independent production component for zombie navigation, Trail handling, movement and recovery.
 
-- Trail recording and segmentation
-- Valve NAV integration
-- TrailDriver
-- target binding
-- progress/stuck detection
-- movement/recovery pipeline
-- BotController/BotNav adapters when appropriate
-
-The suite consumes it through a pinned submodule revision.
+The main suite consumes an exact tested Git revision rather than automatically following the latest component branch.
 
 ### `ZEPVE-Lab`
 
-Experimental workspace only. It owns PoCs for UserCmd, native hooks, signatures, Bot takeover, unusual movement and engine behavior.
+Experimental workspace for isolated Bot, movement, native API and engine-behavior tests.
 
-**Lab is never a release dependency and must never be added as a production submodule.**
+Lab is not a production dependency and is never shipped as part of a ZEPVE release.
 
 ### Future repositories
 
-Create only when justified:
+Create another production repository only when a component has a clear independent responsibility and lifecycle. A separate DLL alone is not a reason to create another repository.
 
-- `ZEPVE-CS2Fixes`: focused compatibility fork, separate from the main source tree
-- `ZEPVE-MovementBridge`: native bridge only if existing Bot APIs cannot satisfy production requirements
+## Component Updates
 
-Do not create separate repositories merely because a C# assembly is a separate DLL.
-
-## Component Pinning
-
-A production component update follows this flow:
+Production-component changes and suite integration are separate histories:
 
 ```text
-component branch
-→ component PR
-→ component tests/runtime verification
+component branch / PR
+→ component verification
 → merge component main
-→ integration branch in CS2-ZE-PVE
-→ bump pinned submodule commit
+→ suite integration branch
+→ update pinned component revision
 → suite validation
 → integration PR
 → merge
 ```
 
-Never make the suite silently follow a component's moving `main` branch during builds or packaging.
+Do not auto-merge component bumps.
 
-The `.gitmodules` file describes where a component comes from; the Git tree records the exact commit used by the suite.
+A component-bump PR should state:
 
-## Dependency Updates
+- previous revision
+- new revision
+- reason for update
+- API/config changes
+- dependency changes
+- runtime tests performed
+- rollback target
 
-`.github/dependabot.yml` may propose Git submodule updates. Treat these as **update candidates**, not trusted automatic upgrades.
+`.github/dependabot.yml` may propose submodule updates, but those proposals are only update candidates and still require review.
 
-Do not auto-merge component bumps. A bump must be reviewed for:
+## Direct `main` vs Pull Request
 
-- API/capability compatibility
-- config changes
-- runtime behavior
-- native/signature requirements
-- CS2 update compatibility
-- release manifest accuracy
+Lightweight repository content may be updated directly on `main` when the owner allows it:
 
-## Branches and Direct-Main Rules
-
-Two classes of change are treated differently.
-
-### Lightweight repository/documentation changes
-
-The owner may allow direct `main` updates for:
-
-- README and user-facing project pages
-- repository-management documentation
+- README and project pages
+- documentation
 - Issue / PR templates
-- CODEOWNERS and similar lightweight collaboration metadata
-- wording/formatting changes that do not affect runtime, build output or dependency versions
+- CODEOWNERS and similar collaboration metadata
+- wording or formatting changes with no runtime/build effect
 
-These still create normal Git commits and remain reversible through commit history.
+Use a branch and PR for changes that can affect the product:
 
-### Production-impacting changes
+- source/runtime behavior
+- build and package output
+- config behavior or schema
+- dependencies
+- component/submodule revisions
+- release contents
+- public APIs/capabilities
 
-Use a branch + PR for:
-
-- source code and runtime behavior
-- build scripts/workflows that affect produced binaries/packages
-- config schema/behavior changes
-- dependency upgrades
-- Git submodule additions or component commit bumps
-- release contents / packaging behavior
-- public API/capability changes
-
-Normal flow:
+Preferred branches:
 
 ```text
-main
-↑
-PR
-↑
-agent/<task> | feat/<task> | fix/<task> | refactor/<task>
+agent/<task>
+feat/<task>
+fix/<task>
+refactor/<task>
+experiment/<task>
 ```
 
-Keep branches short-lived. No permanent `develop` branch for now. Never force-push `main` as a normal rollback mechanism.
+Keep branches short-lived. No permanent `develop` branch unless a concrete need appears.
 
 ## Commits
 
-One logical change per commit where practical.
+Keep commits scoped and descriptive where practical.
 
 Examples:
 
@@ -142,10 +103,10 @@ Examples:
 feat(core): add bot pool lifecycle
 fix(map): stop respawns after nuke signal
 chore(components): bump ZEPVE-Navigation
-build(release): add install-ready package staging
+build(release): add package staging
 ```
 
-For component bump commits, state the old/new component revision and reason in the PR.
+Do not commit credentials, crash dumps, machine-local configuration, generated release binaries or temporary debugging artifacts.
 
 ## Versioning
 
@@ -155,13 +116,9 @@ The public product uses one suite version:
 ZEPVE v0.x.x
 ```
 
-Independent production components may also have their own SemVer tags:
+Independent production components may also use their own SemVer tags.
 
-```text
-ZEPVE-Navigation v0.x.x
-```
-
-Capability/API versions remain independent of package versions:
+Capability/API versions are separate from package versions:
 
 ```text
 zepve:core:v1
@@ -169,17 +126,16 @@ zepve:navigation:v1
 zepve:map:v1
 ```
 
-Breaking API changes add a new capability version rather than silently changing an existing version.
+Breaking API changes should introduce a new capability version rather than silently changing an existing contract.
 
-## Source vs Release Layout
+## Source and Release Layout
 
-Recommended source shape:
+Source layout should remain developer-friendly:
 
 ```text
 CS2-ZE-PVE/
 ├─ src/
 ├─ components/
-│  └─ ZEPVE-Navigation/      # submodule
 ├─ configs/
 ├─ maps/
 ├─ integrations/
@@ -189,7 +145,7 @@ CS2-ZE-PVE/
 └─ .github/
 ```
 
-Recommended generated release staging shape:
+Release staging should be generated and shaped for server deployment:
 
 ```text
 release/stage/
@@ -199,22 +155,21 @@ release/stage/
       └─ cfg/
 ```
 
-Do not hand-maintain duplicate release binaries in source control.
+Do not maintain duplicate release binaries manually in source control.
 
 ## Release Contract
 
-Players should download one suite release.
+Players should normally install one ZEPVE suite release rather than assembling component repositories themselves.
 
-A release must record:
+A release should record:
 
-- suite version
-- suite Git commit
-- every pinned first-party component commit/version
+- suite version and Git commit
+- pinned first-party component revisions
 - tested CS2 build
 - Metamod version
 - CounterStrikeSharp version
 - CS2Fixes version/commit when used
-- native dependency versions/platform when applicable
+- native dependency versions/platforms when applicable
 
 Suggested assets once builds exist:
 
@@ -224,62 +179,48 @@ CS2-ZE-PVE-v0.x.x-Full.zip
 manifest.json
 ```
 
-`Minimal`: required runtime components.
+Experimental Lab output is never included in release packages.
 
-`Full`: Minimal plus stable optional modules. Experimental Lab outputs never belong in either package.
+## Promotion from Lab
 
-## Component Promotion Rules
-
-A repository becomes a production component only when it has:
-
-1. a clear responsibility boundary
-2. a stable integration contract
-3. independent tests/runtime verification
-4. a reason to be developed or reused separately
-5. a documented update path into the suite
-
-Until then, keep the code in the repository that owns the product behavior.
-
-## Experimental Promotion
+A successful experiment provides evidence, not production code.
 
 ```text
-ZEPVE-Lab experiment
-→ PASS/FAIL/INCONCLUSIVE evidence
+experiment result
 → production design decision
-→ clean implementation in owning production repo
-→ PR and runtime test
-→ optional suite component bump PR
+→ clean implementation in owning production repository
+→ PR and runtime verification
+→ optional suite component bump
 ```
 
-Do not promote Lab code by copying an entire PoC unchanged into production.
+Do not copy an entire experimental PoC unchanged into production.
 
-## Upstream First
+## Third-Party Dependencies
 
-When a missing capability belongs to BotController, BotNav, CounterStrikeSharp, CS2Fixes or another dependency:
+Use narrow adapters around external APIs where practical. Prefer upstream fixes or contributions when missing behavior clearly belongs to an external dependency.
 
-1. prefer an upstream issue/PR
-2. use a narrow adapter in ZEPVE
-3. maintain a fork only when necessary
-4. document why the fork exists and how it diverges
+Maintain a fork only when there is a concrete reason, and document why it exists and how it diverges.
+
+Required notices, licenses and source obligations must be preserved whenever third-party code or licensing terms require them.
 
 ## Rollback
 
-If a merged production change breaks the project, prefer a **revert commit/PR**. Do not rewrite shared history to hide mistakes.
+Prefer revert commits/PRs over rewriting shared history.
 
-Release rollback should use a previously tested tag/release rather than reconstructing an old environment manually.
+For released versions, roll back to a previously tested tag/release instead of reconstructing an old environment manually.
+
+Do not force-push `main` as a normal recovery method.
 
 ## Documentation Roles
 
 ```text
-README.md / README.zh-CN.md -> users and project-family overview
+README.md / README.zh-CN.md -> project introduction and user entry point
 AGENTS.md                    -> GPT/Codex execution rules
-GITHUB_MANAGEMENT.md         -> integration/release workflow
-ROADMAP.md                   -> milestone order
-DECISIONS.md                 -> durable architecture/repository decisions
-CONTRIBUTING.md              -> human contributors
-components/README.md         -> component pin/update rules
+GITHUB_MANAGEMENT.md         -> repository/release workflow
+ROADMAP.md                   -> milestones
+DECISIONS.md                 -> durable architecture decisions
+CONTRIBUTING.md              -> contributor guide
+components/README.md         -> component integration rules
 ```
 
-## Primary Rule
-
-Keep **component development**, **suite integration**, and **experimentation** as three distinct histories. That separation is the main reason for the multi-repository model.
+Keep implementation detail out of the root README when a dedicated design document is more appropriate.
