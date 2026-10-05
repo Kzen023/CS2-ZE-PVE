@@ -16,13 +16,23 @@ CS2-ZE-PVE（简称 ZEPVE）是一套以 **1–6 人单机 / 合作体验 Zombie
 - HUD、武器、Director 等功能模块化可选
 - 为 Bot/Nav 开发者和地图作者提供扩展接口
 
+## 项目组成
+
+| 仓库 | 定位 |
+| --- | --- |
+| **CS2-ZE-PVE** | 主运行框架、整合、文档与发布 |
+| **[ZEPVE-Navigation](https://github.com/kzen1023/ZEPVE-Navigation)** | 可复用的僵尸导航、TrailDriver 与恢复逻辑 |
+| **[ZEPVE-Lab](https://github.com/kzen1023/ZEPVE-Lab)** | CS2 Bot、UserCmd、Native Hook 与引擎行为实验区 |
+
+实验功能只有在真实运行验证后，才应从 **Lab → 独立组件 / 主仓库**。
+
 ## 当前状态
 
 私人早期开发仓库。
 
 当前优先级：
 
-1. 稳定现有 PVE Core。
+1. 稳定现有 PvE Core。
 2. 清晰拆分 Navigation 职责。
 3. 实现无 NAV TrailDriver。
 4. 通过 CS2Fixes 兼容层保留成熟 ZE 地图机制。
