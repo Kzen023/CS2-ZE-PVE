@@ -1,0 +1,11 @@
+# Default owner for repository changes
+* @kzen1023
+
+# GitHub workflow and repository policy
+/.github/ @kzen1023
+
+# Architecture and project policy
+/AGENTS.md @kzen1023
+/GITHUB_MANAGEMENT.md @kzen1023
+/DECISIONS.md @kzen1023
+/ROADMAP.md @kzen1023
