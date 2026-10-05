@@ -1,55 +1,55 @@
 # Components
 
-`CS2-ZE-PVE` is the integration/release repository. Independently developed production components are referenced here by **pinned Git revisions**.
+`CS2-ZE-PVE` is the main integration and release repository. Production components that are developed independently are referenced here by **exact Git revisions**.
 
-## Current production component
+## Current Component
 
-- `ZEPVE-Navigation`
-  - source: https://github.com/kzen1023/ZEPVE-Navigation
-  - integration path: `components/ZEPVE-Navigation/`
-  - design source: `NAVIGATION_DESIGN.md` in the component repository
-  - runtime model: `ValveNavDriver -> TrailDriver -> RecoveryDriver`
-  - optional adapter direction: BotNav-style native path access + BotController-style UserCmd movement execution
-  - stuck/recovery model: multi-signal progress monitoring + staged recovery rather than checkpoint-first navigation
+### `ZEPVE-Navigation`
 
-`ZEPVE-Navigation` is explicitly **not** a per-map checkpoint navigation system. No-NAV routing is based on recorded human Trails.
+Zombie navigation and movement component for NAV and no-NAV maps.
 
-## Update rule
+It provides:
 
-Do not make the suite automatically consume an arbitrary latest component build.
+- native navigation integration
+- player Trail navigation
+- progress/stuck detection
+- staged recovery
+- movement/backend abstraction
 
-Use:
+Detailed design lives in the component repository rather than in this integration repository.
+
+## Update Rule
+
+A component revision is updated only after it has been reviewed and verified in its own repository.
 
 ```text
 component change
-→ component PR/test
-→ component main
+→ component verification
 → suite branch
-→ update submodule commit
+→ update pinned revision
 → suite validation
 → suite PR
 ```
 
-The suite PR should state:
+The suite PR should record:
 
-- previous component commit/version
-- new component commit/version
+- previous revision
+- new revision
 - reason for the bump
-- API/config changes
-- runtime tests performed
-- maps/NAV conditions tested where relevant
+- API/config/dependency changes
+- runtime verification performed
+- rollback target
 
-## Experimental repositories
+Do not automatically consume an arbitrary latest component build.
 
-`ZEPVE-Lab` is not a production component and must never be added here as a submodule or release dependency.
+## Experimental Repositories
 
-Successful Lab experiments must be redesigned into the owning production repository first.
+`ZEPVE-Lab` is not a production component and must never be added here as a release dependency.
 
-## Future components
+Experimental results must first become a clean implementation in the production repository that owns the behavior.
 
-Add only when there is a clear independent lifecycle and integration contract. Possible examples:
+## Future Components
 
-- `ZEPVE-CS2Fixes`
-- `ZEPVE-MovementBridge`
+Add another production repository only when there is a clear independent responsibility, lifecycle and integration contract.
 
-Do not create or pin a repository merely because a DLL exists.
+A separate DLL by itself is not a reason to create or pin another repository.
