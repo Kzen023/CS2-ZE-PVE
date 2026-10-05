@@ -4,15 +4,15 @@
 
 ## Current production component
 
-- `ZEPVE-Navigation` — Trail, Valve NAV integration, TrailDriver, stuck/progress detection and Recovery.
+- `ZEPVE-Navigation`
+  - source: https://github.com/kzen1023/ZEPVE-Navigation
+  - integration path: `components/ZEPVE-Navigation/`
+  - design source: `NAVIGATION_DESIGN.md` in the component repository
+  - runtime model: `ValveNavDriver -> TrailDriver -> RecoveryDriver`
+  - optional adapter direction: BotNav-style native path access + BotController-style UserCmd movement execution
+  - stuck/recovery model: multi-signal progress monitoring + staged recovery rather than checkpoint-first navigation
 
-The component should be mounted at:
-
-```text
-components/ZEPVE-Navigation/
-```
-
-through a Git submodule once the initial production revision is pinned.
+`ZEPVE-Navigation` is explicitly **not** a per-map checkpoint navigation system. No-NAV routing is based on recorded human Trails.
 
 ## Update rule
 
