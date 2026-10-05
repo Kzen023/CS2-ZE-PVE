@@ -2,65 +2,115 @@
 
 **English | [简体中文](README.zh-CN.md)**
 
-CS2-ZE-PVE (ZEPVE) is a lightweight cooperative PvE runtime focused on keeping Counter-Strike 2 Zombie Escape maps playable with **1–6 players**.
+CS2-ZE-PVE (ZEPVE) is the **integration and release repository** for a ZE-first cooperative PvE runtime for Counter-Strike 2.
 
-## Goals
-
-- ZE-first compatibility
-- AI zombie opponents
-- Valve NAV when available
-- Trail-based fallback for no-NAV maps
-- CS2Fixes / ZombieReborn compatibility
-- Low server overhead
-- Minimal per-map setup
-- Optional HUD, weapons and Director modules
-- Extensible APIs for Bot/Nav and map developers
+The project targets **1–6 human players** fighting Bot zombies on Zombie Escape maps, with Valve NAV where it works and Trail-based fallback where it does not.
 
 ## Project Family
 
-| Repository | Role |
-| --- | --- |
-| **CS2-ZE-PVE** | Main runtime, integration, documentation and releases |
-| **[ZEPVE-Navigation](https://github.com/kzen1023/ZEPVE-Navigation)** | Reusable zombie navigation, TrailDriver and recovery work |
-| **[ZEPVE-Lab](https://github.com/kzen1023/ZEPVE-Lab)** | Experimental CS2 Bot, UserCmd, native hook and engine PoCs |
+| Repository | Role | Shipped in ZEPVE releases? |
+| --- | --- | --- |
+| **CS2-ZE-PVE** | Suite integration, Core/runtime, configs, compatibility, packaging and releases | Yes |
+| **[ZEPVE-Navigation](https://github.com/kzen1023/ZEPVE-Navigation)** | Independent navigation component: Trail, Valve NAV integration, stuck detection and recovery | Yes, pinned to a specific commit/version |
+| **[ZEPVE-Lab](https://github.com/kzen1023/ZEPVE-Lab)** | Reproducible Bot/UserCmd/native-engine experiments | No |
+| `ZEPVE-CS2Fixes` | Future focused CS2Fixes compatibility fork if required | Only when intentionally pinned |
+| `ZEPVE-MovementBridge` | Future native movement bridge only if existing APIs are insufficient | Only after it becomes a stable component |
 
-Stable functionality should move from **Lab → component/main repository** only after runtime verification.
+## Integration Model
+
+ZEPVE follows an integration-repository pattern inspired by projects such as CS2-Bot-Improver:
+
+```text
+component repository
+        │
+        │ tested change / release
+        ▼
+pinned component commit
+        │
+        ▼
+CS2-ZE-PVE integration repository
+        │
+        │ suite validation
+        ▼
+install-ready ZEPVE release
+```
+
+A production component is **not** consumed by automatically following its moving `main`. The integration repository pins the exact component commit through Git submodules. Component updates are reviewed as explicit integration changes.
+
+`ZEPVE-Lab` is deliberately excluded from this chain. Successful experiments are redesigned and promoted into a production repository before they can ship.
+
+## Runtime Goals
+
+- ZE map compatibility first
+- Humans remain the PvE player team; zombies are Bots
+- Valve NAV when native navigation is usable
+- Player Trail fallback for no-NAV maps
+- CS2Fixes / ZombieReborn compatibility without duplicate rule ownership
+- Low server overhead and minimal per-map setup
+- Optional HUD, Weapons and Director functionality
+- Stable extension points for Bot/Nav contributors
+
+## Repository Responsibilities
+
+This repository owns suite-level concerns:
+
+```text
+CS2-ZE-PVE/
+├─ src/                         # suite-owned runtime modules such as Core / Map
+├─ components/
+│  └─ ZEPVE-Navigation/         # pinned Git submodule
+├─ configs/
+├─ maps/
+├─ integrations/
+├─ release/                     # packaging/manifest definitions
+├─ docs/
+└─ .github/
+```
+
+Independent components should not be duplicated under `src/` after they are split into their own repository.
+
+## Release Model
+
+Players should eventually install **one ZEPVE release package**, not manually assemble component repositories.
+
+A release should record:
+
+- ZEPVE suite version and commit
+- exact component commits/versions
+- tested CS2 build
+- Metamod version
+- CounterStrikeSharp version
+- CS2Fixes version/commit when used
+- platform-specific native dependencies when used
+
+Release archives should be staged so their contents can be copied into `game/csgo` with minimal manual work.
 
 ## Status
 
-Private early-development repository.
+Private early development.
 
 Current priorities:
 
-1. Stabilize the existing PvE core.
-2. Split navigation responsibilities cleanly.
-3. Build a no-NAV TrailDriver.
-4. Preserve mature ZE map semantics through CS2Fixes compatibility.
-5. Keep user-facing documentation bilingual.
+1. Import the existing working PvE implementation into the suite repository.
+2. Establish reproducible builds and release staging.
+3. Develop Navigation independently and pin tested revisions here.
+4. Prove risky movement/native behavior in ZEPVE-Lab before production integration.
+5. Keep user-facing documentation in English and Simplified Chinese.
 
-## Project Structure
+## Change Workflow
 
-```text
-ZEPVE.Abstractions
-├─ ZEPVE.Core
-├─ ZEPVE.Navigation
-├─ ZEPVE.Map
-├─ ZEPVE.Hud
-├─ ZEPVE.Weapons
-└─ ZEPVE.Director
-```
+Documentation, repository pages and lightweight templates may be updated directly on `main` when the owner requests it.
 
-ZE remains the primary mode. Survival, Horde and standard-map PvE may be added as extensions where they improve single-player and co-op replayability.
-
-## Development
-
-Codex/GPT startup order:
+Changes that affect source behavior, builds, dependencies, component pins or release contents should use:
 
 ```text
-1. AGENTS.md
-2. GITHUB_MANAGEMENT.md
-3. ROADMAP.md
-4. DECISIONS.md
+agent/* / feat/* / fix/*
+        ↓
+      PR + diff
+        ↓
+ tests / review
+        ↓
+       main
 ```
 
-Then read only files relevant to the current task.
+For coding rules, read `AGENTS.md`. For repository/component workflow, read `GITHUB_MANAGEMENT.md`.
