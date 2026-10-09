@@ -54,6 +54,7 @@ See [ROADMAP.md](ROADMAP.md) for milestones.
 - [Simplified Chinese README](README.zh-CN.md)
 - [Legacy migration baseline](legacy/README.md)
 - [Migration authority](MIGRATION_AUTHORITY.md)
+- [Core observer: build, commands and validation](docs/CORE_OBSERVER.md)
 - [Roadmap](ROADMAP.md)
 - [Contributing](CONTRIBUTING.md)
 - [Repository and release management](GITHUB_MANAGEMENT.md)
