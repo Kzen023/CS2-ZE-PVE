@@ -39,14 +39,16 @@ Do not add a second respawn scheduler, change infection timing, introduce new AI
 
 #### v0.2b — Core registry + identity + lifecycle invalidation
 
-- [ ] extract/stabilize the minimum `ZEPVE.Abstractions` contracts needed by Core
-- [ ] create one Core-owned `PlayerRegistry` as the identity source
-- [ ] expose Human/Zombie views from the same registry rather than maintaining separate competing registries
-- [ ] track map epoch, round epoch, connection identity/generation and pawn/spawn generation
-- [ ] invalidate delayed work on disconnect, pawn replacement, round/map change and unload
-- [ ] define hot/late-load initialization behavior
-- [ ] add bounded lifecycle diagnostics / Core status queries
-- [ ] add tests for delayed-action validity and slot reuse
+- [x] extract/stabilize the minimum `ZEPVE.Abstractions` contracts needed by Core
+- [x] create one Core-owned `PlayerRegistry` as the identity source
+- [x] expose Human/Zombie views from the same registry rather than maintaining separate competing registries
+- [x] track map epoch, round epoch, connection identity/generation and pawn/spawn generation
+- [x] invalidate delayed work on disconnect, pawn replacement, round/map change and unload
+- [x] define hot/late-load initialization behavior
+- [x] add bounded lifecycle diagnostics / Core status queries
+- [x] add tests for delayed-action validity and slot reuse
+
+Implementation and deterministic model tests are complete; real CS2 runtime scenarios remain **NOT TESTED**. See `docs/CORE_OBSERVER_VERIFICATION.md` before any authority handoff.
 
 At the end of v0.2b, legacy remains the gameplay writer. Core first proves that it can observe identity/lifecycle correctly without changing verified gameplay.
 
