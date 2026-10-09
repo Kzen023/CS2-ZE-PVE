@@ -18,16 +18,20 @@ This repository is the **suite integration/release repository**, not the owner o
 
 ## Repository / Module Ownership
 
-- `CS2-ZE-PVE`: Abstractions, Core lifecycle/round authority, `ZEPVE.BotAI`, Map/ZE integration, suite config, packaging, release metadata and end-user docs.
+- `CS2-ZE-PVE`: Abstractions, Core lifecycle/round authority, `ZEPVE.BotAI`, Map/ZE integration, suite config, packaging, release metadata, legacy migration baseline and end-user docs.
 - `ZEPVE.BotAI`: `AssignedTarget`, target selection/distribution, awareness assistance, Valve combat-perception observation and target reacquisition policy.
 - `ZEPVE-Navigation`: Trail recording, Valve NAV integration, TrailDriver, stuck/progress detection, movement and Recovery.
+- `ZEPVE-HUD`: player-facing presentation only; consumes suite state and must not rediscover gameplay/map authority independently.
+- `ZEPVE-WeaponSystem`: PvE weapon balance, ammo/magazine rules, purchase handling, weapon aliases and weapon-specific damage policy. The current repository slug is `ZEPVE-WeponSystem`; use `ZEPVE-WeaponSystem` in new code/docs.
 - `ZEPVE-Lab`: high-risk experiments and evidence only; never a runtime dependency.
 - Future `ZEPVE-CS2Fixes`: focused compatibility fork only when needed.
 - Future `ZEPVE-MovementBridge`: native bridge only if existing Bot APIs are insufficient.
 
+The existing pre-split plugins under `legacy/` are regression/migration baselines, not the target ownership model. Do not develop duplicate production implementations there.
+
 Do not duplicate an independently owned production component under this repository's `src/` tree.
 
-Only one system should own a state. Do not create duplicate respawn, target, movement or round authorities.
+Only one system should own a state. Do not create duplicate respawn, target, movement, weapon, presentation or round authorities.
 
 ## BotAI
 
@@ -45,7 +49,7 @@ Read `BOT_AI_DESIGN.md` before changing BotAI ownership, targeting or awareness 
 
 ## Component Integration
 
-Production components are pinned to exact Git revisions by the suite.
+Production components are pinned to exact Git revisions by the suite only after they are ready for production integration.
 
 A component update should be:
 
@@ -59,6 +63,8 @@ component PR/test
 ```
 
 Do not make release builds silently track a moving component branch.
+
+`ZEPVE-HUD` and `ZEPVE-WeaponSystem` currently exist as migration targets and are not automatically release dependencies merely because their repositories exist.
 
 ## Navigation
 
@@ -75,6 +81,21 @@ Navigation consumes the BotAI-owned `AssignedTarget` through a narrow contract. 
 Teleport is recovery, not normal locomotion. After a recovery teleport, Navigation rebinds its route state and requests BotAI reacquisition assistance rather than modifying combat-perception state itself.
 
 If a suite change requires Navigation behavior, change the Navigation repository first, verify it, then bump the pinned component revision here.
+
+## HUD / Weapon migration
+
+Legacy migration sources are:
+
+```text
+legacy/CounterStrikeSharp/plugins/Kzen-ZEAssist
+  → presentation parts to ZEPVE-HUD
+  → map/entity semantics to ZEPVE.Map / owning suite service
+
+legacy/CounterStrikeSharp/plugins/Kzen-WeaponBalance
+  → ZEPVE-WeaponSystem
+```
+
+Do not copy mixed legacy plugins wholesale into new repositories and call the migration complete. First preserve verified behavior, then move responsibilities according to ownership.
 
 ## Experimental Work
 
@@ -158,4 +179,4 @@ Developer-only documents do not require translation unless useful to contributor
 
 Before finishing, verify repository ownership, component revision impact, lifecycle, performance, logs, config validation, build status and rollback path.
 
-Primary rule: keep **component development**, **suite integration**, and **experimentation** separate and auditable.
+Primary rule: keep **component development**, **suite integration**, **legacy migration**, and **experimentation** separate and auditable.
