@@ -31,6 +31,8 @@ ZEPVE.Navigation
 
 `ZEPVE-Navigation` must not own target selection, Valve Enemy state, alert/sleep state or enemy reacquisition policy.
 
+BotAI may request temporary navigation assistance toward `AssignedTarget`; Navigation remains the **only final movement/native-goal writer** and decides how that request is executed alongside its current driver/recovery state.
+
 ## 2. Authoritative Target
 
 Each zombie has one ZEPVE-owned `AssignedTarget`.
@@ -49,9 +51,11 @@ Navigation continues toward a valid `AssignedTarget` even when Valve currently r
 
 Target binding is re-evaluated when the assigned human dies, disconnects, becomes invalid, changes stage eligibility, or explicit redistribution is requested.
 
+`AssignedTarget` is a new ZEPVE capability; the legacy ZRPVE baseline does not contain an equivalent authoritative target state.
+
 ## 3. Navigation Contract
 
-Navigation should depend on a narrow contract, preferably from `ZEPVE.Abstractions`:
+Navigation should consume narrow contracts defined by the suite/shared abstractions rather than defining a second copy of them in the Navigation implementation:
 
 ```text
 IBotTargetProvider
@@ -86,6 +90,18 @@ Candidate triggers:
 - AssignedTarget rebind
 - valid AssignedTarget with stale/null Valve Enemy for a bounded interval
 
+Before applying any awareness operation, validate that the request still belongs to the current lifecycle/target binding:
+
+```text
+current map/round/player/pawn identity
+→ current AssignedTarget / binding version
+→ navigation/recovery state already synchronized
+→ duplicate reacquire requests coalesced
+→ smallest validated awareness operation
+→ bounded engine observation window
+→ success / timeout / invalidation
+```
+
 Candidate actions, only when runtime tests justify them:
 
 ```text
@@ -94,10 +110,10 @@ clear ignore-enemies state
 raise a short alert window
 reset look-around bookkeeping
 preserve native sound investigation
-optionally request temporary navigation assistance toward AssignedTarget
+request temporary navigation assistance toward AssignedTarget
 ```
 
-Stop assisting once normal engine perception recovers.
+Stop assisting once normal engine perception recovers or the lifecycle/target binding becomes invalid.
 
 Do not blindly force visibility. Do not continuously write broad Bot AI state every tick unless a specific field is proven to require it.
 
@@ -116,20 +132,25 @@ These are **reference observations**, not code to copy directly. ZEPVE should in
 
 In particular, ZEPVE should prefer an event-triggered `AwarenessAssist` window over permanently forcing all of these states every tick.
 
-## 6. Reacquisition Escalation
+## 6. Reacquisition Experiments
 
-Test in this order:
+The following is an experiment sequence, not a claim that every step is required or that this exact ordering is already production-safe.
+
+Test candidate operations independently where practical:
 
 ```text
-1. AssignedTarget remains valid
-2. reset look-around bookkeeping
-3. wake / allow active
-4. clear IgnoreEnemies state
-5. short alert window
-6. temporary navigation assist toward AssignedTarget
-7. observe native Enemy/visibility recovery
-8. only if still unreliable, test the smallest explicit Enemy-state write in ZEPVE-Lab
+1. confirm AssignedTarget and binding are still valid
+2. establish a baseline observation window after movement/teleport synchronization
+3. test look-around reset
+4. test wake / allow active
+5. test clear IgnoreEnemies state
+6. test a short alert window
+7. test temporary Navigation-owned assistance toward AssignedTarget
+8. observe native Enemy/visibility recovery
+9. only if still unreliable, test the smallest explicit Enemy-state write in ZEPVE-Lab
 ```
+
+Do not change every candidate field at once and then attribute success to one of them.
 
 Explicit Valve Enemy writes are a fallback, not the default design.
 
@@ -155,6 +176,7 @@ Useful debug state:
 
 ```text
 AssignedTarget
+TargetBindingVersion
 ValveEnemy
 EnemyVisible
 IsAimingAtEnemy
@@ -186,5 +208,6 @@ The first BotAI baseline should prove:
 - multi-human target distribution and rebinding;
 - post-spawn/post-teleport awareness recovery;
 - no dependency on Valve Enemy as the navigation authority;
+- Navigation remains the only final movement/native-goal writer;
 - clean interaction with `ZEPVE-Navigation` through narrow contracts;
 - diagnostics sufficient to explain why a Bot is or is not pursuing/attacking a human.
