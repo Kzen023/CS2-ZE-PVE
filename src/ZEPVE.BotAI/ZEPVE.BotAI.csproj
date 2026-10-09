@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Version>0.2.0-d</Version>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <CounterStrikeSharpApiDirectory>$([System.IO.Path]::GetDirectoryName('$(CounterStrikeSharpApiPath)'))</CounterStrikeSharpApiDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../ZEPVE.Abstractions/ZEPVE.Abstractions.csproj"><Private>false</Private></ProjectReference>
+    <Reference Include="CounterStrikeSharp.API"><HintPath>$(CounterStrikeSharpApiPath)</HintPath><Private>false</Private></Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions"><HintPath>$(CounterStrikeSharpApiDirectory)/Microsoft.Extensions.Logging.Abstractions.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+  <Target Name="RequireServerApi" BeforeTargets="ResolveReferences">
+    <Error Condition="!Exists('$(CounterStrikeSharpApiPath)')" Text="Supply the installed CounterStrikeSharpApiPath." />
+  </Target>
+</Project>

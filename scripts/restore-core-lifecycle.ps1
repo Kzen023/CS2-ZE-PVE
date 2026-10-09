@@ -8,7 +8,7 @@ foreach ($process in Get-CimInstance Win32_Process -Filter "name = 'cs2.exe'") {
 foreach ($file in $record.Files) {
     $target = [System.IO.Path]::GetFullPath((Join-Path $installRoot $file.Path))
     if (-not $target.StartsWith($installRoot + [System.IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase) -or
-        $file.Path -notmatch '^game/csgo/addons/counterstrikesharp/(plugins/(ZEPVE\.Core|Kzen-ZRPVE)|shared/ZEPVE\.Abstractions)/(ZEPVE\.Core|ZEPVE\.Abstractions|Kzen-ZRPVE)\.(dll|pdb|deps\.json)$') { throw 'Unsafe recorded rollback path.' }
+        $file.Path -notmatch '^game/csgo/addons/counterstrikesharp/(plugins/(ZEPVE\.Core|ZEPVE\.BotAI|Kzen-ZRPVE)|shared/ZEPVE\.Abstractions)/(ZEPVE\.Core|ZEPVE\.BotAI|ZEPVE\.Abstractions|Kzen-ZRPVE)\.(dll|pdb|deps\.json)$') { throw 'Unsafe recorded rollback path.' }
     if ($file.Existed -and (Get-FileHash -LiteralPath (Join-Path $PSScriptRoot $file.Path) -Algorithm SHA256).Hash -ne $file.OldSHA256) { throw 'Backup integrity failure.' }
     if ($record.Status.StartsWith('installed')) {
         if ($file.NewSHA256) {
@@ -22,4 +22,4 @@ foreach ($file in $record.Files) {
     if ($file.Existed) { Copy-Item -LiteralPath (Join-Path $PSScriptRoot $file.Path) -Destination $target -Force }
     elseif (Test-Path -LiteralPath $target) { Remove-Item -LiteralPath $target }
 }
-Write-Output 'Restored the whole previous Core/ZRPVE/contracts set. Configs and unrelated plugins were not touched.'
+Write-Output 'Restored the whole previous matched suite (including BotAI inventory). Configs and unrelated plugins were not touched.'

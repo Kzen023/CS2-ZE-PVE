@@ -227,8 +227,9 @@ foreach (var (name, run) in scenarios)
 }
 Console.WriteLine($"{scenarios.Length - failures}/{scenarios.Length} scenarios passed (deterministic model tests; CS2 runtime NOT TESTED)");
 var authority = AuthorityTests.Run();
-Console.WriteLine($"TOTAL {scenarios.Length - failures + authority.Passed}/{scenarios.Length + authority.Total} model checks passed");
-return failures == 0 && authority.Passed == authority.Total ? 0 : 1;
+var ai = BotAiTests.Run();
+Console.WriteLine($"TOTAL {scenarios.Length - failures + authority.Passed + ai.Passed}/{scenarios.Length + authority.Total + ai.Total} model checks passed");
+return failures == 0 && authority.Passed == authority.Total && ai.Passed == ai.Total ? 0 : 1;
 
 static void Check(bool valid, string message) { if (!valid) throw new InvalidOperationException(message); }
 

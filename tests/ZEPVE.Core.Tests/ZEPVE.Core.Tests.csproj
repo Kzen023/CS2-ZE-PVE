@@ -8,5 +8,6 @@
   <ItemGroup>
     <ProjectReference Include="../../src/ZEPVE.Core/ZEPVE.Core.csproj" />
     <ProjectReference Include="../../src/ZEPVE.Abstractions/ZEPVE.Abstractions.csproj" />
+    <ProjectReference Include="../../src/ZEPVE.BotAI/ZEPVE.BotAI.csproj" />
   </ItemGroup>
 </Project>
