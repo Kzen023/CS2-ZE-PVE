@@ -22,7 +22,7 @@ Keeping legacy source as a regression baseline does **not** mean loading two pro
 
 ## Current authority matrix
 
-The matrix below describes the **paired v0.2c source/package mode**, installed from `1cf6aa2` on 2026-10-09. Artifact/backup checks and subsequent matched single-player runtime handoff smoke passed on dust2/mirage. Real evidence confirms the bridge gate, registry, lifecycle transitions and basic migrated PvE policy; broader acceptance remains explicitly deferred. Never mix the new Core writer with the old monolithic legacy DLL. See `docs/CORE_MATCHED_RUNTIME_VERIFICATION.md` for evidence/limits and `docs/CORE_LIFECYCLE_MIGRATION.md` for installation and rollback.
+The Core/legacy rows preserve the **accepted paired v0.2c authority**, originally installed from `1cf6aa2` and now merged at baseline `ed480bd` (PR #10). The matched v0.2d package `238b98c` adds only suite-owned AssignedTarget/reacquire policy; fixed-package single-human smoke passed, with limits in `docs/BOTAI_VERIFICATION.md`. Core gameplay authority and the v0.2c deferred acceptance remain unchanged. Never mix Core with the old monolithic legacy writer. Historical Core evidence/limits are in `docs/CORE_MATCHED_RUNTIME_VERIFICATION.md`; matched installation/rollback is in `docs/BOTAI_RUNTIME.md`.
 
 | Behavior / state | Current writer / executor | Migration rule | Final owner |
 | --- | --- | --- | --- |
@@ -32,8 +32,8 @@ The matrix below describes the **paired v0.2c source/package mode**, installed f
 | Zombie respawn policy | `ZEPVE.Core` migrated static profiles / `zr_respawn_delay` compatibility setting | preserve solo/duo/coop/group delay values; no new respawn timer; external runtime retains map/permission/execution rules | `ZEPVE.Core` policy + compatibility adapter |
 | Zombie respawn execution | ZombieReborn / existing CS2Fixes-compatible runtime | unchanged sole executor; Core does not call respawn APIs or schedule respawns | `ZEPVE.Core` policy with one explicit executor/adapter |
 | Recovery teleport | `Kzen-ZRPVE` legacy recovery | legacy remains writer until Navigation recovery is implemented and validated | `ZEPVE-Navigation` |
-| Pursuit target (`AssignedTarget`) | no explicit ZEPVE state in legacy | this is a new BotAI capability, not a legacy extraction; introduce only when BotAI becomes the target authority | `ZEPVE.BotAI` |
-| Valve `Enemy` / visibility | Valve engine state; legacy has no authoritative ZEPVE write path | BotAI observes and may use only validated bounded assistance; never make Navigation the writer | Valve engine state + `ZEPVE.BotAI` observation/assist policy |
+| Pursuit target (`AssignedTarget`) | `ZEPVE.BotAI` in the matched v0.2d package; absent in the v0.2c baseline | new capability, not legacy extraction; single published provider, dual Core tokens + module GUID/BindingVersion; Released/live-role gate | `ZEPVE.BotAI` |
+| Valve `Enemy` / visibility | Valve engine state; BotAI reads only | v0.2d ObserveOnly / zero native writes; BotController lock/replay/input/weapon ownership untouched; future field assist needs evidence/ownership review | Valve engine state + `ZEPVE.BotAI` observation/assist policy |
 | Native/trail movement goal | Valve native behavior plus limited legacy recovery teleport | only Navigation may become the final movement/native-goal writer; BotAI may request assistance but not issue movement itself | `ZEPVE-Navigation` |
 | Runtime Trail | `Kzen-ZRPVE` legacy shared point history | treat as baseline behavior only; new per-human Trail replaces it after Navigation validation | `ZEPVE-Navigation` |
 | Map stage / boss / signal semantics | no canonical suite state; `Kzen-ZEAssist` contains heuristics/observation | heuristics may inform migration but must not silently become gameplay authority | `ZEPVE.Map` |
@@ -52,7 +52,17 @@ The matrix below describes the **paired v0.2c source/package mode**, installed f
 
 Recovery point selection/teleport, legacy Trail recording, HUD presentation and WeaponBalance remain their existing writers. Recovery callbacks now use Core validity/cancellation, but their recovery algorithm remains byte-equivalent to the accepted baseline.
 
-## Handoff checklist
+## v0.2d new-capability boundary
+
+PR #10 merged to `main @ ed480bd500ca01e5ed4da6a61a7391944d38905c`, the new matched-runtime baseline. v0.2c remaining deferred acceptance is unchanged. No Core/legacy gameplay authority is moved by BotAI. Existing bot quota/team, infection, external respawn execution, recovery, Trail, weapons and HUD writers remain unchanged. The only new writer is BotAI's suite-owned AssignedTarget/reacquisition policy.
+
+BotController v0.7.1 source/log revision `0ae8f18` was audited: lock/replay/usercmd/view/weapon/buy/profile controls are separate from BotAI's read-only schema observation. BotAI calls none of them and writes no native perception/movement field. Native locks/replay may impair observed reacquisition; BotAI never overrides them. Future Navigation remains the only final movement-intent writer; its current design pin is not an active runtime.
+
+Matched v0.2d installation/rollback includes Core + adapted ZRPVE + BotAI + one shared ABI, offline with hashes/current backup. See `docs/BOTAI_RUNTIME.md` and `docs/BOTAI_VERIFICATION.md` for implemented contracts and separate model/runtime evidence. AssignedTarget does not claim to change Valve pursuit before Navigation consumes it; Recovery's missing automatic reacquire notification remains explicit debt. `Round_End T tally 20 vs actual 10` remains independent diagnostic debt.
+
+Actual v0.2d matched single-human smoke passed after fixing the startup native-time defect (`238b98c` installed; initial broken whole set was actually rolled back and v0.2c baseline booted). Assignment independent of null Enemy, round/pawn/provider/module invalidation, map/reconnect cleanup and ObserveOnly success/timeout have real evidence. Multiple real humans, isolated target-pawn/BindingVersion-only rejection and native assist efficacy are still NOT TESTED/PARTIAL. Current rollback backup is `ZEPVE_Backup/v0.2d-20261009-161410-5946327`; no writer besides suite-owned target/reacquire policy moved.
+
+### Existing handoff checklist
 
 Before changing a row from the legacy/current writer to a new owner, the PR must state:
 

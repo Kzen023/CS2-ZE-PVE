@@ -1,5 +1,7 @@
 # CS2-ZE-PVE
 
+v0.2c matched-runtime baseline 已合并：PR #10 / `ed480bd`。v0.2d 独立 BotAI DLL 建立目标权威与 bounded ObserveOnly reacquire：[架构/安装/命令](docs/BOTAI_RUNTIME.zh-CN.md)、[独立验证证据](docs/BOTAI_VERIFICATION.md)。不启用 Navigation 或 native awareness 写入。
+
 **[English](README.md) | 简体中文**
 
 CS2-ZE-PVE（简称 ZEPVE）是一套面向 **Counter-Strike 2 Zombie Escape** 的轻量 PvE / Coop 运行框架，目标是让 **1–6 名人类玩家**可以和 Bot 僵尸进行稳定的 ZE 游戏。

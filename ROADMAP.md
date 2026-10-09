@@ -63,20 +63,22 @@ At the end of v0.2b, legacy remains the gameplay writer. Core first proves that 
 - [x] add bounded Flight Recorder events for lifecycle actions, rejection and invalidation
 - [x] verify the paired v0.2c handoff on the real server (single-player dust2/mirage smoke; broader tests deferred)
 
-Source implementation/model validation, matched deployment and single-player runtime acceptance are complete. See `docs/CORE_MATCHED_RUNTIME_VERIFICATION.md` for actual RCON/log evidence, limits and remaining NOT TESTED/PARTIAL. PR #10 can move Ready for review; no automatic merge or next-phase development. PR #9 observer evidence remains historical.
+Source/model validation and matched single-player runtime acceptance are complete; PR #10 merged to `main @ ed480bd` with owner authorization. See `docs/CORE_MATCHED_RUNTIME_VERIFICATION.md` for unchanged deferred acceptance. PR #9 observer evidence remains historical.
 
 Do not introduce dynamic Director logic, a new respawn gameplay model or a complex BotPool merely to complete Core ownership.
 
 #### v0.2d — BotAI ownership + observability
 
-- [ ] create `ZEPVE.BotAI.dll` inside the main repository
-- [ ] introduce authoritative `AssignedTarget` as a new ZEPVE capability
-- [ ] implement target validity, rebinding and multi-human distribution
-- [ ] define narrow BotAI/Navigation contracts in Abstractions
-- [ ] add `AwarenessAssist` / `TargetReacquireService` baseline
-- [ ] add BotAI diagnostics for AssignedTarget, Valve Enemy and reacquire state
-- [ ] extend the bounded per-Bot Flight Recorder with target/awareness transitions
-- [ ] add status/debug/dump commands for Core and BotAI state
+- [x] create `ZEPVE.BotAI.dll` inside the main repository
+- [x] introduce authoritative `AssignedTarget` as a new ZEPVE capability
+- [x] implement dual-identity validity, rebinding and stable balanced multi-human distribution
+- [x] define narrow BotAI/Navigation contracts in Abstractions
+- [x] add bounded ObserveOnly reacquisition baseline (native assist candidates unvalidated)
+- [x] add BotAI diagnostics for AssignedTarget, Valve Enemy and reacquire state
+- [x] bounded target/awareness/combat FlightRecorder
+- [x] add admin status/events/reacquire/binding-probe commands
+
+127 model/source checks pass. Matched single-human runtime smoke passed after repairing the startup native-clock defect, with actual initial whole rollback verified. Detailed PASS/PARTIAL/NOT TESTED is separate in `docs/BOTAI_VERIFICATION.md`. Native perception writes are absent, Recovery handshake awaits the owning Navigation runtime, no Navigation implementation/pin change. v0.2d ready for review, no automatic merge/Navigation. See bilingual `docs/BOTAI_RUNTIME.md`.
 
 Lab work:
 

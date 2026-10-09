@@ -45,6 +45,8 @@ When releases begin, install-ready packages will be published from this reposito
 
 ## Status
 
+v0.2c matched runtime baseline is merged at `ed480bd` (PR #10). v0.2d introduces the separate BotAI target-authority DLL with bounded ObserveOnly reacquisition: [architecture/install/commands](docs/BOTAI_RUNTIME.md), [separate verification](docs/BOTAI_VERIFICATION.md). Navigation and native awareness writes are not enabled by this capability.
+
 Current work focuses on reproducing the legacy baseline, documenting migration authority, establishing safe Core identity/lifecycle foundations, and integrating independently developed components without changing verified gameplay unnecessarily.
 
 See [ROADMAP.md](ROADMAP.md) for milestones.

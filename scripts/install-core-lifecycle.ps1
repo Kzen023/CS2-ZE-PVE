@@ -1,16 +1,28 @@
 param(
     [Parameter(Mandatory = $true)][string]$ServerRoot,
-    [Parameter(Mandatory = $true)][string]$PackageDirectory
+    [Parameter(Mandatory = $true)][string]$PackageDirectory,
+    [switch]$AllowUnmoddedClient
 )
 $ErrorActionPreference = 'Stop'
 $installRoot = (Resolve-Path -LiteralPath $ServerRoot).Path.TrimEnd('\', '/')
 $packageRoot = (Resolve-Path -LiteralPath $PackageDirectory).Path.TrimEnd('\', '/')
 if (-not (Test-Path -LiteralPath (Join-Path $installRoot 'game/csgo/addons/counterstrikesharp/api/CounterStrikeSharp.API.dll'))) { throw 'ServerRoot is not a CS2 CounterStrikeSharp installation.' }
 foreach ($process in Get-CimInstance Win32_Process -Filter "name = 'cs2.exe'") {
-    if (-not $process.ExecutablePath -or $process.ExecutablePath.StartsWith($installRoot + '\', [StringComparison]::OrdinalIgnoreCase)) { throw 'Stop CS2 first; paired DLL/contract upgrades must be offline.' }
+    if (-not $process.ExecutablePath) { throw 'Cannot identify CS2 process; stop it before matched deployment.' }
+    if (-not $process.ExecutablePath.StartsWith($installRoot + '\', [StringComparison]::OrdinalIgnoreCase)) { continue }
+    if (-not $AllowUnmoddedClient -or -not $process.CommandLine -or $process.CommandLine -match '(?i)(^|\s)-dedicated(\s|$)') {
+        throw 'Stop CS2 first; matched DLL/contract upgrades must be offline.'
+    }
+    $client = Get-Process -Id $process.ProcessId -ErrorAction Stop
+    if ($client.MainWindowHandle -eq [IntPtr]::Zero -or $client.Modules.Count -eq 0) { throw 'Cannot establish an active unmodded client.' }
+    foreach ($module in $client.Modules) {
+        if ($module.FileName -match '(?i)[\\/]addons[^\\/]*[\\/]|metamod|counterstrikesharp|cs2fixes|botcontroller') {
+            throw 'Client has addon modules loaded; stop it before matched deployment.'
+        }
+    }
 }
 $manifest = Get-Content -LiteralPath (Join-Path $packageRoot 'manifest.json') -Raw | ConvertFrom-Json
-if ($manifest.Stage -ne 'v0.2c paired lifecycle/round authority migration' -or $manifest.WorkingTreeChanges.Count -ne 0) { throw 'Require a clean, committed paired build manifest.' }
+if ($manifest.Stage -notin @('v0.2c paired lifecycle/round authority migration', 'v0.2d matched BotAI suite') -or $manifest.WorkingTreeChanges.Count -ne 0) { throw 'Require a clean, committed matched build manifest.' }
 $apiPath = Join-Path $installRoot 'game/csgo/addons/counterstrikesharp/api/CounterStrikeSharp.API.dll'
 if ((Get-FileHash -LiteralPath $apiPath -Algorithm SHA256).Hash -ne $manifest.ApiSHA256) { throw 'Server API differs from the verified build input.' }
 $allowed = @(
@@ -23,6 +35,14 @@ $allowed = @(
     'game/csgo/addons/counterstrikesharp/shared/ZEPVE.Abstractions/ZEPVE.Abstractions.dll',
     'game/csgo/addons/counterstrikesharp/shared/ZEPVE.Abstractions/ZEPVE.Abstractions.pdb'
 )
+if ($manifest.Stage -eq 'v0.2d matched BotAI suite') {
+    $allowed += @('game/csgo/addons/counterstrikesharp/plugins/ZEPVE.BotAI/ZEPVE.BotAI.dll',
+        'game/csgo/addons/counterstrikesharp/plugins/ZEPVE.BotAI/ZEPVE.BotAI.deps.json',
+        'game/csgo/addons/counterstrikesharp/plugins/ZEPVE.BotAI/ZEPVE.BotAI.pdb')
+}
+elseif (Test-Path -LiteralPath (Join-Path $installRoot 'game/csgo/addons/counterstrikesharp/plugins/ZEPVE.BotAI/ZEPVE.BotAI.dll')) {
+    throw 'BotAI is installed: restore the matched backup before downgrading the shared ABI to v0.2c.'
+}
 if ($manifest.Files.Count -ne $allowed.Count -or @($manifest.Files.Path | Select-Object -Unique).Count -ne $allowed.Count) { throw 'Unexpected/duplicate package inventory.' }
 foreach ($file in $manifest.Files) {
     if ($file.Path -notin $allowed -or (Get-FileHash -LiteralPath (Join-Path $packageRoot $file.Path) -Algorithm SHA256).Hash -ne $file.SHA256) { throw 'Invalid package path/hash.' }
@@ -33,7 +53,12 @@ $privateCopies = @(
     'game/csgo/addons/counterstrikesharp/plugins/Kzen-ZRPVE/ZEPVE.Abstractions.dll',
     'game/csgo/addons/counterstrikesharp/plugins/Kzen-ZRPVE/ZEPVE.Abstractions.pdb'
 )
-$backupRoot = Join-Path $installRoot ('ZEPVE_Backup/v0.2c-' + [DateTimeOffset]::UtcNow.ToString('yyyyMMdd-HHmmss-fffffff'))
+if ($manifest.Stage -eq 'v0.2d matched BotAI suite') {
+    $privateCopies += @('game/csgo/addons/counterstrikesharp/plugins/ZEPVE.BotAI/ZEPVE.Abstractions.dll',
+        'game/csgo/addons/counterstrikesharp/plugins/ZEPVE.BotAI/ZEPVE.Abstractions.pdb')
+}
+$version = if ($manifest.Stage -eq 'v0.2d matched BotAI suite') { 'v0.2d' } else { 'v0.2c' }
+$backupRoot = Join-Path $installRoot ('ZEPVE_Backup/' + $version + '-' + [DateTimeOffset]::UtcNow.ToString('yyyyMMdd-HHmmss-fffffff'))
 New-Item -ItemType Directory -Path $backupRoot | Out-Null
 $inventory = @()
 foreach ($relative in @($allowed + $privateCopies)) {
