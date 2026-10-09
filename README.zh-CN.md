@@ -55,6 +55,7 @@ ZEPVE 目前仍处于私人早期开发阶段，暂时没有公开 Release。
 - [旧版迁移 baseline](legacy/README.md)
 - [迁移 authority](MIGRATION_AUTHORITY.md)
 - [Core observer：构建、命令与验证](docs/CORE_OBSERVER.zh-CN.md)
+- [Core 生命周期迁移：配套构建、handoff 与运行验收](docs/CORE_LIFECYCLE_MIGRATION.zh-CN.md)
 - [开发路线](ROADMAP.md)
 - [贡献指南](CONTRIBUTING.md)
 - [仓库与发布管理](GITHUB_MANAGEMENT.md)

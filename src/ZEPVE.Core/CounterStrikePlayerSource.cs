@@ -26,6 +26,7 @@ internal sealed class CounterStrikePlayerSource : IPlayerObservationSource
         var pawnValid = pawn is { IsValid: true } && pawn.Controller.Raw == player.EntityHandle.Raw;
         return new(slot, player.EntityHandle.Raw, player.UserId,
             pawnValid ? player.PlayerPawn.Raw : null, role,
-            pawnValid && pawn!.LifeState == (byte)LifeState_t.LIFE_ALIVE && player.PawnIsAlive);
+            pawnValid && pawn!.LifeState == (byte)LifeState_t.LIFE_ALIVE && player.PawnIsAlive,
+            (PlayerTeam)(int)player.Team, player.IsBot, player.IsHLTV);
     }
 }

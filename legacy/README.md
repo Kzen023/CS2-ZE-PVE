@@ -41,6 +41,8 @@ Do not copy a whole legacy plugin into a new repository and call the migration c
 
 ## Current migration priority
 
+The v0.2c adapted ZRPVE source now removes its old round/quota/team/policy writer paths and consumes Core validity. Recovery/Trail/presentation remain legacy-owned. Install it only as the matched Core/shared-ABI package; no legacy writer fallback exists. The installed accepted v0.2b deployment is distinct from this source handoff. See [Core lifecycle migration](../docs/CORE_LIFECYCLE_MIGRATION.md) for deferred runtime acceptance and whole-set rollback.
+
 1. Reproduce the legacy build/dependency/runtime baseline and preserve a rollback target.
 2. Document current writers and handoff rules in `MIGRATION_AUTHORITY.md`.
 3. Add Core registry/identity/lifecycle invalidation as an observer while legacy remains the gameplay writer.

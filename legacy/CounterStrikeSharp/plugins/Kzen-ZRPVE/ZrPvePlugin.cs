@@ -5,6 +5,7 @@ using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Globalization;
+using ZEPVE.Abstractions;
 
 namespace KzenZrPve;
 
@@ -18,10 +19,11 @@ public sealed class ZrPvePlugin : BasePlugin
     private const string Prefix = "[ZR-PvE]";
     private bool _enabled = true;
     private ZrPveConfig _config = new();
-    private string _currentProfile = "off";
-    private int _targetBotQuota;
-    private bool _infectionReleased;
-    private int _roundToken;
+    private LegacyBridge? _bridge;
+    private ICoreLifecycle? _workProvider;
+    private bool _infectionReleased => SuiteRuntime.Current is { State.Loaded: true, GameplayAuthorityActive: true } core && core.Round.InfectionReleased;
+    private ICoreWorkScope? _coreWork;
+    private readonly List<CounterStrikeSharp.API.Modules.Timers.Timer> _mapTimers = new();
     private long _pathSequence;
     private readonly List<PathPoint> _pathHistory = new();
     private readonly Dictionary<int, BotWatchState> _botWatch = new();
@@ -35,15 +37,15 @@ public sealed class ZrPvePlugin : BasePlugin
     {
         _config = LoadConfig();
         _enabled = _config.Enabled;
-        RegisterListener<Listeners.OnMapStart>(OnMapStart);
+        _bridge = new(this);
+        try { SuiteRuntime.AttachLegacy(_bridge); }
+        catch { SuiteRuntime.DetachLegacy(_bridge); _bridge = null; StopMapTimers(); throw; }
     }
 
     private void OnMapStart(string mapName)
     {
+        StopMapTimers();
         StopAllEscorts();
-        _currentProfile = "off";
-        _targetBotQuota = 0;
-        _infectionReleased = false;
         _pathHistory.Clear();
         _botWatch.Clear();
         _escorts.Clear();
@@ -52,17 +54,18 @@ public sealed class ZrPvePlugin : BasePlugin
         _botStatuses.Clear();
         _reservedRecoveryPoints.Clear();
         _pathSequence = 0;
-        _roundToken++;
-        AddTimer(Math.Max(0.1f, _config.RecordInterval), RecordHumanPath, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
-        AddTimer(Math.Max(0.25f, _config.WatchdogInterval), CheckZombieBots, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
-        AddTimer(Math.Max(0.5f, _config.StatusHudInterval), ShowBotStatusHud, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
-        AddTimer(1.0f, ApplyMapRoundTime, TimerFlags.STOP_ON_MAPCHANGE);
+        StartMapServices();
     }
 
-    [GameEventHandler]
-    public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
+    private void StartMapServices()
     {
-        _infectionReleased = false;
+        StartMapTimer(Math.Max(0.1f, _config.RecordInterval), RecordHumanPath, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
+        StartMapTimer(Math.Max(0.25f, _config.WatchdogInterval), CheckZombieBots, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
+        StartMapTimer(Math.Max(0.5f, _config.StatusHudInterval), ShowBotStatusHud, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
+    }
+
+    private void ResetRound()
+    {
         StopAllEscorts();
         _pathHistory.Clear();
         _botWatch.Clear();
@@ -71,33 +74,22 @@ public sealed class ZrPvePlugin : BasePlugin
         _botStatuses.Clear();
         _reservedRecoveryPoints.Clear();
         _pathSequence = 0;
-        _roundToken++;
-        StartInfectionCountdownHud();
-        QueueApply("round start", hardResetBots: true);
-        return HookResult.Continue;
     }
 
-    private void StartInfectionCountdownHud()
+    private void ShowInfectionCountdown(int seconds)
     {
-        var profile = PickProfile(CountHumanPlayers(), _config);
-        var seconds = Math.Max(3, (int)MathF.Ceiling(profile.InfectionDelay));
-        Server.ExecuteCommand($"zr_infect_spawn_time_min {seconds}");
-        Server.ExecuteCommand($"zr_infect_spawn_time_max {seconds}");
         Server.ExecuteCommand($"css_kzen_countdown {seconds} 首轮感染");
         Server.PrintToConsole($"{Prefix} Infection countdown synchronized: {seconds}s.");
     }
 
-    [GameEventHandler]
-    public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
+    private void ObserveSpawn(int slot)
     {
-        var player = @event.Userid;
+        var player = Utilities.GetPlayerFromSlot(slot);
         if (_infectionReleased && IsZombieBot(player))
         {
             SetBotStatus(player!, "复活等待回位");
             QueueBotRecovery(player!.Slot, "respawn", _config.RespawnRecoveryDelay);
         }
-
-        return HookResult.Continue;
     }
 
     [GameEventHandler]
@@ -134,157 +126,59 @@ public sealed class ZrPvePlugin : BasePlugin
         return HookResult.Continue;
     }
 
-    private void QueueApply(string reason, bool hardResetBots = false)
+    public override void Unload(bool hotReload)
     {
-        AddTimer(1.0f, () => ApplyProfile(reason, hardResetBots), TimerFlags.STOP_ON_MAPCHANGE);
+        if (_bridge is not null) SuiteRuntime.DetachLegacy(_bridge);
+        _bridge = null;
+        _coreWork?.Dispose();
+        _coreWork = null;
+        _workProvider = null;
+        StopMapTimers();
+        _pendingRecoveries.Clear();
     }
 
-    private void ApplyProfile(string reason, bool hardResetBots)
+    private void StartMapTimer(float seconds, Action action, TimerFlags flags)
     {
-        if (!_enabled)
+        var core = SuiteRuntime.Current;
+        if (core is not { State.Loaded: true }) return;
+        var token = core.CaptureServer();
+        _mapTimers.Add(new(seconds, () =>
         {
-            return;
-        }
-
-        if (!IsRealPlayableMap())
-        {
-            return;
-        }
-
-        var humans = CountHumanPlayers();
-        var profile = PickProfile(humans, _config);
-        _targetBotQuota = profile.BotQuota;
-
-        Server.ExecuteCommand("mp_autoteambalance 0");
-        Server.ExecuteCommand("mp_limitteams 0");
-        Server.ExecuteCommand("mp_humanteam CT");
-        Server.ExecuteCommand("mp_warmuptime 0");
-        Server.ExecuteCommand("mp_warmuptime_all_players_connected 0");
-        Server.ExecuteCommand("mp_warmup_pausetimer 0");
-        Server.ExecuteCommand("mp_freezetime 0");
-        ApplyMapRoundTime();
-        Server.ExecuteCommand($"mp_buytime {_config.BuyTimeSeconds}");
-        Server.ExecuteCommand($"mp_buy_anywhere {BoolToInt(_config.BuyAnywhere)}");
-        Server.ExecuteCommand($"bot_join_team {(_infectionReleased ? "T" : "CT")}");
-        Server.ExecuteCommand("bot_join_after_player 0");
-        Server.ExecuteCommand("bot_auto_vacate 0");
-        Server.ExecuteCommand($"bot_difficulty {_config.BotDifficulty}");
-        Server.ExecuteCommand($"bot_coop_idle_max_vision_distance {_config.BotIdleVisionDistance:0}");
-        Server.ExecuteCommand("bot_chatter off");
-        Server.ExecuteCommand("bot_defer_to_human_goals 0");
-        Server.ExecuteCommand("bot_defer_to_human_items 0");
-        Server.ExecuteCommand("bot_allow_rogues 1");
-        Server.ExecuteCommand("bot_stop 0");
-        Server.ExecuteCommand("bot_path_require_reachable_goal 0");
-        Server.ExecuteCommand("bot_quota_mode normal");
-        Server.ExecuteCommand("bot_quota 0");
-
-        Server.ExecuteCommand("zr_enable 1");
-        Server.ExecuteCommand($"zr_napalm_enable {BoolToInt(_config.ZrNapalmEnable)}");
-        Server.ExecuteCommand($"zr_infect_spawn_type {_config.ZrInfectSpawnType}");
-        Server.ExecuteCommand($"zr_infect_spawn_warning {BoolToInt(_config.ZrInfectSpawnWarning)}");
-        Server.ExecuteCommand($"zr_default_winner_team {_config.ZrDefaultWinnerTeam}");
-
-        Server.ExecuteCommand($"zr_infect_min_count_req {profile.MinPlayersToInfect}");
-        Server.ExecuteCommand($"zr_infect_spawn_mz_min_count {profile.MotherZombieMinCount}");
-        Server.ExecuteCommand($"zr_infect_spawn_mz_ratio {profile.MotherZombieRatio}");
-        Server.ExecuteCommand($"zr_infect_spawn_time_min {Math.Max(3, (int)MathF.Ceiling(profile.InfectionDelay))}");
-        Server.ExecuteCommand($"zr_infect_spawn_time_max {Math.Max(3, (int)MathF.Ceiling(profile.InfectionDelay))}");
-        Server.ExecuteCommand($"zr_respawn_delay {profile.RespawnDelay:0.0}");
-        Server.ExecuteCommand($"zr_knockback_scale {profile.KnockbackScale:0.0}");
-        Server.ExecuteCommand($"zr_napalm_burn_duration {profile.NapalmBurnDuration:0.0}");
-
-        _currentProfile = profile.Name;
-
-        if (hardResetBots)
-        {
-            _infectionReleased = false;
-            Server.ExecuteCommand("bot_kick");
-            var token = _roundToken;
-            AddTimer(profile.InfectionDelay, () => ReleaseInfectionBots(token), TimerFlags.STOP_ON_MAPCHANGE);
-        }
-        else if (_infectionReleased)
-        {
-            MoveExistingBots(CsTeam.Terrorist);
-        }
-        else
-        {
-            MoveExistingBots(CsTeam.CounterTerrorist);
-        }
-
-        Server.PrintToConsole($"{Prefix} Applied {profile.Name} profile on {Server.MapName} for {humans} human player(s), bots={profile.BotQuota}, phase={(_infectionReleased ? "zombie" : "prepare")}: {reason}");
+            if (core.ValidateServer(token, ServerValidity.Map, out _)) action();
+        }, flags));
     }
 
-    private void ReleaseInfectionBots(int roundToken)
+    private void StopMapTimers()
     {
-        if (!IsRealPlayableMap() || roundToken != _roundToken)
-        {
-            return;
-        }
+        foreach (var timer in _mapTimers) timer.Kill();
+        _mapTimers.Clear();
+    }
 
-        _infectionReleased = true;
-        Server.ExecuteCommand("bot_join_team T");
-        Server.ExecuteCommand("bot_kick");
-        AddTimer(_config.BotAddDelay, () =>
+    private sealed class LegacyBridge(ZrPvePlugin plugin) : ILegacyPveBridge
+    {
+        public LegacyPveSettings Settings => new(
+            plugin._config.Enabled, plugin._config.SoloBotQuota, plugin._config.DuoBotQuota,
+            plugin._config.CoopMinBotQuota, plugin._config.CoopMaxBotQuota, plugin._config.GroupMinBotQuota,
+            plugin._config.GroupMaxBotQuota, plugin._config.InfectionDelay, plugin._config.ZeRoundTimeMinutes,
+            plugin._config.NonZeRoundTimeMinutes, plugin._config.BuyTimeSeconds, plugin._config.BuyAnywhere,
+            plugin._config.BotAddDelay, plugin._config.ReleaseMoveDelay, plugin._config.BotDifficulty,
+            plugin._config.BotIdleVisionDistance, plugin._config.ZrNapalmEnable, plugin._config.ZrInfectSpawnType,
+            plugin._config.ZrInfectSpawnWarning, plugin._config.ZrDefaultWinnerTeam);
+        public void ShowInfectionCountdown(int seconds) => plugin.ShowInfectionCountdown(seconds);
+        public void ObserveSpawn(int slot) => plugin.ObserveSpawn(slot);
+        public void ObserveMapStart(string mapName, bool resetData)
         {
-            Server.ExecuteCommand("bot_quota_mode normal");
-            Server.ExecuteCommand($"bot_quota {_targetBotQuota}");
-        }, TimerFlags.STOP_ON_MAPCHANGE);
-        AddTimer(_config.ReleaseMoveDelay, () => MoveExistingBots(CsTeam.Terrorist, botsOnly: true), TimerFlags.STOP_ON_MAPCHANGE);
-        Server.PrintToConsole($"{Prefix} Infection phase released; maintaining {_targetBotQuota} zombie/T bots.");
+            if (resetData) plugin.OnMapStart(mapName);
+            else { plugin.StopMapTimers(); plugin.StartMapServices(); }
+        }
+        public void ObserveRoundStart() => plugin.ResetRound();
+        public void SuspendMapServices() => plugin.StopMapTimers();
     }
 
     private static bool IsRealPlayableMap()
     {
         var mapName = Server.MapName ?? string.Empty;
         return !string.IsNullOrWhiteSpace(mapName) && !mapName.Equals("<empty>", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private void ApplyMapRoundTime()
-    {
-        var mapName = Server.MapName ?? string.Empty;
-        var isZeMap = mapName.StartsWith("ze_", StringComparison.OrdinalIgnoreCase);
-        var minutes = isZeMap
-            ? _config.ZeRoundTimeMinutes
-            : _config.NonZeRoundTimeMinutes;
-        var value = minutes.ToString("0.##", CultureInfo.InvariantCulture);
-
-        Server.ExecuteCommand($"mp_roundtime {value}");
-        Server.ExecuteCommand($"mp_roundtime_defuse {value}");
-        Server.ExecuteCommand($"mp_roundtime_hostage {value}");
-        Server.PrintToConsole($"{Prefix} Map timer applied: {mapName} => {value} minute(s) ({(isZeMap ? "ZE" : "non-ZE")}).");
-    }
-
-    private static void AddBots(int count, CsTeam team)
-    {
-        var command = team == CsTeam.Terrorist ? "bot_add_t" : "bot_add_ct";
-
-        for (var i = 0; i < count; i++)
-        {
-            Server.ExecuteCommand(command);
-        }
-    }
-
-    private static void MoveExistingBots(CsTeam team, bool botsOnly = true)
-    {
-        foreach (var player in Utilities.GetPlayers())
-        {
-            if (!player.IsValid || player.IsHLTV)
-            {
-                continue;
-            }
-
-            if (botsOnly && !player.IsBot)
-            {
-                continue;
-            }
-
-            if (player.Team != team)
-            {
-                player.ChangeTeam(team);
-                player.SwitchTeam(team);
-            }
-        }
     }
 
     private void RecordHumanPath()
@@ -388,16 +282,25 @@ public sealed class ZrPvePlugin : BasePlugin
 
     private void QueueBotRecovery(int slot, string reason, float delay, int attempt = 0)
     {
-        if (!_pendingRecoveries.Add(slot))
-        {
-            return;
-        }
-
-        AddTimer(Math.Max(0.0f, delay), () =>
+        if (!_pendingRecoveries.Add(slot)) return;
+        var core = SuiteRuntime.Current;
+        if (core is not { State.Loaded: true } || !core.TryCapture(slot, out var token))
         {
             _pendingRecoveries.Remove(slot);
-            TryRecoverZombieBot(slot, reason, attempt);
-        }, TimerFlags.STOP_ON_MAPCHANGE);
+            return;
+        }
+        if (!ReferenceEquals(_workProvider, core))
+        {
+            _coreWork?.Dispose();
+            _workProvider = core;
+            _coreWork = core.CreateWorkScope();
+        }
+        if (!_coreWork!.TrySchedulePlayer(token, Math.Max(0, delay), current =>
+            {
+                _pendingRecoveries.Remove(current.Slot);
+                TryRecoverZombieBot(current.Slot, reason, attempt);
+            }, out _, canceled: _ => _pendingRecoveries.Remove(slot)))
+            _pendingRecoveries.Remove(slot);
     }
 
     private void QueueInitialRecoveries()
@@ -840,93 +743,6 @@ public sealed class ZrPvePlugin : BasePlugin
     {
         return player is { IsValid: true, IsBot: true, IsHLTV: false, Team: CsTeam.Terrorist };
     }
-
-    private static int CountHumanPlayers()
-    {
-        var count = 0;
-
-        foreach (var player in Utilities.GetPlayers())
-        {
-            if (!player.IsValid || player.IsBot || player.IsHLTV)
-            {
-                continue;
-            }
-
-            if (player.Team == CsTeam.CounterTerrorist || player.Team == CsTeam.Terrorist)
-            {
-                count++;
-            }
-        }
-
-        return count;
-    }
-
-    private static PveProfile PickProfile(int humans, ZrPveConfig config)
-    {
-        if (humans <= 1)
-        {
-            return new PveProfile(
-                Name: "solo",
-                MinPlayersToInfect: 2,
-                MotherZombieMinCount: 1,
-                MotherZombieRatio: 16,
-                RespawnDelay: 7.0f,
-                KnockbackScale: 4.8f,
-                NapalmBurnDuration: 4.0f,
-                BotQuota: config.SoloBotQuota,
-                InfectionDelay: config.InfectionDelay);
-        }
-
-        if (humans <= 2)
-        {
-            return new PveProfile(
-                Name: "duo",
-                MinPlayersToInfect: 2,
-                MotherZombieMinCount: 1,
-                MotherZombieRatio: 12,
-                RespawnDelay: 5.0f,
-                KnockbackScale: 4.0f,
-                NapalmBurnDuration: 4.0f,
-                BotQuota: config.DuoBotQuota,
-                InfectionDelay: config.InfectionDelay);
-        }
-
-        if (humans <= 6)
-        {
-            return new PveProfile(
-                Name: "coop",
-                MinPlayersToInfect: 2,
-                MotherZombieMinCount: 1,
-                MotherZombieRatio: 8,
-                RespawnDelay: 4.0f,
-                KnockbackScale: 3.5f,
-                NapalmBurnDuration: 3.5f,
-                BotQuota: Math.Clamp(humans * 2, config.CoopMinBotQuota, config.CoopMaxBotQuota),
-                InfectionDelay: config.InfectionDelay);
-        }
-
-        return new PveProfile(
-            Name: "group",
-            MinPlayersToInfect: 2,
-            MotherZombieMinCount: 2,
-            MotherZombieRatio: 7,
-            RespawnDelay: 3.0f,
-            KnockbackScale: 3.0f,
-            NapalmBurnDuration: 3.0f,
-            BotQuota: Math.Clamp(humans * 2, config.GroupMinBotQuota, config.GroupMaxBotQuota),
-            InfectionDelay: config.InfectionDelay);
-    }
-
-    private sealed record PveProfile(
-        string Name,
-        int MinPlayersToInfect,
-        int MotherZombieMinCount,
-        int MotherZombieRatio,
-        float RespawnDelay,
-        float KnockbackScale,
-        float NapalmBurnDuration,
-        int BotQuota,
-        float InfectionDelay);
 
     private sealed class ZrPveConfig
     {

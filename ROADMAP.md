@@ -54,13 +54,16 @@ At the end of v0.2b, legacy remains the gameplay writer. Core first proves that 
 
 #### v0.2c — Core lifecycle authority handoff
 
-- [ ] move existing round/lifecycle actions from legacy into Core one responsibility at a time
-- [ ] migrate Bot quota/team-transition authority with exactly one active writer
-- [ ] preserve current static human-count/profile behavior during the handoff
-- [ ] define round-end/map-end cancellation for delayed actions
-- [ ] keep respawn policy and executor explicitly separated; retain the validated ZombieReborn/compatibility executor unless a replacement is proven
-- [ ] update `MIGRATION_AUTHORITY.md` in the same PR whenever a writer actually changes
-- [ ] add bounded Flight Recorder events for lifecycle actions, rejection and invalidation
+- [x] move existing round/lifecycle actions from legacy into Core one responsibility at a time
+- [x] migrate Bot quota/team-transition authority with exactly one active writer in the paired package
+- [x] preserve current static human-count/profile behavior during the handoff
+- [x] define round-end/map-end cancellation for delayed actions
+- [x] keep respawn policy and executor explicitly separated; retain the ZombieReborn/compatibility executor
+- [x] update `MIGRATION_AUTHORITY.md` with the source handoff and explicit installed-runtime distinction
+- [x] add bounded Flight Recorder events for lifecycle actions, rejection and invalidation
+- [ ] verify the paired v0.2c handoff on the real server (NOT TESTED)
+
+Source implementation/model validation is complete. Deployment/runtime acceptance remains pending; see `docs/CORE_LIFECYCLE_MIGRATION.md`. Do not infer v0.2c runtime PASS from PR #9's observer tests or its owner-accepted deferred acceptance.
 
 Do not introduce dynamic Director logic, a new respawn gameplay model or a complex BotPool merely to complete Core ownership.
 

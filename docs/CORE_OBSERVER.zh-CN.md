@@ -2,6 +2,8 @@
 
 **[English](CORE_OBSERVER.md) | 简体中文**
 
+本页是 `766317f` observer 的 v0.2b 历史说明。当前构建脚本已生成配套 v0.2c 迁移产物；新构建/安装请使用[生命周期迁移说明](CORE_LIFECYCLE_MIGRATION.zh-CN.md)。历史实测不代表新 writer 已通过运行验收。
+
 Core 是可选的独立观察插件，基于已接受的 pre-Core baseline：`CS2-ZE-PVE @ 89b5c0c0`，回滚包 `ZEPVE_Backup/pre-core-2026-10-09`。**legacy 仍然是唯一 gameplay writer；本 PR 不发生 authority handoff。** ZombieReborn/CS2Fixes 继续承担现有复活执行。
 
 ## 构建、安装、回滚
