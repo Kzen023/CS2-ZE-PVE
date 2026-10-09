@@ -78,7 +78,7 @@ Do not introduce dynamic Director logic, a new respawn gameplay model or a compl
 - [x] bounded target/awareness/combat FlightRecorder
 - [x] add admin status/events/reacquire/binding-probe commands
 
-127 model/source checks pass; actual runtime tracked separately in `docs/BOTAI_VERIFICATION.md`. Native perception writes are absent, Recovery handshake awaits the owning Navigation runtime, no Navigation implementation/pin change. See bilingual `docs/BOTAI_RUNTIME.md`.
+127 model/source checks pass. Matched single-human runtime smoke passed after repairing the startup native-clock defect, with actual initial whole rollback verified. Detailed PASS/PARTIAL/NOT TESTED is separate in `docs/BOTAI_VERIFICATION.md`. Native perception writes are absent, Recovery handshake awaits the owning Navigation runtime, no Navigation implementation/pin change. v0.2d ready for review, no automatic merge/Navigation. See bilingual `docs/BOTAI_RUNTIME.md`.
 
 Lab work:
 

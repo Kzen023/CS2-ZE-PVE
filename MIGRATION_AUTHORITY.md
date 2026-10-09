@@ -22,7 +22,7 @@ Keeping legacy source as a regression baseline does **not** mean loading two pro
 
 ## Current authority matrix
 
-The matrix below describes the **paired v0.2c source/package mode**, installed from `1cf6aa2` on 2026-10-09. Artifact/backup checks and subsequent matched single-player runtime handoff smoke passed on dust2/mirage. Real evidence confirms the bridge gate, registry, lifecycle transitions and basic migrated PvE policy; broader acceptance remains explicitly deferred. Never mix the new Core writer with the old monolithic legacy DLL. See `docs/CORE_MATCHED_RUNTIME_VERIFICATION.md` for evidence/limits and `docs/CORE_LIFECYCLE_MIGRATION.md` for installation and rollback.
+The Core/legacy rows preserve the **accepted paired v0.2c authority**, originally installed from `1cf6aa2` and now merged at baseline `ed480bd` (PR #10). The matched v0.2d package `238b98c` adds only suite-owned AssignedTarget/reacquire policy; fixed-package single-human smoke passed, with limits in `docs/BOTAI_VERIFICATION.md`. Core gameplay authority and the v0.2c deferred acceptance remain unchanged. Never mix Core with the old monolithic legacy writer. Historical Core evidence/limits are in `docs/CORE_MATCHED_RUNTIME_VERIFICATION.md`; matched installation/rollback is in `docs/BOTAI_RUNTIME.md`.
 
 | Behavior / state | Current writer / executor | Migration rule | Final owner |
 | --- | --- | --- | --- |
@@ -59,6 +59,8 @@ PR #10 merged to `main @ ed480bd500ca01e5ed4da6a61a7391944d38905c`, the new matc
 BotController v0.7.1 source/log revision `0ae8f18` was audited: lock/replay/usercmd/view/weapon/buy/profile controls are separate from BotAI's read-only schema observation. BotAI calls none of them and writes no native perception/movement field. Native locks/replay may impair observed reacquisition; BotAI never overrides them. Future Navigation remains the only final movement-intent writer; its current design pin is not an active runtime.
 
 Matched v0.2d installation/rollback includes Core + adapted ZRPVE + BotAI + one shared ABI, offline with hashes/current backup. See `docs/BOTAI_RUNTIME.md` and `docs/BOTAI_VERIFICATION.md` for implemented contracts and separate model/runtime evidence. AssignedTarget does not claim to change Valve pursuit before Navigation consumes it; Recovery's missing automatic reacquire notification remains explicit debt. `Round_End T tally 20 vs actual 10` remains independent diagnostic debt.
+
+Actual v0.2d matched single-human smoke passed after fixing the startup native-time defect (`238b98c` installed; initial broken whole set was actually rolled back and v0.2c baseline booted). Assignment independent of null Enemy, round/pawn/provider/module invalidation, map/reconnect cleanup and ObserveOnly success/timeout have real evidence. Multiple real humans, isolated target-pawn/BindingVersion-only rejection and native assist efficacy are still NOT TESTED/PARTIAL. Current rollback backup is `ZEPVE_Backup/v0.2d-20261009-161410-5946327`; no writer besides suite-owned target/reacquire policy moved.
 
 ### Existing handoff checklist
 

@@ -53,4 +53,4 @@ css_zepve_ai_probe <bot-slot> [0.1..60 秒]
 
 ## 验证范围
 
-127 模型/source checks（原 72 + BotAI 55）通过，不代表 runtime PASS。实际服务器证据独立记在 `BOTAI_VERIFICATION.md`。完整 ZE 兼容、多真人几何、native awareness 效果、Recovery handshake、长期性能均不能由模型推断。`T tally 20 vs 10` 继续独立债务，不修复。不进入 Navigation。
+127 模型/source checks（原 72 + BotAI 55）通过，不代表 runtime PASS。实际服务器证据独立记在 [BotAI 实际验证](BOTAI_VERIFICATION.zh-CN.md)。完整 ZE 兼容、多真人几何、native awareness 效果、Recovery handshake、长期性能均不能由模型推断。`T tally 20 vs 10` 继续独立债务，不修复。不进入 Navigation。
