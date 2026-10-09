@@ -18,13 +18,16 @@ HUD consumes state; it does not discover map entities itself
 
 The main gaps identified by this research are:
 
-1. a unified runtime player/zombie context and lifecycle boundary;
-2. bounded diagnostic history so Bot failures can be explained after they happen;
-3. a narrow Valve Bot profile adapter behind BotAI;
-4. a compiled map runtime model instead of ad-hoc entity lookup from multiple modules;
-5. real-world ZE configuration corpora for compatibility testing.
+1. a unified runtime player/zombie identity and lifecycle boundary;
+2. explicit migration-time writer handoff so legacy and replacement systems never execute the same responsibility concurrently;
+3. bounded diagnostic history so Bot failures can be explained after they happen;
+4. a narrow Valve Bot profile adapter behind BotAI;
+5. a compiled map runtime model instead of ad-hoc entity lookup from multiple modules;
+6. real-world ZE configuration corpora for compatibility testing.
 
 These should be added without creating unnecessary new repositories or DLLs.
+
+Migration-time execution ownership is documented separately in `MIGRATION_AUTHORITY.md` and takes priority whenever a responsibility is being transferred from legacy code.
 
 ## 2. CS2KZ — lifecycle dispatch and recording discipline
 
@@ -34,11 +37,12 @@ A player object receives engine movement/user-command lifecycle callbacks and di
 
 ### Apply to ZEPVE
 
-Core should introduce lightweight runtime contexts:
+Core should introduce lightweight runtime identity/context state:
 
 ```text
 ZepvePlayerContext
 ├─ stable player identity
+├─ connection generation
 ├─ current controller/pawn generation
 ├─ role: Human / ZombieBot
 ├─ lifecycle state
@@ -53,17 +57,30 @@ ZombieContext
 
 The context is not a shared bag of writable module state. Core owns identity and lifecycle; BotAI and Navigation still own their own data.
 
+Delayed actions need more than one spawn counter. The relevant validity scope may include:
+
+```text
+plugin lifetime
+map epoch
+round epoch
+connection identity/generation
+pawn/spawn generation
+optional target/binding version
+```
+
 Expected lifecycle flow:
 
 ```text
-player disconnect / map change / Bot replacement
-→ Core invalidates context
+player disconnect / pawn replacement / round or map change
+→ Core invalidates the relevant lifetime
 → BotAI releases target/awareness state
 → Navigation releases route/movement state
-→ timers and delayed callbacks become invalid
+→ stale timers and delayed callbacks are rejected
 ```
 
 This is preferable to every module repeatedly rediscovering whether a controller, pawn or entity reference is still valid.
+
+Core should first prove this identity/invalidity model while legacy remains the gameplay writer. Gameplay authority is transferred later, one responsibility at a time.
 
 ### Bounded recording
 
@@ -199,7 +216,7 @@ It treats entity keyvalues and Entity I/O as structured data rather than scatter
 
 ### Apply to ZEPVE.Map
 
-Use this flow:
+Use this flow when Map complexity actually requires it:
 
 ```text
 MapConfig
@@ -232,9 +249,13 @@ MapEntitySelector
 └─ OutputSignature?
 ```
 
+Selector semantics still need to define multi-field AND/OR behavior, zero/multiple matches and rebind behavior after templated entity creation/replacement.
+
 Avoid separate implementations of `FindByTargetName`, HammerID matching and counter discovery in HUD, Map, Navigation and other modules.
 
 Map configuration must be loaded/validated outside hot paths. One malformed map override should produce a clear error and a controlled fallback rather than breaking unrelated runtime systems.
+
+Do not block early Core migration on a complete MapPlan compiler. Implement the minimum trustworthy map/round signals first when Core authority actually needs them.
 
 ## 6. GFL ZE configuration corpus — test against real maps
 
@@ -318,6 +339,10 @@ large displacement
 
 Do not use one fixed distance threshold as the entire rule because `trigger_push`, fast movement and unusual map mechanics can cause false positives.
 
+Runtime Trail data must belong to one human identity/generation. The legacy shared/global point pool is useful as behavioral history but must not be copied as the final Navigation model.
+
+Consumer cursors should use monotonic node sequence semantics rather than ring-buffer storage indexes that can later be reused.
+
 ### Do not copy the hot-path pattern
 
 Avoid per-tick patterns such as:
@@ -329,7 +354,7 @@ Get all players
 → repeated searches
 ```
 
-Core should maintain stable human/Bot registries. Navigation should iterate those registries using allocation-light loops and bounded buffers.
+Core should maintain stable human/Bot registry views. Navigation should iterate those views using allocation-light loops and bounded buffers.
 
 ## 9. CS2ServerGUI — bounded queryable debug state
 
@@ -426,39 +451,46 @@ CS2-ZE-PVE
 │  ├─ MapSignal
 │  └─ MapRuntime
 │
-├─ ZEPVE.Hud
-│  └─ consumes state APIs only
-│
 └─ tools/
    └─ ZEPVE.MapAnalyzer        # later/offline
 ```
 
-`ZEPVE-Navigation` remains the production navigation component and keeps ownership of Runtime Trails, Recorded Routes, movement intent, progress and recovery.
+Independent repositories remain outside this main-source tree:
+
+```text
+ZEPVE-Navigation  -> Runtime Trails, Recorded Routes, movement, progress and Recovery
+ZEPVE-HUD         -> presentation only, after stable public state APIs exist
+ZEPVE-WeaponSystem -> weapon configuration/purchase/ammo/damage policy
+```
+
+Do not duplicate these independent component implementations under `CS2-ZE-PVE/src/` merely for directory symmetry.
 
 ## 12. Updated implementation priority
 
 ### Immediate
 
-1. Import the current working PvE source and establish a reproducible baseline.
-2. Add Core player/zombie lifecycle contexts before broad module extraction.
-3. Establish BotAI authoritative `AssignedTarget` ownership.
-4. Add structured Bot/Nav diagnostics and a bounded Flight Recorder early.
-5. Reproduce the current post-teleport awareness problem with evidence rather than logs alone.
+1. Reproduce and tie the working legacy baseline to build/dependency/runtime evidence.
+2. Define migration authority/current writers before transferring gameplay behavior.
+3. Add Core identity/registry/lifecycle invalidation as an observer while legacy remains the gameplay writer.
+4. Transfer Core lifecycle authority one responsibility at a time with an explicit old-writer disable path.
+5. Add structured lifecycle diagnostics / bounded Flight Recorder events early.
 
-### After the baseline
+### After the lifecycle foundation
 
-6. Validate minimal Valve Bot profile changes in ZEPVE-Lab.
-7. Build the hybrid Navigation baseline: native progress → Trail → layered recovery.
-8. Implement no-NAV movement takeover only after the movement-control PoC succeeds.
-9. Introduce `MapDefinition → MapPlan → MapRuntime` during Map/CS2Fixes integration.
-10. Add real ZE configuration corpus tests before broad map-support claims.
+6. Introduce BotAI authoritative `AssignedTarget` as a new capability.
+7. Reproduce the current post-teleport awareness problem with evidence rather than logs alone.
+8. Validate minimal Valve Bot profile/awareness changes in ZEPVE-Lab.
+9. Build the hybrid Navigation baseline: native progress → per-human Trail → layered recovery.
+10. Implement no-NAV movement takeover only after the movement-control PoC succeeds.
+11. Introduce the minimum useful `MapDefinition → MapPlan → MapRuntime` pieces during Map/CS2Fixes integration.
+12. Add real ZE configuration corpus tests before broad map-support claims.
 
 ### Later
 
-11. Recorded Route authoring and visualization.
-12. HUD/Weapons on top of stable public state APIs.
-13. Director through Core spawn pressure and BotAI profile policy.
-14. Offline `ZEPVE.MapAnalyzer` and compatibility-report tooling.
+13. Recorded Route authoring and visualization.
+14. HUD/WeaponSystem migration on top of stable public state APIs and verified behavior contracts.
+15. Director through Core spawn pressure and BotAI profile policy.
+16. Offline `ZEPVE.MapAnalyzer` and compatibility-report tooling.
 
 ## 13. Explicit non-goals from this research
 
@@ -471,13 +503,16 @@ Do not introduce these only because another project has them:
 - full movement recording for ordinary Runtime Trails;
 - a separate repository for every DLL;
 - a new diagnostics DLL before the diagnostic API has independent value;
-- automatic generated map overrides without human review.
+- automatic generated map overrides without human review;
+- a second respawn scheduler while ZombieReborn/compatibility remains the active executor;
+- a complete BotPool/lease system during the first Core migration slice.
 
 ## 14. Engineering rules reinforced by the research
 
 ```text
 One authoritative owner per state.
-Lifecycle invalidation is explicit.
+One active writer during migration.
+Lifecycle invalidation is explicit and wider than slot/spawn identity alone.
 Hot paths do only necessary allocation-light work.
 Configuration is parsed/validated before runtime use.
 Map entity discovery belongs to Map, not HUD.
