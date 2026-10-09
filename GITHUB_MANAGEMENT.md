@@ -9,7 +9,9 @@ Repository and release rules for the ZEPVE project family. Coding rules belong i
 Main product and integration repository. It owns:
 
 - Core runtime and shared abstractions
+- `ZEPVE.BotAI`
 - ZEPVE-owned map / ZE integration
+- legacy migration/regression baseline
 - suite configuration and compatibility data
 - production-component pinning
 - packaging, manifests and releases
@@ -22,6 +24,24 @@ Independent production component for zombie navigation, Trail handling, movement
 
 The main suite consumes an exact tested Git revision rather than automatically following the latest component branch.
 
+### `ZEPVE-HUD`
+
+Independent migration target for player-facing presentation.
+
+It owns HUD rendering and view-state presentation only. Map/entity discovery, boss semantics and gameplay authority remain in their owning suite modules and are exposed to HUD through explicit contracts.
+
+The repository is not considered a pinned production dependency until its build, API boundary and suite integration are verified.
+
+### `ZEPVE-WeaponSystem`
+
+Independent migration target for PvE weapon balance and purchase behavior.
+
+It owns weapon configuration, ammo/magazine tuning, purchase handling, aliases and weapon-specific damage policy.
+
+The current repository slug is `ZEPVE-WeponSystem`; use `ZEPVE-WeaponSystem` as the component/code name and correct the repository slug when convenient.
+
+The repository is not considered a pinned production dependency until its build, API boundary and suite integration are verified.
+
 ### `ZEPVE-Lab`
 
 Experimental workspace for isolated Bot, movement, native API and engine-behavior tests.
@@ -31,6 +51,20 @@ Lab is not a production dependency and is never shipped as part of a ZEPVE relea
 ### Future repositories
 
 Create another production repository only when a component has a clear independent responsibility and lifecycle. A separate DLL alone is not a reason to create another repository.
+
+## Legacy Baseline
+
+Pre-split plugins are preserved under `legacy/` in `CS2-ZE-PVE` so working behavior remains auditable during migration.
+
+Current migration sources:
+
+```text
+Kzen-ZRPVE          -> Core / BotAI / Navigation / Map after ownership analysis
+Kzen-WeaponBalance  -> ZEPVE-WeaponSystem
+Kzen-ZEAssist       -> presentation to ZEPVE-HUD; map/entity semantics to ZEPVE.Map/owner
+```
+
+Do not treat `legacy/` as a second production tree. Once a responsibility has been migrated and verified, development continues in the new owner.
 
 ## Component Updates
 
@@ -60,6 +94,8 @@ A component-bump PR should state:
 - rollback target
 
 `.github/dependabot.yml` may propose submodule updates, but those proposals are only update candidates and still require review.
+
+Creating a component repository does not automatically add it as a submodule or release dependency. Pin it only after the production-integration criteria are met.
 
 ## Direct `main` vs Pull Request
 
@@ -122,8 +158,11 @@ Capability/API versions are separate from package versions:
 
 ```text
 zepve:core:v1
+zepve:botai:v1
 zepve:navigation:v1
 zepve:map:v1
+zepve:hud:v1
+zepve:weapons:v1
 ```
 
 Breaking API changes should introduce a new capability version rather than silently changing an existing contract.
@@ -135,6 +174,7 @@ Source layout should remain developer-friendly:
 ```text
 CS2-ZE-PVE/
 ├─ src/
+├─ legacy/
 ├─ components/
 ├─ configs/
 ├─ maps/
@@ -144,6 +184,8 @@ CS2-ZE-PVE/
 ├─ tests/
 └─ .github/
 ```
+
+`legacy/` is a temporary long-lived migration baseline, not the final runtime layout.
 
 Release staging should be generated and shaped for server deployment:
 
@@ -221,6 +263,7 @@ ROADMAP.md                   -> milestones
 DECISIONS.md                 -> durable architecture decisions
 CONTRIBUTING.md              -> contributor guide
 components/README.md         -> component integration rules
+legacy/README.md             -> legacy baseline and migration map
 ```
 
 Keep implementation detail out of the root README when a dedicated design document is more appropriate.
