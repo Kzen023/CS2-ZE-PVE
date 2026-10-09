@@ -92,6 +92,8 @@ See `BOT_AI_DESIGN.md`, `MIGRATION_AUTHORITY.md` and `docs/CODE_RESEARCH_FINDING
 
 ### v0.3 — ZEPVE-Navigation component baseline
 
+PR #11 merged at `7cf3891` establishes the accepted v0.2 complete baseline. v0.3 runtime implementation/handoff is stopped at the native movement execution safety gate; no production component pin or legacy writer changes. Existing slot-indexed persistent analog overrides cannot prove application-time Core/BotAI/binding validity or exclusive ownership. See `docs/NAVIGATION_BACKEND_SAFETY_GATE.md`; v0.3 is not ready for review and its runtime remains NOT TESTED.
+
 Navigation repository:
 
 - [ ] TrailRecorder with one bounded Trail per human identity/generation
