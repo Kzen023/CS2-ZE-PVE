@@ -54,13 +54,16 @@ At the end of v0.2b, legacy remains the gameplay writer. Core first proves that 
 
 #### v0.2c — Core lifecycle authority handoff
 
-- [ ] move existing round/lifecycle actions from legacy into Core one responsibility at a time
-- [ ] migrate Bot quota/team-transition authority with exactly one active writer
-- [ ] preserve current static human-count/profile behavior during the handoff
-- [ ] define round-end/map-end cancellation for delayed actions
-- [ ] keep respawn policy and executor explicitly separated; retain the validated ZombieReborn/compatibility executor unless a replacement is proven
-- [ ] update `MIGRATION_AUTHORITY.md` in the same PR whenever a writer actually changes
-- [ ] add bounded Flight Recorder events for lifecycle actions, rejection and invalidation
+- [x] move existing round/lifecycle actions from legacy into Core one responsibility at a time
+- [x] migrate Bot quota/team-transition authority with exactly one active writer in the paired package
+- [x] preserve current static human-count/profile behavior during the handoff
+- [x] define round-end/map-end cancellation for delayed actions
+- [x] keep respawn policy and executor explicitly separated; retain the ZombieReborn/compatibility executor
+- [x] update `MIGRATION_AUTHORITY.md` with the source handoff and explicit installed-runtime distinction
+- [x] add bounded Flight Recorder events for lifecycle actions, rejection and invalidation
+- [x] verify the paired v0.2c handoff on the real server (single-player dust2/mirage smoke; broader tests deferred)
+
+Source implementation/model validation, matched deployment and single-player runtime acceptance are complete. See `docs/CORE_MATCHED_RUNTIME_VERIFICATION.md` for actual RCON/log evidence, limits and remaining NOT TESTED/PARTIAL. PR #10 can move Ready for review; no automatic merge or next-phase development. PR #9 observer evidence remains historical.
 
 Do not introduce dynamic Director logic, a new respawn gameplay model or a complex BotPool merely to complete Core ownership.
 

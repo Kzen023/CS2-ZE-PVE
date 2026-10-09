@@ -2,6 +2,8 @@
 
 **English | [简体中文](CORE_OBSERVER.zh-CN.md)**
 
+Historical v0.2b instructions for the `766317f` observer artifact. The current build script now stages the paired v0.2c migration; use [Core lifecycle migration](CORE_LIFECYCLE_MIGRATION.md) for current builds/installations. This page does not certify the new writer's runtime.
+
 This opt-in plugin adds identity/lifecycle observations beside the accepted pre-Core runtime baseline (`CS2-ZE-PVE @ 89b5c0c0`, rollback `ZEPVE_Backup/pre-core-2026-10-09`). **Legacy remains the only gameplay writer; no authority handoff occurs in this PR.** ZombieReborn/CS2Fixes remains the existing respawn executor.
 
 ## Build and install

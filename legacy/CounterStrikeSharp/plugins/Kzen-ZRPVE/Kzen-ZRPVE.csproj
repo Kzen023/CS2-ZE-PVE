@@ -11,6 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../../../../src/ZEPVE.Abstractions/ZEPVE.Abstractions.csproj"><Private>false</Private></ProjectReference>
     <Reference Include="CounterStrikeSharp.API">
       <HintPath>$(CounterStrikeSharpApiPath)</HintPath>
       <Private>false</Private>

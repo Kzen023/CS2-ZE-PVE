@@ -5,5 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  <ItemGroup><ProjectReference Include="../../src/ZEPVE.Core/ZEPVE.Core.csproj" /></ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/ZEPVE.Core/ZEPVE.Core.csproj" />
+    <ProjectReference Include="../../src/ZEPVE.Abstractions/ZEPVE.Abstractions.csproj" />
+  </ItemGroup>
 </Project>

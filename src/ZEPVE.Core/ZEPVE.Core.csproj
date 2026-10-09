@@ -3,11 +3,11 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>0.2.0</Version>
+    <Version>0.2.0-c</Version>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../ZEPVE.Abstractions/ZEPVE.Abstractions.csproj" />
+    <ProjectReference Include="../ZEPVE.Abstractions/ZEPVE.Abstractions.csproj"><Private>false</Private></ProjectReference>
     <Reference Include="CounterStrikeSharp.API">
       <HintPath>$(CounterStrikeSharpApiPath)</HintPath>
       <Private>false</Private>
