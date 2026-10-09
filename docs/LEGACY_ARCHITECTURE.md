@@ -28,10 +28,9 @@ The source does not select a ZEPVE target. Bot pursuit is left to native CS2/CS2
 - Build host observed: .NET SDK 10.0.401 (also SDK 8.0.425 installed); .NET 10 runtime 10.0.12.
 - Compile-time dependency: installed `CounterStrikeSharp.API.dll`, informational version `1.0.376+Branch.main.Sha.653d651f1ac09ac1ddb423d588f871b891038860.653d651`. The project files use a non-private direct assembly reference.
 - Runtime dependencies: MetaMod:Source, CounterStrikeSharp, CS2Fixes with its Zombie:Reborn feature, and BotController (runtime log reported v0.7.1, commit `0ae8f18`). These are server-installed dependencies, not vendored here. Exact MetaMod and CS2Fixes build identifiers were not established from the inspected logs.
-- The install tree has no solution or pinned SDK file. Each project built successfully in Release with zero warnings/errors using:
-  `dotnet build <project.csproj> --configuration Release --no-restore`
+- The install tree has no solution or pinned SDK file. Each project built successfully in Release with zero warnings/errors using `dotnet build <project.csproj> --configuration Release` (restore enabled; no NuGet packages are referenced).
 - In the imported projects, `CounterStrikeSharpApiPath` can be supplied to the direct reference. Example from a checkout on Windows:
-  `dotnet build legacy/CounterStrikeSharp/plugins/Kzen-ZRPVE/ZERO-ZRPVE.csproj -c Release -p:CounterStrikeSharpApiPath="D:\\CS2\\game\\csgo\\addons\\counterstrikesharp\\api\\CounterStrikeSharp.API.dll"`
+  `dotnet build legacy/CounterStrikeSharp/plugins/Kzen-ZRPVE/ZERO-ZRPVE.csproj -c Release -p:CounterStrikeSharpApiPath="D:\CS2\game\csgo\addons\counterstrikesharp\api\CounterStrikeSharp.API.dll"`
   Repeat for the ZEAssist and WeaponBalance projects. No API binary is committed.
 - Expected output names: `Kzen-ZRPVE.dll`, `Kzen-ZEAssist.dll`, and `Kzen-WeaponBalance.dll`, under each project's `bin/Release/net10.0/`. Generated binaries/PDBs/deps files are intentionally excluded.
 
