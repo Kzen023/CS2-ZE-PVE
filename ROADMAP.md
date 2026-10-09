@@ -61,9 +61,9 @@ At the end of v0.2b, legacy remains the gameplay writer. Core first proves that 
 - [x] keep respawn policy and executor explicitly separated; retain the ZombieReborn/compatibility executor
 - [x] update `MIGRATION_AUTHORITY.md` with the source handoff and explicit installed-runtime distinction
 - [x] add bounded Flight Recorder events for lifecycle actions, rejection and invalidation
-- [ ] verify the paired v0.2c handoff on the real server (NOT TESTED)
+- [x] verify the paired v0.2c handoff on the real server (single-player dust2/mirage smoke; broader tests deferred)
 
-Source implementation/model validation and matched deployment are complete. The user reported normal in-game operation; detailed runtime handoff acceptance remains pending. See `docs/CORE_LIFECYCLE_MIGRATION.md`. Do not infer individual v0.2c runtime PASS from this general report, PR #9's observer tests or its owner-accepted deferred acceptance.
+Source implementation/model validation, matched deployment and single-player runtime acceptance are complete. See `docs/CORE_MATCHED_RUNTIME_VERIFICATION.md` for actual RCON/log evidence, limits and remaining NOT TESTED/PARTIAL. PR #10 can move Ready for review; no automatic merge or next-phase development. PR #9 observer evidence remains historical.
 
 Do not introduce dynamic Director logic, a new respawn gameplay model or a complex BotPool merely to complete Core ownership.
 

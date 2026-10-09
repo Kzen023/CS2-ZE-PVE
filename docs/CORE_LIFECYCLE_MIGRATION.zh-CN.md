@@ -52,10 +52,10 @@ Core / Abstractions / 适配 ZRPVE Release：PASS，0 警告/错误。model/sour
 
 **部署：PASS。** 2026-10-09 已停服安装 `1cf6aa21503316ab2963c35e6e222312e14131ad` 的配套包：8/8 文件哈希一致，47 个配置/无关插件文件未变，回滚清单校验通过。备份目录为 `ZEPVE_Backup/v0.2c-20261009-151119-2996277`，尚未实际执行回滚。
 
-**基础游戏内运行：PASS（用户真实服务器报告）。** 用户安装后确认：“游戏内插件正常工作”。这不是 model/unit test 结果；本次报告未附具体命令、status 输出、地图、时序、人数或 probe 日志。不能据此将单一 shared ABI/writer、quota/team 时序、生命周期失效、复活/Recovery 回归、hot/late load、性能或回滚等具体项目标 PASS；这些仍为 **NOT TESTED**。PR #9 的 deferred acceptance 不变。
+此前用户“游戏内插件正常工作”仅证明概括的游戏内 smoke。随后在 2026-10-09 实际执行了 dust2/mirage **配套单人 runtime handoff smoke：PASS**，有 RCON、Core/CSS 日志及控制台快照。详见[真实验收记录与保留项目](CORE_MATCHED_RUNTIME_VERIFICATION.zh-CN.md)。本次覆盖 shared ABI/gate、1 Human/10 ZombieBots、round/profile/release/quota/team、外部复活、Recovery placement、换图、断连重连、三阶段 hot reload、manual late load 与 bridge loss。多人档位、精确时序、native team-tally parity、长时间性能及实际回滚仍为 NOT TESTED/PARTIAL；没有追溯修改 PR #9 的 observer 证据。
 
 最小 runtime 验收：配套加载和单一 shared ABI/writer；原静态 quota、+1 preparation 和释放时序；round/map 取消；断连、同 slot 复活和 pawn 替换；ZR 复活及 Recovery 回归；在 preparing/waiting/released 三阶段 hot reload；manual late load 与依赖丢失；人类断连/hibernation；recorder 上限、服务重复、性能和整套回滚。每项期望见英文验证表。使用 `css_plugins list` 中当前 LOADED 的纯数字 ID；新版 ModuleName 是 `ZEPVE Core`，不要沿用旧 observer 名称/旧 session ID。
 
 保留的技术债：legacy 共享 Trail、per-slot watch/display 集合、混合 Recovery/HUD/config、休眠 escort、Recovery 后游走；ZEAssist/WeaponBalance 的独立延迟工作仍未迁移。没有新的目标、AI、Navigation、Director、武器或地图系统。
 
-v0.2c 源码实现、自动验证和配套部署完成，已有用户报告的基础游戏内运行证据；详细 runtime handoff 验收仍待完成。下一步只做具体真实服务器验收及发现问题的修复；本阶段结束后停止，不自动进入 BotAI/Navigation。
+v0.2c 源码、自动验证、配套部署和单人 runtime handoff smoke 完成；建议 PR #10 带明确 deferred tests 进入 Ready for review。不得将保留项目写成 PASS，不自动合并、不进入 BotAI/Navigation。

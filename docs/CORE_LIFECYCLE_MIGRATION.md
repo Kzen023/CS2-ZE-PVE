@@ -65,21 +65,21 @@ Release Core, Abstractions and adapted ZRPVE builds: **PASS**, zero warnings/err
 
 **Deployment and basic gameplay evidence:** the matched package from `1cf6aa21503316ab2963c35e6e222312e14131ad` was installed while CS2 was stopped on 2026-10-09. All eight artifact hashes and the rollback inventory passed; 47 configuration/unrelated plugin files were unchanged. Backup: `ZEPVE_Backup/v0.2c-20261009-151119-2996277`.
 
-After installation, the user reported: “游戏内插件正常工作” (plugins work normally in game). Record **basic in-game smoke: PASS — user-reported real-server observation**, not a model/unit result. No specific commands, status output, map, timing, player counts or probe results accompanied this report. It does not establish the individual authority/ABI, lifecycle invalidation, quota/team/timing, respawn/recovery, reload, performance or rollback scenarios below. PR #9's deferred observer acceptance remains deferred.
+The earlier user report “游戏内插件正常工作” established general gameplay smoke only. Subsequent **matched runtime acceptance on 2026-10-09: PASS for the single-player smoke scope**, with actual RCON, Core/CSS logs and console snapshots on dust2/mirage. See [the runtime evidence and explicit deferred tests](CORE_MATCHED_RUNTIME_VERIFICATION.md). PR #9's deferred observer acceptance remains historical; no observer result was retroactively changed.
 
 | Runtime acceptance | Status | Expected evidence |
 | --- | --- | --- |
 | Stopped-server paired installation / backup integrity | PASS | Eight installed artifact hashes match `1cf6aa2`; 47 preserved files unchanged; rollback inventory verified without executing rollback. |
 | Basic in-game smoke | PASS (user report) | User confirmed normal in-game plugin operation after installation; no detailed transcript supplied. |
-| Matched load / one shared ABI / one writer | NOT TESTED | One LOADED Core and adapted ZRPVE; status GameplayAuthority=True; no old quota/team writer; provider missing/duplicate fails closed. |
-| Static solo/duo/coop/group profiles | NOT TESTED | Configured quotas, preparation at +1, unchanged countdown/release offsets and no duplicate kicks/cvar writes. |
-| Round restart/end / map change | NOT TESTED | Old work cancels, no delayed quota/team writes after boundary; recorder epochs advance and map services rebind. |
-| Connection/pawn/death/respawn | NOT TESTED | Correct generation increments, stale probe/recovery rejected; legitimate post-spawn recovery still works. |
-| External respawn / recovery regression | NOT TESTED | ZR performs one respawn at existing policy delay; normal recovery/Trail/HUD behavior preserved. |
-| Hot reload in preparing / waiting / released phase | NOT TESTED | Fresh GUID, no old callback, no repeated preparation/release, only pending quota/team deadlines resume, same-map Trail data retained. |
-| Manual late load / dependency loss | NOT TESTED | Immediate player bootstrap, Unbound until next round without premature release; no legacy fallback on Core/bridge loss. |
-| Human disconnect / hibernation | NOT TESTED | Core status removes human from view and keeps disconnected tombstone; no stale action on wake/reuse; timing under hibernation recorded separately. |
-| FlightRecorder / overhead / actual rollback | NOT TESTED | Ring <=256, pending <=256, no duplicate logs/services, acceptable server frame time; stopped-server rollback restores previous writer set. |
+| Matched load / one shared ABI / one writer | PASS (smoke) | One LOADED Core and adapted ZRPVE; GameplayAuthority=True. Bridge loss fails closed; old writer absent. Duplicate-provider injection NOT TESTED. |
+| Static solo/duo/coop/group profiles | PARTIAL | Solo quota 10, preparation/release timing and T transitions observed; real duo/coop/group NOT TESTED. |
+| Round restart/end / map change | PASS (smoke) | Old probes reject; epochs advance; map services and round policy resume on mirage. |
+| Connection/pawn/death/respawn | PASS (smoke) | Death probe rejects pawn generation; same-slot external respawn and human reconnect advance generations. |
+| External respawn / recovery regression | PASS (smoke) | Controlled bot death followed by external respawn at about seven seconds; retained Recovery placement actually logged. Exhaustive regression NOT TESTED. |
+| Hot reload in preparing / waiting / released phase | PASS (observed phases) | Fresh GUIDs, retained phases, old probes reject, pending plan completes at quota 10. Sub-second quota/team reload windows NOT TESTED. |
+| Manual late load / dependency loss | PASS (smoke) | Existing-player bootstrap, Unbound until next round, no fallback on bridge loss. |
+| Human disconnect / hibernation | PASS (observed session) | Humans=0 and disconnected tombstone during hibernation, same slot reconnects with new generation; general timing NOT TESTED. |
+| FlightRecorder / overhead / actual rollback | PARTIAL | Ring stays 256 with dropped count; no observed duplicate Core service/log symptom. One stats sample only; endurance and actual server rollback NOT TESTED. |
 
 Use `css_plugins list` for current plugin IDs; the new ModuleName is `ZEPVE Core` (observer was `ZEPVE Core Observer`). Use the current plain numeric LOADED ID for reload/unload, never an earlier session's ID or `#` prefix. Keep another human connected for timed disconnect tests so hibernation does not obscure results. Record status/recorder before and after each boundary, and retain every probe's queued/result messages.
 
@@ -87,4 +87,4 @@ Use `css_plugins list` for current plugin IDs; the new ModuleName is `ZEPVE Core
 
 Legacy still has shared per-map Trail history, per-slot watch/pending/display collections, dormant escort code and mixed recovery/HUD/config concerns. ZEAssist/WeaponBalance's independent delayed work and known source-level risks are not retrofitted here. Existing post-recovery wandering is not fixed. Core respawn permission remains governed by the compatible external executor/map rules rather than a new canonical Map system. The temporary bridge and config parser can be narrowed in later ownership-specific PRs.
 
-The v0.2c **source implementation** is complete and build/model verified; the matched package is installed and has user-reported basic gameplay evidence. Detailed runtime handoff acceptance remains pending. Do not declare the live handoff fully verified, silently merge deferred results into PASS, or automatically proceed to BotAI/Navigation. The next work is focused runtime acceptance and fixing any observed regressions; only afterward consider the next architecture phase.
+The v0.2c source implementation, matched deployment and single-player runtime handoff smoke are complete. PR #10 is recommended Ready for review with the deferred limits in the evidence record, including native team-tally parity, broader populations, endurance and actual rollback. Do not turn those deferred results into PASS or automatically merge/proceed to BotAI/Navigation.
