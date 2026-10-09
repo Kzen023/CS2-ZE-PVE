@@ -77,6 +77,8 @@ static class BotAiTests
         var root=new DirectoryInfo(AppContext.BaseDirectory);
         while(root is not null&&!File.Exists(Path.Combine(root.FullName,"MIGRATION_AUTHORITY.md")))root=root.Parent;
         Check(root is not null);
+        var plugin=File.ReadAllText(Path.Combine(root!.FullName,"src/ZEPVE.BotAI/BotAiPlugin.cs"));
+        Check(!plugin.Contains("=> Server.CurrentTime")&&!plugin.Contains("Server.CurrentTime <")&&plugin.Contains("Stopwatch.GetElapsedTime"));
         foreach(var file in Directory.GetFiles(Path.Combine(root!.FullName,"src/ZEPVE.BotAI"),"*.cs"))
         {
             var code=File.ReadAllText(file);

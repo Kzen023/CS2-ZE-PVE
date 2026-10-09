@@ -1,9 +1,16 @@
-param([switch]$VerifyOnly)
+param([switch]$VerifyOnly, [switch]$AllowUnmoddedClient)
 $ErrorActionPreference = 'Stop'
 $record = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'deployment.json') -Raw | ConvertFrom-Json
 $installRoot = (Resolve-Path -LiteralPath $record.ServerRoot).Path.TrimEnd('\', '/')
 foreach ($process in Get-CimInstance Win32_Process -Filter "name = 'cs2.exe'") {
-    if (-not $process.ExecutablePath -or $process.ExecutablePath.StartsWith($installRoot + '\', [StringComparison]::OrdinalIgnoreCase)) { throw 'Stop CS2 before rollback or verification.' }
+    if (-not $process.ExecutablePath) { throw 'Cannot identify CS2 process; stop it before rollback.' }
+    if (-not $process.ExecutablePath.StartsWith($installRoot + '\', [StringComparison]::OrdinalIgnoreCase)) { continue }
+    if (-not $AllowUnmoddedClient -or -not $process.CommandLine -or $process.CommandLine -match '(?i)(^|\s)-dedicated(\s|$)') { throw 'Stop CS2 before rollback or verification.' }
+    $client = Get-Process -Id $process.ProcessId -ErrorAction Stop
+    if ($client.MainWindowHandle -eq [IntPtr]::Zero -or $client.Modules.Count -eq 0) { throw 'Cannot establish an active unmodded client.' }
+    foreach ($module in $client.Modules) {
+        if ($module.FileName -match '(?i)[\\/]addons[^\\/]*[\\/]|metamod|counterstrikesharp|cs2fixes|botcontroller') { throw 'Client has addon modules loaded; stop it before rollback.' }
+    }
 }
 foreach ($file in $record.Files) {
     $target = [System.IO.Path]::GetFullPath((Join-Path $installRoot $file.Path))

@@ -14,7 +14,7 @@ Core 无效、bridge 缺失、Unbound/Closed/Disabled/准备期/等待感染、�
 
 保持有效目标。新 Bot 选择当前分配数最少的存活 CT，平手用轮转 slot。人口变化只移动超额绑定，使最大/最小分配数差不超过 1。适用 1–6 人，不使用 Valve Enemy、可见性、距离或 engine tally 决定 AssignedTarget。无地图几何策略，Navigation 以后决定如何到达目标。
 
-事件标记 + 每 0.5 秒 reevaluation；单个 0.25 秒 dispatch timer，unload 销毁。64 个 bounded Bot state；没有每 tick 全实体扫描。最多 16 个 probe，callback 校验 Core 双端 token、角色、gameplay permission、模块 lifetime 和 BindingVersion。
+事件标记 + 每 0.5 秒 reevaluation；单个 0.25 秒 dispatch timer，unload 销毁。deadline 使用模块启动后的单调 Stopwatch 时间，避免 native globals 尚未初始化的启动调用，也不受 map-time 重置影响；hibernation 暂停 dispatch 后下一次检查会使到期窗口停止。64 个 bounded Bot state；没有每 tick 全实体扫描。最多 16 个 probe，callback 校验 Core 双端 token、角色、gameplay permission、模块 lifetime 和 BindingVersion。
 
 ## Native / Awareness 边界
 
@@ -47,7 +47,7 @@ css_zepve_ai_probe <bot-slot> [0.1..60 秒]
 ./scripts/install-core-lifecycle.ps1 -ServerRoot '<CS2 根目录>' -PackageDirectory '<staging>'
 ```
 
-要求 clean commit、API hash 一致、CS2 停止。可选 `-AllowUnmoddedClient` 只允许已显示窗口、非 dedicated、可完整检查 loaded modules 且没有 addon/MetaMod/CSS/CS2Fixes/BotController 模块的客户端；默认仍全部拒绝。专用服、加载插件或无法判断的客户端始终拒绝。整套 11 个文件：Core、adapted ZRPVE、BotAI 的 DLL/deps/PDB 与唯一 shared Abstractions DLL/PDB。先备份旧文件/hash，删除插件私有 contracts；config/native/其他插件保持。停服且退出客户端后用备份 `restore.ps1 -VerifyOnly` 验证，再执行 `restore.ps1` 整套回滚；第一次安装的 BotAI 新文件会移除。不现场混装、不复活旧 legacy writer。
+要求 clean commit、API hash 一致、CS2 停止。可选 `-AllowUnmoddedClient` 只允许已显示窗口、非 dedicated、可完整检查 loaded modules 且没有 addon/MetaMod/CSS/CS2Fixes/BotController 模块的客户端；默认仍全部拒绝。专用服、加载插件或无法判断的客户端始终拒绝。整套 11 个文件：Core、adapted ZRPVE、BotAI 的 DLL/deps/PDB 与唯一 shared Abstractions DLL/PDB。先备份旧文件/hash，删除插件私有 contracts；config/native/其他插件保持。停服后用备份 `restore.ps1 -VerifyOnly` 验证，再执行 `restore.ps1` 整套回滚（可选同样经过检查的客户端例外）；第一次安装的 BotAI 新文件会移除。不现场混装、不复活旧 legacy writer。
 
 已检查当前 CSS 命令：先 `css_plugins list` 找当前 LOADED BotAI 的数字 ID；`css_plugins reload <id>`，或 `unload <id>` 后 `load ZEPVE.BotAI`。历史 UNLOADED 条目可能保留名字，不猜 ID。Core 原有 hot/late policy 不变。
 

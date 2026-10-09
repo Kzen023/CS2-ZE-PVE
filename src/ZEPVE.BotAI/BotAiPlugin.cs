@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Diagnostics;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
@@ -20,12 +21,15 @@ public sealed class BotAiPlugin : BasePlugin
     private Timer? _timer;
     private bool _dirty = true;
     private double _nextEvaluation;
+    private readonly long _clockOrigin = Stopwatch.GetTimestamp();
+    private double Now => Stopwatch.GetElapsedTime(_clockOrigin).TotalSeconds;
     private readonly List<Action> _unsubscribe = new();
 
     public override void Load(bool hotReload)
     {
         if (BotAiRuntime.Current is not null) throw new InvalidOperationException("Duplicate BotAI provider refused.");
-        _service = new(() => SuiteRuntime.Current, new NativeCombatObserver(), () => Server.CurrentTime);
+        // Plugin discovery can precede engine global-vars initialization; never read Server.CurrentTime here.
+        _service = new(() => SuiteRuntime.Current, new NativeCombatObserver(), () => Now);
         BotAiRuntime.Publish(_service);
         try
         {
@@ -60,8 +64,8 @@ public sealed class BotAiPlugin : BasePlugin
     private HookResult Dirty() { _dirty = true; return HookResult.Continue; }
     private void Tick()
     {
-        if (_service is null || (!_dirty && Server.CurrentTime < _nextEvaluation)) return;
-        _dirty = false; _nextEvaluation = Server.CurrentTime + 0.5;
+        if (_service is null || (!_dirty && Now < _nextEvaluation)) return;
+        _dirty = false; _nextEvaluation = Now + 0.5;
         _service.Evaluate();
     }
     private void Command(string name, string description, CommandInfo.CommandCallback callback)
