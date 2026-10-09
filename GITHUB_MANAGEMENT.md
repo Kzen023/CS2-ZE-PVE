@@ -12,6 +12,7 @@ Main product and integration repository. It owns:
 - `ZEPVE.BotAI`
 - ZEPVE-owned map / ZE integration
 - legacy migration/regression baseline
+- migration authority documentation
 - suite configuration and compatibility data
 - production-component pinning
 - packaging, manifests and releases
@@ -20,9 +21,11 @@ Main product and integration repository. It owns:
 
 ### `ZEPVE-Navigation`
 
-Independent production component for zombie navigation, Trail handling, movement and recovery.
+Independent production-target component for zombie navigation, Trail handling, movement and recovery.
 
-The main suite consumes an exact tested Git revision rather than automatically following the latest component branch.
+The suite may pin an exact design/integration revision before runtime readiness, but a pinned gitlink is not by itself proof of a production-verified implementation.
+
+When Navigation becomes runtime-ready, the main suite consumes an exact tested Git revision rather than automatically following the latest component branch.
 
 ### `ZEPVE-HUD`
 
@@ -38,7 +41,7 @@ Independent migration target for PvE weapon balance and purchase behavior.
 
 It owns weapon configuration, ammo/magazine tuning, purchase handling, aliases and weapon-specific damage policy.
 
-The current repository slug is `ZEPVE-WeponSystem`; use `ZEPVE-WeaponSystem` as the component/code name and correct the repository slug when convenient.
+Repository: `https://github.com/Kzen023/ZEPVE-WeaponSystem`.
 
 The repository is not considered a pinned production dependency until its build, API boundary and suite integration are verified.
 
@@ -65,6 +68,39 @@ Kzen-ZEAssist       -> presentation to ZEPVE-HUD; map/entity semantics to ZEPVE.
 ```
 
 Do not treat `legacy/` as a second production tree. Once a responsibility has been migrated and verified, development continues in the new owner.
+
+## Migration Authority
+
+`MIGRATION_AUTHORITY.md` is the source of truth for migration-time execution ownership.
+
+Every state-changing handoff should identify:
+
+```text
+current writer
+replacement writer
+old-writer disable path
+verification
+rollback
+```
+
+Do not merge a gameplay migration that leaves both the legacy and replacement execution paths active for the same responsibility.
+
+Core may first observe/index lifecycle state without becoming the gameplay writer. This is the preferred first migration slice.
+
+## Component Readiness
+
+Use readiness language precisely:
+
+```text
+repository exists
+→ migration/design target
+→ registered integration revision
+→ build-verified revision
+→ suite-integrated revision
+→ runtime-verified production revision
+```
+
+A gitlink is an exact reference, not proof of runtime readiness.
 
 ## Component Updates
 
@@ -95,7 +131,9 @@ A component-bump PR should state:
 
 `.github/dependabot.yml` may propose submodule updates, but those proposals are only update candidates and still require review.
 
-Creating a component repository does not automatically add it as a submodule or release dependency. Pin it only after the production-integration criteria are met.
+Creating a component repository does not automatically add it as a submodule or release dependency. Pin it only after the production-integration criteria are met, except for an explicitly documented design/integration reference that is not shipped as production-ready.
+
+Release builds must initialize the exact gitlink recorded by the suite. Do not use `git submodule update --remote` as the mechanism that chooses a release component revision.
 
 ## Direct `main` vs Pull Request
 
@@ -136,7 +174,7 @@ Keep commits scoped and descriptive where practical.
 Examples:
 
 ```text
-feat(core): add bot pool lifecycle
+feat(core): add player registry lifecycle
 fix(map): stop respawns after nuke signal
 chore(components): bump ZEPVE-Navigation
 build(release): add package staging
@@ -206,7 +244,8 @@ Players should normally install one ZEPVE suite release rather than assembling c
 A release should record:
 
 - suite version and Git commit
-- pinned first-party component revisions
+- pinned first-party component revisions actually included in the package
+- component readiness/verification evidence relevant to the release
 - tested CS2 build
 - Metamod version
 - CounterStrikeSharp version
@@ -216,10 +255,11 @@ A release should record:
 Suggested assets once builds exist:
 
 ```text
-CS2-ZE-PVE-v0.x.x-Minimal.zip
-CS2-ZE-PVE-v0.x.x-Full.zip
+CS2-ZE-PVE-v0.x.x.zip
 manifest.json
 ```
+
+Do not describe a design-only component pin as a shipped runtime feature.
 
 Experimental Lab output is never included in release packages.
 
@@ -251,6 +291,8 @@ Prefer revert commits/PRs over rewriting shared history.
 
 For released versions, roll back to a previously tested tag/release instead of reconstructing an old environment manually.
 
+Migration PRs must identify the previous active writer/known-good baseline before disabling it.
+
 Do not force-push `main` as a normal recovery method.
 
 ## Documentation Roles
@@ -259,10 +301,11 @@ Do not force-push `main` as a normal recovery method.
 README.md / README.zh-CN.md -> project introduction and user entry point
 AGENTS.md                    -> GPT/Codex execution rules
 GITHUB_MANAGEMENT.md         -> repository/release workflow
+MIGRATION_AUTHORITY.md       -> migration-time writer handoff rules
 ROADMAP.md                   -> milestones
 DECISIONS.md                 -> durable architecture decisions
 CONTRIBUTING.md              -> contributor guide
-components/README.md         -> component integration rules
+components/README.md         -> component integration/readiness rules
 legacy/README.md             -> legacy baseline and migration map
 ```
 
