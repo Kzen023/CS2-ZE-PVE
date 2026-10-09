@@ -29,13 +29,15 @@ These results come from the **user's actual CS2 server deployment and test sessi
 | Legacy coexistence | PASS | User reported basic real-server coexistence with legacy enabled; not exhaustive infection/quota/recovery/HUD/weapon parity. |
 | Probe unchanged identity ACCEPT | PASS | User executed the two probes below; local Core log records both ACCEPT results. |
 | Core exceptions during test sessions | None observed | User report; inspected Core log contains no ERROR/FATAL/exception entries. Limited to those test sessions. |
-| Human classification | NOT TESTED | Slot 0 probe acceptance alone does not prove `Role=Human`. |
+| Human classification | PASS | Subsequent user server transcript shows `Humans=1`, `Slot=0 Role=Human Connected=True Alive=True`; repeated status before/after late load confirms classification. |
 | Probe stale identity REJECT | NOT TESTED | No real-server REJECT evidence supplied yet. |
 | Death/respawn pawn invalidation | NOT TESTED | No same-round death/respawn generation and rejection sequence supplied yet. |
-| Hot/late reload bootstrap | NOT TESTED | Startup load with `hotReload=false` is not a mid-map late-load/hot-reload test. |
-| Player disconnect registry cleanup after disconnect | PARTIAL | Bot disconnected rows observed; role-view removal, persistence through reconciliation, and human disconnect not fully validated. |
-| Slot reuse | NOT TESTED | Model PASS only; no real-server reconnect/slot-reuse sequence supplied. |
-| Native timer / subscription cleanup | NOT TESTED | Requires actual unload/reload observation; source review/model results are separate. |
+| Hot reload bootstrap | NOT TESTED | Subsequent transcript contains explicit unload/load (`hotReload=False`), not reload (`hotReload=True`). |
+| Late load bootstrap | PASS | Explicit mid-map unload at 21:28:01, load at 21:28:08, fresh GUID and immediate initialization; repeated status has Humans=1/ZombieBots=10, RoundEpoch=1 before the next round at 21:28:34. |
+| Player disconnect registry cleanup after disconnect | PARTIAL | Bot cleanup/count removal/persistent tombstones now verified; human disconnect and its stale probe still lack evidence. |
+| Bot registry cleanup | PASS | Transcript shows ZombieBots=0 with all Bot rows disconnected/Unknown; older disconnected rows remain excluded across successive status/reconciliation. |
+| Slot reuse observation (Bots) | PASS | Slots 1–5 reused with increased ConnectionGeneration after legacy kicks; stale connection callback rejection is still NOT TESTED. |
+| Native timer / subscription cleanup | PARTIAL | Explicit unload completed; no Core status output while unloaded and only one LOADED observer after load. Pending-probe cancellation/hot-reload duplication checks remain NOT TESTED. |
 
 User's unchanged-identity probes:
 
@@ -67,6 +69,21 @@ After legacy Bot kick: Connected=False Role=Unknown
 
 Local Core log corroboration: map initialization at 20:57:32.564 had `MapEpoch=1 RoundEpoch=1`; initialization at 20:59:54.117 had `MapEpoch=3 RoundEpoch=10`; later round-start observations included `MapEpoch=3 RoundEpoch=13/15/18/21`. The advance 1 → 3 is expected: map end and map start each advance MapEpoch. Status/category snippets above are user-supplied console observations, not reconstructed from unit tests.
 
+### Subsequent user transcript audit (21:24–21:28 +08:00)
+
+Source: user's pasted server transcript supplied after the initial evidence update (attachment SHA256 `3D80D3B225575F917F2A68906669EB55EC0DA1122526E990BE32D344B9246EAA`). It starts a dedicated server on de_dust2 with maxplayers=16. Evidence line numbers below refer to that attachment, not this Markdown file. No raw player names, Steam identifiers or full server log are imported into the repository.
+
+- **Human PASS:** lines 715–717 show MapEpoch=1/RoundEpoch=4/Humans=1 and slot 0 Human/connected/alive, ConnectionGeneration=1/PawnGeneration=4. Lines 917–919 repeat that human state.
+- **Bot cleanup PASS / overall player cleanup PARTIAL:** lines 1166–1183 show old slots 6–10 disconnected/Unknown while ten currently connected ZombieBots use other/reused slots. Lines 1316–1333 show ZombieBots=0, all Bot rows disconnected/Unknown, including those same older tombstones; Human remains connected. Thus role-count exclusion and persistence through status reconciliation are verified for Bots, not a human disconnect.
+- **Bot slot reuse observation PASS:** slot 1 changes from ConnectionGeneration=2 (line 920) to 22 (line 1169), and other reused slots similarly advance. This does not prove stale-probe rejection on slot reuse.
+- **Round stale-probe NOT TESTED:** `css_zepve_probe H 10` returned Usage (lines 1436–1437); the later `mp_restartgame 1`/new RoundEpoch=12 (lines 1466/1490) had no valid pending probe. The two actual Slot=0 probes had already ACCEPTed at 21:26:20 and 21:26:23 (lines 1227–1241). Round restart observation is PASS; rejection is not.
+- **Pawn stale-probe NOT TESTED:** `css_zepve_probe Z 30` returned Usage (lines 1531–1532). Legacy respawn/recovery lines alone do not supply same-round Core pawn-generation/rejection evidence.
+- **Late load PASS:** lines 1762–1775 show unload `hotReload=False`, no Core response to status while unloaded, then explicit load with immediate map initialization and new PluginLifetime `cc3eec52-b9ab-44cf-9290-0133f4e4755e` (initial lifetime was `3b83033d-b6dc-4e70-9e35-dca6401e5485`). Lines 1865–1913 show one UNLOADED context (#4), one LOADED context (#5), and two immediate status snapshots at MapEpoch=1/RoundEpoch=1/Humans=1/ZombieBots=10 before the next round at 21:28:34 (line 1950).
+- **Hot reload NOT TESTED:** no `css_plugins reload` or `hotReload=True` sequence is present. **Human disconnect NOT TESTED:** no slot 0 disconnected snapshot. **Stale rejection NOT TESTED:** no `Result=REJECT` anywhere in the attachment. Pending-probe cancellation was not demonstrated around unload/load.
+- No Core exception is present in the supplied transcript. Engine/other-plugin warnings, malformed command input and frame spikes are not attributed to Core without further evidence; Core overhead has not been profiled.
+
+Literal `H`/`Z` input and concatenated commands produced Usage/Unknown command, so those attempts never queued a probe. For the next test, copy **one command at a time and press Enter**; use the actual numeric slot and require the `Observation probe queued` response before triggering invalidation. There is no confirmed new Core defect in this transcript.
+
 ## Confirmed CounterStrikeSharp plugin-management commands
 
 Commands were confirmed by read-only IL inspection of the **actually installed** `CounterStrikeSharp.API.dll` (1.0.376, full informational revision `653d651f1ac09ac1ddb423d588f871b891038860`, API SHA256 above), specifically `Application.RegisterPluginCommands`, `Application.OnCSSPluginCommand`, and `PluginContextQueryHandler.FindPluginByIdOrName`. This is a command-implementation check, not an executed reload test. Current `core.json` has `PluginHotReloadEnabled=true` and `PluginAutoLoadEnabled=true`; neither was changed.
@@ -82,9 +99,11 @@ css_plugins load ZEPVE.Core
 
 Execute only the commands called for by the test below. Reload/unload resolve the exact ModuleName (`ZEPVE Core Observer`) or a plugin ID expressed as plain decimal digits from `css_plugins list`. The implementation compares `PluginId.ToString()` directly: do **not** include `#`, despite the generic help example. Reload does not resolve the directory name `ZEPVE.Core`; load does resolve that directory to `plugins/ZEPVE.Core/ZEPVE.Core.dll`. Explicit reload calls unload/load with `hotReload=true`; explicit unload/load use `false`. No reload of legacy or of all plugins is required.
 
+**After the observed unload/load, use the current LOADED numeric ID for reload/unload.** The user's list has #4 UNLOADED and #5 LOADED with the same ModuleName; the installed name resolver selects the first matching context, without filtering LOADED state. Thus name-only selection is ambiguous now. Run `css_plugins list` again; if #5 remains the LOADED Core, use `css_plugins reload 5` (or `css_plugins unload 5` when required). If the ID has changed after server restart/load, use the new LOADED row's plain numeric ID. This is command-selection guidance, not a Core source change or evidence of two active writers.
+
 ## Remaining minimum runtime acceptance steps
 
-Below are exactly the five requested remaining tests. Keep legacy and the existing respawn executor enabled. Do not change quota, infection/respawn cvars or Core behavior. Run one probe at a time and retain its queued message, result and the surrounding status output. `H` and `Z` are placeholders: replace them with an actual integer slot from `css_zepve_status`; do not type the letters. A `Probe unavailable` message means the probe was not queued and the scenario has not been tested.
+Below are the original five requested tests, with completed portions marked above. Human classification and late load need not be repeated; remaining work is round/pawn REJECT, hot reload and human disconnect cleanup. Keep legacy and the existing respawn executor enabled. Do not change quota, infection/respawn cvars or Core behavior. Run one command/probe at a time and retain its queued message, result and the surrounding status output. `H` and `Z` below are notation only, not literal commands: this transcript identifies H=0; choose Z from the current live ZombieBot rows (slot 1 is an example only when currently connected/alive/ZombieBot). Usage/Probe unavailable means no test was queued.
 
 ### 1. Human classification
 
@@ -100,7 +119,7 @@ Below are exactly the five requested remaining tests. Keep legacy and the existi
 
   ```text
   css_zepve_status
-  css_zepve_probe H 10
+  css_zepve_probe 0 10
   mp_restartgame 1
   css_zepve_status
   ```
@@ -111,19 +130,19 @@ Below are exactly the five requested remaining tests. Keep legacy and the existi
 ### 3. Stale probe after death/respawn → REJECT
 
 - **When / action:** After normal infection/release, choose a live T Bot `Z`. Record its connection/pawn generations and queue the probe. Within 30 seconds, kill only that chosen Bot through normal combat and let the existing ZombieReborn executor respawn it. Keep other zombies alive so the round continues. Do not kick the Bot or restart/change map/reload Core. No unverified `bot_kill` or new respawn command is needed.
-- **Server commands:** `css_zepve_status`, then `css_zepve_probe Z 30`; run `css_zepve_status` immediately after the kill and again after its normal respawn.
+- **Server commands:** `css_zepve_status`; if slot 1 is currently a live ZombieBot, execute `css_zepve_probe 1 30` (otherwise substitute the actual live Bot slot). Run `css_zepve_status` immediately after the kill and again after its normal respawn.
 - **PASS output:** Same MapEpoch/RoundEpoch and ConnectionGeneration; death status `Alive=False`; respawn `Alive=True` with PawnGeneration greater than the baseline; original probe logs `Slot=Z Result=REJECT Reason=pawn generation` at its deadline.
 - **FAIL:** Same-generation respawn or old probe ACCEPT; exception during observation. `Reason=round epoch` or `connection generation` demonstrates another boundary, not pawn invalidation. If the Bot is still dead at the deadline, rejection can prove death invalidation but respawn remains unverified until the revived status is recorded. If no respawn is permitted by the existing round policy, retain NOT TESTED rather than changing that policy.
 
 ### 4. Hot reload / late load bootstrap
 
 - **When:** Mid-map/mid-round with an existing human and Bots, avoiding simultaneous round transitions. Baseline: `css_plugins list`, `css_zepve_status`; record current slots, counts and load log PluginLifetime. This test should not need the next map/round event.
-- **Hot reload commands:** Queue `css_zepve_probe H 10`, then immediately run `css_plugins reload "ZEPVE Core Observer"`. Run `css_plugins list` and `css_zepve_status`; wait past the old probe deadline before moving on.
+- **Hot reload commands:** Run `css_plugins list`; if #5 is the current LOADED Core, queue `css_zepve_probe 0 10`, then immediately run `css_plugins reload 5`. Use the actual LOADED numeric ID if different. Run `css_plugins list` and `css_zepve_status`; wait past the old probe deadline before moving on. Do not use a same-name UNLOADED context.
 - **Hot reload PASS:** Core logs `unloaded (hotReload=true)` and `loaded (hotReload=true, PluginLifetime=<new GUID>)`; the plugin list has one LOADED Core observer; status immediately discovers current players/categories. Old pending probe is canceled and produces no delayed result after its deadline; no duplicate observer/round logs or exceptions. MapEpoch normally restarts at 1 for the new plugin lifetime; reset counters across different GUIDs are expected.
-- **Late load commands, while staying on the same map:**
+- **Late load commands (already PASS; no repeat required), while staying on the same map:**
 
   ```text
-  css_plugins unload "ZEPVE Core Observer"
+  css_plugins unload 5
   css_plugins list
   css_zepve_status
   css_plugins load ZEPVE.Core
@@ -137,16 +156,16 @@ Below are exactly the five requested remaining tests. Keep legacy and the existi
 ### 5. Registry cleanup after disconnect
 
 - **When / action:** Use a disconnecting human client while the server stays running with an independent server console/RCON or a second client. Record `H`, role-view count and generations. Queue the probe, then that human executes `disconnect` in their **client console** within the 10-second window. Do not end the map/reload Core. Disconnecting the sole listen-server host can close the server and does not verify this scenario; keep PARTIAL in that case.
-- **Server commands:** `css_zepve_status`, `css_zepve_probe H 10`; after the client disconnects, run `css_zepve_status` after at least 1 second and repeat after another 2 seconds.
+- **Server commands:** For the observed human slot 0: `css_zepve_status`, then `css_zepve_probe 0 10`; after that client's disconnect, run `css_zepve_status` after at least 1 second and repeat after another 2 seconds. Use the actual human slot if it changes.
 - **PASS output:** Slot `H` remains only as the expected tombstone `Connected=False Alive=False Role=Unknown`, its generations have advanced, and `Humans` decreases by one; subsequent reconciliation does not resurrect it. Original probe logs REJECT (normally `Reason=disconnected/invalid entity`). For Bot disconnect, the analogous view count is ZombieBots. Physical removal of the tombstone row is **not** required by the implementation; rows are bounded by the 64 slots and cleared on map end/unload.
 - **FAIL:** Disconnected player remains connected/alive/in the role-view count, reappears without a new connection, stale probe ACCEPT, or exception. The earlier Bot kick evidence already establishes disconnect observation; this step completes the cleanup/count/persistence evidence.
 
 ## Limitations and rollback
 
-Basic loading, round/map/category observation, coexistence and unchanged-identity probe execution now have real-server evidence. Native pawn invalidation, stale rejection, hot/late-load bootstrap and complete disconnect cleanup still need the steps above. Reconciliation latency is at most one normal 0.5-second interval for continuously observable changes; callbacks refresh synchronously. Entire unobserved same-handle life cycles cannot be inferred. Hot/late-load round phase is deliberately unknown and initial epochs provide observation validity only. Registry slots are limited to 0–63 and state is server-thread-only. Probe map/unload cases cancel timers rather than emitting a later REJECT log.
+Basic loading, round/map/category observation (including Human), coexistence, unchanged-identity probes, Bot cleanup/slot reuse observation, and late-load bootstrap now have real-server evidence. Native pawn invalidation, stale rejection, hot-reload bootstrap/pending-timer cancellation and complete human disconnect cleanup still need the steps above. Reconciliation latency is at most one normal 0.5-second interval for continuously observable changes; callbacks refresh synchronously. Entire unobserved same-handle life cycles cannot be inferred. Hot/late-load round phase is deliberately unknown and initial epochs provide observation validity only. Registry slots are limited to 0–63 and state is server-thread-only. Probe map/unload cases cancel timers rather than emitting a later REJECT log.
 
 Legacy callbacks are not retrofitted; their existing slot/lifetime risks and recovery wandering remain. The historical source-vs-deployed uncertainty in the import audit is superseded for the local accepted pre-Core baseline by the user's acceptance and build/deployment records, not by this Core change. No new Core code defect was established by this review or the supplied test session. No source fix was made. The supplied evidence does not justify an authority handoff or completion of the remaining acceptance tests.
 
 Rollback is unloading/removing just Core's plugin folder. Original legacy DLLs/configs and `ZEPVE_Backup/pre-core-2026-10-09` remain untouched.
 
-Keep PR #9 **Draft** until the five remaining tests have explicit results and any failures are resolved. Only then reassess Ready for review; this is not automatic merge approval.
+Keep PR #9 **Draft** until the outstanding portions of the five tests have explicit results and any failures are resolved. Only then reassess Ready for review; this is not automatic merge approval.
