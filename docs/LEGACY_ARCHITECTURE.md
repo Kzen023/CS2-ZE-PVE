@@ -54,7 +54,7 @@ The import includes the ZRPVE and WeaponBalance configuration snapshots; these c
 
 Evidence is deliberately split by strength:
 
-- **Build confirmed:** all three current source projects compiled in Release on this installation with zero warnings/errors.
+- **Build confirmed:** all three current source projects compiled in Release on this installation with no warnings or errors.
 - **Plugin load confirmed by supplied server logs:** the logs show CounterStrikeSharp loaded and ZRPVE/ZEAssist plugin contexts loading; WeaponBalance reported 34 config entries. This establishes startup/load only, not every feature.
 - **Observed in supplied de_dust2 logs:** the infection countdown synchronized at 16 seconds; the log reports release maintaining 10 T bots; WeaponBalance intercepted native `unused 5` and `unused 3`; prefixed `!deagle` was received; ZRPVE emitted several `recovery placed` records and many `recovery skipped: no route point` records.
 - The same logs report no `func_button` entities on de_dust2, so they do not verify ZE button highlighting.
