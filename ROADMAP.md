@@ -12,7 +12,8 @@ Research-driven architecture priorities are summarized in `docs/CODE_RESEARCH_FI
 - [x] Human path recording concept
 - [x] Bot respawn/recovery teleport concept
 - [x] Establish ZEPVE project-family repositories
-- [ ] Import the current working PvE source into `CS2-ZE-PVE`
+- [x] Preserve the current working plugin sources under `legacy/` as the migration/regression baseline
+- [ ] Reproduce the legacy build and record dependency/runtime requirements
 - [ ] Add `ZEPVE-Navigation` as a pinned production component
 - [ ] Establish reproducible suite + component builds
 - [ ] Create release staging under `game/csgo`
@@ -128,10 +129,30 @@ Runtime Trail remains the default no-NAV route source. Recorded Routes are optio
 - [ ] create `ZEPVE-CS2Fixes` only if a maintained fork becomes necessary
 - [ ] pin any fork/compatibility component explicitly in suite releases
 
+### v0.7 — HUD + WeaponSystem migration
+
+`ZEPVE-HUD`:
+
+- [ ] extract presentation behavior from legacy `Kzen-ZEAssist`
+- [ ] consume stable Core/Map/Boss state APIs instead of independently discovering map state
+- [ ] establish reproducible build and component tests
+- [ ] verify HUD lifecycle and update cadence on map change/hot reload
+
+`ZEPVE-WeaponSystem`:
+
+- [ ] extract verified behavior from legacy `Kzen-WeaponBalance`
+- [ ] separate config/catalog, purchase policy, runtime weapon application and damage policy
+- [ ] preserve CS2Fixes compatibility boundaries
+- [ ] establish reproducible build and component tests
+
+Suite integration:
+
+- [ ] pin verified HUD/WeaponSystem revisions only after their component contracts are stable
+- [ ] validate combined package behavior and rollback targets
+
 ## Later
 
 ```text
-v0.7  HUD + Weapons; HUD consumes stable Core/Map state APIs only
 v0.8  Director / difficulty through Core spawn pressure + BotAI profile policy
 v0.9  map compatibility matrix + offline MapAnalyzer + packaging/update/rollback hardening
 v1.0  stable ZE-first PvE suite
