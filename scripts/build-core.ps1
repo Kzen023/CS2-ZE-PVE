@@ -3,11 +3,6 @@ param(
     [string]$OutputDirectory,
     [switch]$IncludeBotAi
 )
-if ($IncludeBotAi) {
-    $relativeFiles += @('game/csgo/addons/counterstrikesharp/plugins/ZEPVE.BotAI/ZEPVE.BotAI.dll',
-        'game/csgo/addons/counterstrikesharp/plugins/ZEPVE.BotAI/ZEPVE.BotAI.deps.json',
-        'game/csgo/addons/counterstrikesharp/plugins/ZEPVE.BotAI/ZEPVE.BotAI.pdb')
-}
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $apiFile = (Resolve-Path -LiteralPath $CounterStrikeSharpApiPath).Path
@@ -27,6 +22,11 @@ $relativeFiles = @(
     'game/csgo/addons/counterstrikesharp/shared/ZEPVE.Abstractions/ZEPVE.Abstractions.dll',
     'game/csgo/addons/counterstrikesharp/shared/ZEPVE.Abstractions/ZEPVE.Abstractions.pdb'
 )
+if ($IncludeBotAi) {
+    $relativeFiles += @('game/csgo/addons/counterstrikesharp/plugins/ZEPVE.BotAI/ZEPVE.BotAI.dll',
+        'game/csgo/addons/counterstrikesharp/plugins/ZEPVE.BotAI/ZEPVE.BotAI.deps.json',
+        'game/csgo/addons/counterstrikesharp/plugins/ZEPVE.BotAI/ZEPVE.BotAI.pdb')
+}
 foreach ($relative in $relativeFiles) {
     if (Test-Path -LiteralPath (Join-Path $stageRoot $relative)) { throw 'Use a fresh staging directory; existing artifacts are not overwritten.' }
 }

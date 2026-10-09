@@ -52,8 +52,6 @@ The matrix below describes the **paired v0.2c source/package mode**, installed f
 
 Recovery point selection/teleport, legacy Trail recording, HUD presentation and WeaponBalance remain their existing writers. Recovery callbacks now use Core validity/cancellation, but their recovery algorithm remains byte-equivalent to the accepted baseline.
 
-## Handoff checklist
-
 ## v0.2d new-capability boundary
 
 PR #10 merged to `main @ ed480bd500ca01e5ed4da6a61a7391944d38905c`, the new matched-runtime baseline. v0.2c remaining deferred acceptance is unchanged. No Core/legacy gameplay authority is moved by BotAI. Existing bot quota/team, infection, external respawn execution, recovery, Trail, weapons and HUD writers remain unchanged. The only new writer is BotAI's suite-owned AssignedTarget/reacquisition policy.
