@@ -57,16 +57,20 @@ Stop this installation's CS2 processes. From a **clean committed** build, run:
 
 The installer rejects running CS2, dirty/mismatched manifests and API/hash mismatches, backs up the exact previous artifact set, installs Core + adapted ZRPVE + shared ABI together, removes recorded private contract copies, and verifies hashes. No configs, mutable data, ZEAssist or WeaponBalance are replaced. Do not separately copy only the new Core or only adapted ZRPVE. Keep old monolithic ZRPVE copies out of active plugin paths; source/runtime modes must not be mixed.
 
-Rollback while stopped: run the backup's `restore.ps1 -VerifyOnly`, then `restore.ps1`. It restores all previous files and removes only new recorded artifacts, checking paths/hashes and refusing later-changed files. The accepted `ZEPVE_Backup/pre-core-2026-10-09` stays untouched. Installer/restore were exercised only against disposable filesystem fixtures; actual live upgrade/rollback is NOT TESTED.
+Rollback while stopped: run the backup's `restore.ps1 -VerifyOnly`, then `restore.ps1`. It restores all previous files and removes only new recorded artifacts, checking paths/hashes and refusing later-changed files. The accepted `ZEPVE_Backup/pre-core-2026-10-09` stays untouched. The actual stopped-server installation and backup verification passed on 2026-10-09; actual live rollback remains NOT TESTED.
 
 ## Verification and runtime acceptance
 
 Release Core, Abstractions and adapted ZRPVE builds: **PASS**, zero warnings/errors, SDK 10.0.401 / CounterStrikeSharp API 1.0.376. Tests: **72/72 PASS** (30 identity +42 authority/scheduler/recorder/migration checks). Installer/restore syntax and offline filesystem roundtrip: **PASS**. Tests cover token invalidation, same-slot respawn, raced callbacks, consumer unload, job/recorder bounds, exact static profile/command/timing parity, reentrant round end, three hot-resume stages, absent/duplicate providers and source disable/recovery/config parity.
 
-**v0.2c runtime: NOT TESTED.** No new artifacts were deployed to the live server, and no live writer ownership handoff is claimed. The currently installed accepted observer/legacy artifacts remain unchanged. Model/file checks do not prove loader/ABI identity, native team API order, real infection/respawn timing, recovery usability or performance. All new runtime rows below remain NOT TESTED; PR #9's deferred observer acceptance remains deferred.
+**Deployment and basic gameplay evidence:** the matched package from `1cf6aa21503316ab2963c35e6e222312e14131ad` was installed while CS2 was stopped on 2026-10-09. All eight artifact hashes and the rollback inventory passed; 47 configuration/unrelated plugin files were unchanged. Backup: `ZEPVE_Backup/v0.2c-20261009-151119-2996277`.
+
+After installation, the user reported: “游戏内插件正常工作” (plugins work normally in game). Record **basic in-game smoke: PASS — user-reported real-server observation**, not a model/unit result. No specific commands, status output, map, timing, player counts or probe results accompanied this report. It does not establish the individual authority/ABI, lifecycle invalidation, quota/team/timing, respawn/recovery, reload, performance or rollback scenarios below. PR #9's deferred observer acceptance remains deferred.
 
 | Runtime acceptance | Status | Expected evidence |
 | --- | --- | --- |
+| Stopped-server paired installation / backup integrity | PASS | Eight installed artifact hashes match `1cf6aa2`; 47 preserved files unchanged; rollback inventory verified without executing rollback. |
+| Basic in-game smoke | PASS (user report) | User confirmed normal in-game plugin operation after installation; no detailed transcript supplied. |
 | Matched load / one shared ABI / one writer | NOT TESTED | One LOADED Core and adapted ZRPVE; status GameplayAuthority=True; no old quota/team writer; provider missing/duplicate fails closed. |
 | Static solo/duo/coop/group profiles | NOT TESTED | Configured quotas, preparation at +1, unchanged countdown/release offsets and no duplicate kicks/cvar writes. |
 | Round restart/end / map change | NOT TESTED | Old work cancels, no delayed quota/team writes after boundary; recorder epochs advance and map services rebind. |
@@ -83,4 +87,4 @@ Use `css_plugins list` for current plugin IDs; the new ModuleName is `ZEPVE Core
 
 Legacy still has shared per-map Trail history, per-slot watch/pending/display collections, dormant escort code and mixed recovery/HUD/config concerns. ZEAssist/WeaponBalance's independent delayed work and known source-level risks are not retrofitted here. Existing post-recovery wandering is not fixed. Core respawn permission remains governed by the compatible external executor/map rules rather than a new canonical Map system. The temporary bridge and config parser can be narrowed in later ownership-specific PRs.
 
-The v0.2c **source implementation** is complete and build/model verified; production deployment/runtime handoff acceptance remains pending. Do not declare the live handoff complete, silently merge deferred results into PASS, or automatically proceed to BotAI/Navigation. The next work is matched runtime acceptance and fixing any observed regressions; only afterward consider the next architecture phase.
+The v0.2c **source implementation** is complete and build/model verified; the matched package is installed and has user-reported basic gameplay evidence. Detailed runtime handoff acceptance remains pending. Do not declare the live handoff fully verified, silently merge deferred results into PASS, or automatically proceed to BotAI/Navigation. The next work is focused runtime acceptance and fixing any observed regressions; only afterward consider the next architecture phase.

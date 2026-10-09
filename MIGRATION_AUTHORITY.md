@@ -22,7 +22,7 @@ Keeping legacy source as a regression baseline does **not** mean loading two pro
 
 ## Current authority matrix
 
-The matrix below describes the **paired v0.2c source/package mode**. The installed, user-tested v0.2b runtime remains legacy gameplay + Core observer until the paired package is deployed. Source/model verification is not live handoff verification: v0.2c runtime is **NOT TESTED**. Never mix the new Core writer with the old monolithic legacy DLL. See `docs/CORE_LIFECYCLE_MIGRATION.md` for the gate, disable path, installation and rollback.
+The matrix below describes the **paired v0.2c source/package mode**, installed from `1cf6aa2` on 2026-10-09. Artifact/backup checks passed and the user reported normal in-game operation. Detailed runtime handoff acceptance remains **NOT TESTED**; a general gameplay report does not verify each authority boundary. Never mix the new Core writer with the old monolithic legacy DLL. See `docs/CORE_LIFECYCLE_MIGRATION.md` for evidence, the gate, disable path, installation and rollback.
 
 | Behavior / state | Current writer / executor | Migration rule | Final owner |
 | --- | --- | --- | --- |
@@ -43,11 +43,11 @@ The matrix below describes the **paired v0.2c source/package mode**. The install
 
 ## v0.2c handoff boundary and deployment state
 
-- Previous writer: accepted `Kzen-ZRPVE @ 89b5c0c0`, installed with the user-tested `766317f` Core observer. That **live installation is unchanged** by source development.
+- Previous writer: accepted `Kzen-ZRPVE @ 89b5c0c0`, installed with the user-tested `766317f` Core observer. The matched `1cf6aa2` package replaced that installation while stopped on 2026-10-09; the whole previous artifact set is backed up at `ZEPVE_Backup/v0.2c-20261009-151119-2996277`.
 - Replacement: `ZEPVE.Core` lifecycle coordinator, scheduler, PveRoundController and native command/team adapter. The engine/ZR executes its normal native infection/respawn behavior; Core owns only the migrated ZEPVE policy/commands.
 - Disable path: adapted `ZrPvePlugin.cs` physically removes QueueApply, ApplyProfile, ReleaseInfectionBots, MoveExistingBots, AddBots, ApplyMapRoundTime, PickProfile and `_roundToken`; map/round/spawn coordination is forwarded from Core. Its sole remaining Server.ExecuteCommand is the existing presentation countdown command. No automatic fallback reactivates old writers.
 - Gate: shared `SuiteRuntime` permits one Core provider and one adapted legacy bridge. New Core without the bridge issues no gameplay commands; adapted legacy without Core pauses services/recovery instead of writing quota/team. Shared ABI must be installed once under `shared/ZEPVE.Abstractions`.
-- Validation: Release builds and 72 model/source checks PASS; paired installer/restore filesystem fixture PASS; **v0.2c plugin loading, gameplay handoff and real-map parity NOT TESTED**. PR #9's deferred acceptance is retained, not extended into a fictitious v0.2c runtime PASS.
+- Validation: Release builds and 72 model/source checks PASS; paired installer/restore filesystem fixture PASS; actual stopped-server installation (8/8 hashes, 47 preserved files) and backup verification PASS; basic in-game operation PASS from the user's real-server report. No detailed command/log evidence was supplied for shared-ABI/single-writer enforcement, lifecycle transitions or gameplay parity; those remain NOT TESTED. Actual server rollback is NOT TESTED. PR #9's deferred acceptance is retained.
 - Switch/rollback: stop the server and deploy/restore the whole Core + adapted ZRPVE + shared contract set using the paired scripts. Keep configs, WeaponBalance, ZEAssist and the pre-Core backup. Runtime acceptance is required before declaring the deployed handoff verified or proceeding to BotAI/Navigation.
 
 Recovery point selection/teleport, legacy Trail recording, HUD presentation and WeaponBalance remain their existing writers. Recovery callbacks now use Core validity/cancellation, but their recovery algorithm remains byte-equivalent to the accepted baseline.

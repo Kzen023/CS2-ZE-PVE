@@ -44,16 +44,18 @@ FlightRecorder 是内存 256 条 ring，记录生命周期、角色/pawn 变化�
 
 安装脚本拒绝运行中的 CS2、dirty manifest、路径/API/hash 不符；先备份精确文件清单，再整体替换配套 DLL、移除旧私有 contract 副本并核对哈希。不覆盖配置、mutable data、WeaponBalance、ZEAssist 或 pre-Core backup。不要单独替换 Core/ZRPVE，也不要保留能加载的旧 monolithic ZRPVE 副本。
 
-停服后用该次 backup 的 `restore.ps1 -VerifyOnly` 检查，再运行 `restore.ps1` 整套回滚；拒绝覆盖后来改过的文件。当前只在一次性文件系统 fixture 里验证安装/回滚，真实部署和回滚 **NOT TESTED**。
+停服后用该次 backup 的 `restore.ps1 -VerifyOnly` 检查，再运行 `restore.ps1` 整套回滚；拒绝覆盖后来改过的文件。2026-10-09 已完成真实停服安装及备份校验；真实服务器执行回滚仍为 **NOT TESTED**。
 
 ## 验证与剩余风险
 
 Core / Abstractions / 适配 ZRPVE Release：PASS，0 警告/错误。model/source checks：**72/72 PASS**。PowerShell 语法及 offline installer/restore roundtrip：PASS。
 
-**v0.2c runtime 全部 NOT TESTED，尚未部署新产物。** 当前运行环境仍是已接受的 v0.2b observer + legacy。authority 文档区分配套源码模式和已安装 runtime，绝不把源码交接写成实测交接。
+**部署：PASS。** 2026-10-09 已停服安装 `1cf6aa21503316ab2963c35e6e222312e14131ad` 的配套包：8/8 文件哈希一致，47 个配置/无关插件文件未变，回滚清单校验通过。备份目录为 `ZEPVE_Backup/v0.2c-20261009-151119-2996277`，尚未实际执行回滚。
+
+**基础游戏内运行：PASS（用户真实服务器报告）。** 用户安装后确认：“游戏内插件正常工作”。这不是 model/unit test 结果；本次报告未附具体命令、status 输出、地图、时序、人数或 probe 日志。不能据此将单一 shared ABI/writer、quota/team 时序、生命周期失效、复活/Recovery 回归、hot/late load、性能或回滚等具体项目标 PASS；这些仍为 **NOT TESTED**。PR #9 的 deferred acceptance 不变。
 
 最小 runtime 验收：配套加载和单一 shared ABI/writer；原静态 quota、+1 preparation 和释放时序；round/map 取消；断连、同 slot 复活和 pawn 替换；ZR 复活及 Recovery 回归；在 preparing/waiting/released 三阶段 hot reload；manual late load 与依赖丢失；人类断连/hibernation；recorder 上限、服务重复、性能和整套回滚。每项期望见英文验证表。使用 `css_plugins list` 中当前 LOADED 的纯数字 ID；新版 ModuleName 是 `ZEPVE Core`，不要沿用旧 observer 名称/旧 session ID。
 
 保留的技术债：legacy 共享 Trail、per-slot watch/display 集合、混合 Recovery/HUD/config、休眠 escort、Recovery 后游走；ZEAssist/WeaponBalance 的独立延迟工作仍未迁移。没有新的目标、AI、Navigation、Director、武器或地图系统。
 
-v0.2c 源码实现和自动验证完成，生产部署及 runtime handoff 验收仍待完成。下一步只做配套真实服务器验收及发现问题的修复；本阶段结束后停止，不自动进入 BotAI/Navigation。
+v0.2c 源码实现、自动验证和配套部署完成，已有用户报告的基础游戏内运行证据；详细 runtime handoff 验收仍待完成。下一步只做具体真实服务器验收及发现问题的修复；本阶段结束后停止，不自动进入 BotAI/Navigation。

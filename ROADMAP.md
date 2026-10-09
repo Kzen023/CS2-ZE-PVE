@@ -63,7 +63,7 @@ At the end of v0.2b, legacy remains the gameplay writer. Core first proves that 
 - [x] add bounded Flight Recorder events for lifecycle actions, rejection and invalidation
 - [ ] verify the paired v0.2c handoff on the real server (NOT TESTED)
 
-Source implementation/model validation is complete. Deployment/runtime acceptance remains pending; see `docs/CORE_LIFECYCLE_MIGRATION.md`. Do not infer v0.2c runtime PASS from PR #9's observer tests or its owner-accepted deferred acceptance.
+Source implementation/model validation and matched deployment are complete. The user reported normal in-game operation; detailed runtime handoff acceptance remains pending. See `docs/CORE_LIFECYCLE_MIGRATION.md`. Do not infer individual v0.2c runtime PASS from this general report, PR #9's observer tests or its owner-accepted deferred acceptance.
 
 Do not introduce dynamic Director logic, a new respawn gameplay model or a complex BotPool merely to complete Core ownership.
 
