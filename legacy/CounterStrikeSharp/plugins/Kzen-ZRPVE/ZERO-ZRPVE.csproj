@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <CounterStrikeSharpApiPath Condition="'$(CounterStrikeSharpApiPath)' == '' and '$(CS2_INSTALL_ROOT)' != ''">$(CS2_INSTALL_ROOT)\game\csgo\addons\counterstrikesharp\api\CounterStrikeSharp.API.dll</CounterStrikeSharpApiPath>
+    <CounterStrikeSharpApiPath Condition="'$(CounterStrikeSharpApiPath)' == ''">..\..\api\CounterStrikeSharp.API.dll</CounterStrikeSharpApiPath>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Kzen-ZRPVE</AssemblyName>
+    <RootNamespace>KzenZrPve</RootNamespace>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="CounterStrikeSharp.API">
+      <HintPath>$(CounterStrikeSharpApiPath)</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>
+
