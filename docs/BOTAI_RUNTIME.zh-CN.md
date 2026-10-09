@@ -47,7 +47,7 @@ css_zepve_ai_probe <bot-slot> [0.1..60 秒]
 ./scripts/install-core-lifecycle.ps1 -ServerRoot '<CS2 根目录>' -PackageDirectory '<staging>'
 ```
 
-要求 clean commit、API hash 一致、CS2 停止（同安装的客户端也须退出）。整套 11 个文件：Core、adapted ZRPVE、BotAI 的 DLL/deps/PDB 与唯一 shared Abstractions DLL/PDB。先备份旧文件/hash，删除插件私有 contracts；config/native/其他插件保持。停服后用当前备份 `restore.ps1 -VerifyOnly` 验证，再执行 `restore.ps1` 整套回滚；第一次安装的 BotAI 新文件会移除。不现场混装、不复活旧 legacy writer。
+要求 clean commit、API hash 一致、CS2 停止。可选 `-AllowUnmoddedClient` 只允许已显示窗口、非 dedicated、可完整检查 loaded modules 且没有 addon/MetaMod/CSS/CS2Fixes/BotController 模块的客户端；默认仍全部拒绝。专用服、加载插件或无法判断的客户端始终拒绝。整套 11 个文件：Core、adapted ZRPVE、BotAI 的 DLL/deps/PDB 与唯一 shared Abstractions DLL/PDB。先备份旧文件/hash，删除插件私有 contracts；config/native/其他插件保持。停服且退出客户端后用备份 `restore.ps1 -VerifyOnly` 验证，再执行 `restore.ps1` 整套回滚；第一次安装的 BotAI 新文件会移除。不现场混装、不复活旧 legacy writer。
 
 已检查当前 CSS 命令：先 `css_plugins list` 找当前 LOADED BotAI 的数字 ID；`css_plugins reload <id>`，或 `unload <id>` 后 `load ZEPVE.BotAI`。历史 UNLOADED 条目可能保留名字，不猜 ID。Core 原有 hot/late policy 不变。
 

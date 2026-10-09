@@ -1,13 +1,25 @@
 param(
     [Parameter(Mandatory = $true)][string]$ServerRoot,
-    [Parameter(Mandatory = $true)][string]$PackageDirectory
+    [Parameter(Mandatory = $true)][string]$PackageDirectory,
+    [switch]$AllowUnmoddedClient
 )
 $ErrorActionPreference = 'Stop'
 $installRoot = (Resolve-Path -LiteralPath $ServerRoot).Path.TrimEnd('\', '/')
 $packageRoot = (Resolve-Path -LiteralPath $PackageDirectory).Path.TrimEnd('\', '/')
 if (-not (Test-Path -LiteralPath (Join-Path $installRoot 'game/csgo/addons/counterstrikesharp/api/CounterStrikeSharp.API.dll'))) { throw 'ServerRoot is not a CS2 CounterStrikeSharp installation.' }
 foreach ($process in Get-CimInstance Win32_Process -Filter "name = 'cs2.exe'") {
-    if (-not $process.ExecutablePath -or $process.ExecutablePath.StartsWith($installRoot + '\', [StringComparison]::OrdinalIgnoreCase)) { throw 'Stop CS2 first; paired DLL/contract upgrades must be offline.' }
+    if (-not $process.ExecutablePath) { throw 'Cannot identify CS2 process; stop it before matched deployment.' }
+    if (-not $process.ExecutablePath.StartsWith($installRoot + '\', [StringComparison]::OrdinalIgnoreCase)) { continue }
+    if (-not $AllowUnmoddedClient -or -not $process.CommandLine -or $process.CommandLine -match '(?i)(^|\s)-dedicated(\s|$)') {
+        throw 'Stop CS2 first; matched DLL/contract upgrades must be offline.'
+    }
+    $client = Get-Process -Id $process.ProcessId -ErrorAction Stop
+    if ($client.MainWindowHandle -eq [IntPtr]::Zero -or $client.Modules.Count -eq 0) { throw 'Cannot establish an active unmodded client.' }
+    foreach ($module in $client.Modules) {
+        if ($module.FileName -match '(?i)[\\/]addons[^\\/]*[\\/]|metamod|counterstrikesharp|cs2fixes|botcontroller') {
+            throw 'Client has addon modules loaded; stop it before matched deployment.'
+        }
+    }
 }
 $manifest = Get-Content -LiteralPath (Join-Path $packageRoot 'manifest.json') -Raw | ConvertFrom-Json
 if ($manifest.Stage -notin @('v0.2c paired lifecycle/round authority migration', 'v0.2d matched BotAI suite') -or $manifest.WorkingTreeChanges.Count -ne 0) { throw 'Require a clean, committed matched build manifest.' }
