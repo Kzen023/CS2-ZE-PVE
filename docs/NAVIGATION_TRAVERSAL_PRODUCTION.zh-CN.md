@@ -13,3 +13,11 @@ Bot 正常走到起点，检查位置、落地、速度，再通过同一个独�
 测试时连接 CT，等 Released 后在每次动作前站定。先 W 跳、蹲跳，再 A 包一箱→二箱旋转跳，无需 Lab 聊天指令。检查 css_zepve_nav 的 profile/clip 数，以及 css_zepve_nav_bot、css_zepve_nav_events 的 clip start/complete/failed。实际看 Bot 是否通过；仅 command 完成不是物理成功。验收执行 css_zepve_nav_recovery 0，Navigation reload 后需要再次关闭，避免传送掩盖失败。
 
 自动测试115/115 Navigation、26/26 retained native、26/26 traversal、14/14 retained interop 与新增1544-byte signed payload 往返检查通过。安装/实际回滚 fixture 通过。**本 production 候选真实自动 traversal、旋转跳和 reload/drain 验收仍 NOT TESTED；历史 Lab PASS 不代替它。**
+
+## 真实服首轮状态（2026-10-11）
+
+07:38 整套停服安装，19/19 live hash 一致；当前回滚为 v0.3-20261011-073807-7690790，22 文件备份与 VerifyOnly 通过。**这一新 production 候选实际 rollback 尚 NOT TESTED**，不要把 fixture/以前 Lab 回滚混作本轮。
+
+六个正式/保留插件加载，Lab 未加载；Core Released、1 真人/1 ZombieBot、LegacyMovementDisabled=True、一个 owner/lease，drain pending/lookup failure 为0。只读临时 inspector 确认 Human command 连续有效且 origin=tick-1、站定 prelude 已 armed；随后已卸载并移出 loader 路径，不随包提供。当前没有观察到新 clip 动作，W 跳、蹲跳、旋转跳和 timed reload/drain 仍待实际测试，未标 PASS。
+
+Recovery 关闭，测试临时 sv_cheats=1 / bot_dont_shoot=1，原值均0已记录；普通 PvE 验收前恢复。服务端 PID23516 保持运行，三个 PR 为 Draft，没有 merge。
