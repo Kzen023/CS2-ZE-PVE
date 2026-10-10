@@ -65,3 +65,10 @@ Next source correction: a demonstrated, fully validated recorded jump is no long
 Stopped-server replacement on 2026-10-10: previous whole-set backup/inventory verified, current state backed up and all19 matched files installed/hash verified. Executable revisions suite93494299ffcaa8e96c58fe72d23d10faa05e43e7 / Navigation0dd1d3b16b1da295ba06953d6bba437053c60986 / nativefcf3e66 executable (df67e21 docs-only pin). Backup `ZEPVE_Backup/v0.3-20261010-180220-4733607/restore.ps1` restores preceding package16. Release build, retained127/127 and Navigation70/70 PASS. No new native source/binary change.
 
 Server launched, shared ABI/provider/gates observed with RecoveryEnabled=False, LegacyMovementDisabled=True and PerceptionWrites=0. Initial no-Human Unbound state had zero leases/intents; not a gameplay failure. Await actual human ascent/descent retest. Native remains process resident; previous server process exited before replacement. No partial-DLL installation, old writer re-enable or baseline promotion occurred.
+
+
+## Package17 A-short failure and launch posture candidate
+
+User explicitly reported A-short→CT still failed and Bots did not appear to run forward then jump. This remains FAIL. Package17 current-curve retirement was observed with worldent rejection, but that control exit is not passage completion.
+
+Source diagnosis: ProbeRecordedJump derived standing takeoff clearance from whether the Human ever ducked during flight. That conflated airborne duck with grounded launch posture. It now checks the actual standing hull at the Bot's launch position. With standing clearance, a running launch presses jump only and preserves that posture for its bounded grounded pulse; airborne flight can then duck. A real low ceiling still permits the existing crouch launch. Pulse cancellation/reset and all native lifetime/owner gates are unchanged. Model73/73 PASS, including grounded jump-only pulse, airborne duck transition, low ceiling and bounded retirement. Real launch/route efficacy for this new source remains NOT TESTED. No view/Enemy/position/velocity writes or authority changes.
