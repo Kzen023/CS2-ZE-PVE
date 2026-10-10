@@ -1,5 +1,7 @@
 # v0.3 matched Navigation verification
 
+**Superseded initial checklist:** actual corrected-package results, limits and rollback are in [NAVIGATION_MATCHED_RUNTIME.md](NAVIGATION_MATCHED_RUNTIME.md). The NOT TESTED table below is the preserved pre-deployment checklist, not the final verdict. Final automated counts: native22/22, interop14/14, Navigation30/30, retained127/127.
+
 Source stage: production native backend in ZEPVE-BotController, independent Navigation runtime and matched legacy disable/shared contract. Research closeout: Lab PR#1 merged2b0d2da; suite PR#12 merged236fed2. Implementation branches start at latest main. Lab is neither production build source nor runtime dependency.
 
 Automated evidence: native21/21 (1000 deterministic worker detach races), resident SDK actual native/C# interop14/14, Navigation29/29 model checks, retained Core/BotAI127/127. Release native and managed builds PASS. Model subjects/providers/traces are explicit test doubles and are not CS2 PASS. Recovery/source tests verify old legacy teleport/scheduler/Trail writers absent and config/policy/presentation retained.
