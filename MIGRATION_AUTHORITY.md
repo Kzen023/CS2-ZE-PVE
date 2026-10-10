@@ -22,6 +22,14 @@ Keeping legacy source as a regression baseline does **not** mean loading two pro
 
 ## Current authority matrix
 
+### v0.3 candidate source / deployment distinction
+
+The v0.3 PR candidate physically removes legacy RecordHumanPath/CheckZombieBots/QueueBotRecovery/TryRecoverZombieBot/TryStartEscort/UpdateEscorts and every legacy Teleport call. Matched Navigation becomes the only ZEPVE movement/Trail/Recovery writer, gated by the adapter's MovementWriterDisabled capability and one shared Navigation provider. Production native execution is ZEPVE-BotController ABI1 in the existing dispatcher, process resident, with explicit rejection of old anonymous movement/replay/locks. Lab is evidence only.
+
+**At initial source implementation the installed accepted baseline is still v0.2 and legacy retains runtime Trail/Recovery authority.** Candidate deployment/testing must be the entire stopped-server matched package; source presence alone does not claim runtime acceptance or main authority handoff. Actual PASS/NOT TESTED and rollback are recorded in `docs/NAVIGATION_VERIFICATION.md`. The matrix below describes the accepted v0.2 baseline until candidate acceptance is recorded.
+
+Core identity/lifecycle/round/quota/team, BotAI AssignedTarget/ObserveOnly and external ZR/CS2Fixes respawn execution remain their exact writers. No authority handoff for those responsibilities. Candidate Recovery cancels intent and reserves exclusive ownership before geometric placement/route synchronization/reacquire. Missing Navigation/backend does not re-enable old legacy writer; whole-set rollback restores the accepted baseline only while stopped.
+
 The Core/legacy rows preserve the **accepted paired v0.2c authority**, originally installed from `1cf6aa2` and now merged at baseline `ed480bd` (PR #10). The matched v0.2d package `238b98c` adds only suite-owned AssignedTarget/reacquire policy; fixed-package single-human smoke passed, with limits in `docs/BOTAI_VERIFICATION.md`. Core gameplay authority and the v0.2c deferred acceptance remain unchanged. Never mix Core with the old monolithic legacy writer. Historical Core evidence/limits are in `docs/CORE_MATCHED_RUNTIME_VERIFICATION.md`; matched installation/rollback is in `docs/BOTAI_RUNTIME.md`.
 
 | Behavior / state | Current writer / executor | Migration rule | Final owner |
