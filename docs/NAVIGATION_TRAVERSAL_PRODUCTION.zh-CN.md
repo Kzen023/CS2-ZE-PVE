@@ -1,0 +1,15 @@
+# v0.3 短动作 traversal 候选
+
+本次是 production 仓库中的正式候选实现，Lab 只提供研究证据，不随包部署。native backend 属于 ZEPVE-BotController；自动动作采集、路线选择和执行属于 ZEPVE-Navigation。Core、BotAI、外部 ZR 复活执行器、HUD 和 Weapon 权威不变。未 merge，未宣称复杂地形全部通过。
+
+普通路段仍走 Native→Trail→Recovery。特殊路段从同一个 Core Human 身份采集短 command clip：站定起步、真实离地、三个落地 command。保留 signed subtick、jump/duck 边沿和视角变化；不移动事件、不裁剪超长动作。每段最多256 command，约四秒；每人最多八段，选取最近30秒的数据。
+
+Bot 正常走到起点，检查位置、落地、速度，再通过同一个独占 lease 执行。播放中不复制位置或速度。临时视角也归同一个 router 仲裁；动作结束或失效后交回 Valve。全生命周期、BindingVersion、路线 generation、native handle、permission、lease/revision 均在最终写入前验证。取消的 clip 不能再出现，取消也不算成功通过障碍。
+
+当前 timed/view capability 限于已审计的 Windows CS2 14190 /64Hz 与精确 game DLL hash。其他 profile 会关闭该 capability，普通移动继续可用。连续助跑跳链没有站定起步时暂不采集；长动作、人物碰撞和人类/僵尸物理差异仍有限制。不要据此承诺完美 KZ 复刻。
+
+整套停服安装：native DLL/gamedata、Core、BotAI、adapted ZRPVE、一个 Abstractions、Navigation、一个 MovementBridge SDK。安装器先建立可恢复备份并校验，再替换；同时归档三个 Lab consumer 程序集，保留录制数据与配置。默认保留现有 quota，包括当前实验配置的 solo=1，不偷偷改为10。回滚使用本次安装备份的 restore.ps1，先 VerifyOnly，再实际 restore；前一套可能仍是实验 baseline，不能声称自动恢复到了 v0.2 main。
+
+测试时连接 CT，等 Released 后在每次动作前站定。先 W 跳、蹲跳，再 A 包一箱→二箱旋转跳，无需 Lab 聊天指令。检查 css_zepve_nav 的 profile/clip 数，以及 css_zepve_nav_bot、css_zepve_nav_events 的 clip start/complete/failed。实际看 Bot 是否通过；仅 command 完成不是物理成功。验收执行 css_zepve_nav_recovery 0，Navigation reload 后需要再次关闭，避免传送掩盖失败。
+
+自动测试115/115 Navigation、26/26 retained native、26/26 traversal、14/14 retained interop 与新增1544-byte signed payload 往返检查通过。安装/实际回滚 fixture 通过。**本 production 候选真实自动 traversal、旋转跳和 reload/drain 验收仍 NOT TESTED；历史 Lab PASS 不代替它。**

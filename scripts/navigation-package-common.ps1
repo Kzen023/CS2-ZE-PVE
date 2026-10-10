@@ -14,6 +14,10 @@ function Assert-NavigationServerStopped([string]$Root,[bool]$AllowClient){
     }
 }
 function Resolve-NavigationTarget([string]$Root,[string]$Relative){
-    if($Relative -notin (Get-NavigationPackagePaths)){throw 'Unexpected matched package path'}
+    if($Relative -notin (@(Get-NavigationPackagePaths)+@(Get-NavigationLabPaths))){throw 'Unexpected matched package path'}
     $target=[IO.Path]::GetFullPath((Join-Path $Root $Relative));if(-not $target.StartsWith($Root+[IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase)){throw 'Target escapes server root'};return $target
+}
+
+function Get-NavigationLabPaths {
+    @('dll','pdb','deps.json') | ForEach-Object { 'game/csgo/addons/counterstrikesharp/plugins/ZEPVE.Lab.CommandFidelity/ZEPVE.Lab.CommandFidelity.'+$_ }
 }

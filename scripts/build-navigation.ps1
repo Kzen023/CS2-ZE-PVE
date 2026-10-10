@@ -1,6 +1,11 @@
 param([Parameter(Mandatory=$true)][string]$CounterStrikeSharpApiPath,[Parameter(Mandatory=$true)][string]$NativeComponentRoot,[Parameter(Mandatory=$true)][string]$NativeBuildRoot,[Parameter(Mandatory=$true)][string]$OutputDirectory)
 $ErrorActionPreference='Stop';$root=Split-Path -Parent $PSScriptRoot;$api=(Resolve-Path -LiteralPath $CounterStrikeSharpApiPath).Path
 $native=(Resolve-Path -LiteralPath $NativeComponentRoot).Path;$nav=Join-Path $root 'components/ZEPVE-Navigation';$stage=[IO.Path]::GetFullPath($OutputDirectory)
+foreach($component in @(@('components/ZEPVE-BotController',$native),@('components/ZEPVE-Navigation',$nav))){
+ $pin=(& git -C $root rev-parse ("HEAD:"+$component[0]));$actual=(& git -C $component[1] rev-parse HEAD)
+ if($pin-ne $actual){throw 'Component revision differs from committed suite pin'}
+}
+
 if(Test-Path -LiteralPath $stage){throw 'Use a fresh staging directory'}
 $properties=@("-p:CounterStrikeSharpApiPath=$api","-p:SuiteRootPath=$root","-p:MovementBridgeRootPath=$native")
 foreach($project in @('src/ZEPVE.Core/ZEPVE.Core.csproj','src/ZEPVE.BotAI/ZEPVE.BotAI.csproj','legacy/CounterStrikeSharp/plugins/Kzen-ZRPVE/Kzen-ZRPVE.csproj','components/ZEPVE-Navigation/src/ZEPVE.Navigation/ZEPVE.Navigation.csproj')){& dotnet build (Join-Path $root $project) -c Release @properties;if($LASTEXITCODE){throw "Build failed: $project"}}
@@ -19,6 +24,6 @@ foreach($entry in @(@('ZEPVE.Core','src/ZEPVE.Core','plugins'),@('ZEPVE.BotAI','
  }
 }
 foreach($entry in @(@('game/csgo/addons/BotController/bin/win64/BotController.dll','package/addons/BotController/bin/win64/BotController.dll'),@('game/csgo/addons/BotController/gamedata.json','package/addons/BotController/gamedata.json'))){$dest=Join-Path $stage $entry[0];New-Item -ItemType Directory -Path (Split-Path -Parent $dest) -Force|Out-Null;Copy-Item -LiteralPath (Join-Path $NativeBuildRoot $entry[1]) -Destination $dest;$files+=[ordered]@{Path=$entry[0];SHA256=(Get-FileHash -LiteralPath $dest).Hash}}
-$manifest=[ordered]@{Stage='v0.3 matched Navigation authority';SourceRevision=(& git -C $root rev-parse HEAD);NativeRevision=(& git -C $native rev-parse HEAD);NavigationRevision=(& git -C $nav rev-parse HEAD);WorkingTreeChanges=@(& git -C $root status --porcelain);NativeWorkingTreeChanges=@(& git -C $native status --porcelain);NavigationWorkingTreeChanges=@(& git -C $nav status --porcelain);ApiSHA256=(Get-FileHash -LiteralPath $api).Hash;NativeABI=1;NativeLifetime='ProcessResident; physical hot unload unsupported';Writer='Navigation movement/Trail/Recovery; Core identity/policy; BotAI target; external ZR respawn';Runtime='NOT TESTED for this build';Files=$files}
+$manifest=[ordered]@{Stage='v0.3 matched Navigation authority';SourceRevision=(& git -C $root rev-parse HEAD);NativeRevision=(& git -C $native rev-parse HEAD);NavigationRevision=(& git -C $nav rev-parse HEAD);WorkingTreeChanges=@(& git -C $root status --porcelain);NativeWorkingTreeChanges=@(& git -C $native status --porcelain);NavigationWorkingTreeChanges=@(& git -C $nav status --porcelain);ApiSHA256=(Get-FileHash -LiteralPath $api).Hash;NativeABI=1;TraversalABI=1;TraversalProfile='Windows14190/64Hz exact game image; fail closed otherwise';NativeLifetime='ProcessResident; physical hot unload unsupported';Writer='Navigation movement/Trail/Recovery; Core identity/policy; BotAI target; external ZR respawn';Runtime='NOT TESTED for this build';Files=$files}
 $manifest|ConvertTo-Json -Depth 5|Set-Content -LiteralPath (Join-Path $stage 'manifest.json') -Encoding utf8
 Write-Output "Matched package ready: $stage; files=$($files.Count); no deployment"
