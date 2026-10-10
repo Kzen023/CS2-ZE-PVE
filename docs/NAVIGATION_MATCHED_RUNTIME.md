@@ -43,3 +43,8 @@ Local evidence retained outside Git: package-2 manifest, commands.jsonl, bot-dea
 Native mode preserves authorized Valve commands plus clear-corridor assistance; this is not a new Valve MoveTo pathfinder or full vertical ZE certification. Recovery uses conservative geometry, not map semantics. Physical native hot unload is unsupported by design; replacement needs stopped server. Managed Navigation is hot reloadable.
 
 Review/merge component PRs before suite promotion, then pin accepted component-main revisions. Current pins are exact candidate revisions. No automatic production merge. T tally20/HUD/Weapon/Map/Director remain out of scope.
+
+
+## Subsequent behavior acceptance supersedes promotion conclusion
+
+The ordinary-map smoke/rollback above remains historical. Latest candidacy, installation state and failure evidence are in [NAVIGATION_BEHAVIOR_ACCEPTANCE.md](NAVIGATION_BEHAVIOR_ACCEPTANCE.md). Later fixes limit near-target Waiting to96 units and normalize movement axes; user confirmed plain pursuit/low boxes. Advanced rotating jumps, barrels and stationary crouch-jumping during Human bunnyhops failed actual package14 acceptance. The current package15 run-up/cooldown correction has bounded-exit runtime evidence but no broad physical traversal acceptance. Current server is running the matched candidate with Recovery disabled; no PR was merged or accepted baseline promoted. Matched rollout merge remains blocked by actual behavior, independently of the passed backend safety architecture.

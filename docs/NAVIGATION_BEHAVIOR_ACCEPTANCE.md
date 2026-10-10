@@ -35,3 +35,12 @@ No guarantee of generic longjump/rotating jump/bunnyhop/low ceiling/boost/platfo
 CS2KZ's [playback implementation](https://github.com/KZGlobalTeam/cs2kz-metamod/blob/master/src/kz/replays/playback.cpp) directly restores pre/post positions, velocities, angles and movement-service state. That approach can produce faithful playback but cannot be substituted for proof that a PvE Bot physically executes the route. No such state replay, parallel hook, KZ runtime dependency or disabled old BotController replay was enabled. Current movement ABI has direction/buttons and lifetime validation, not a timed subtick recording payload; perfect physical reproduction is not claimed.
 
 Promotion remains component review/merge then suite pin promotion. Runtime behavior failures are independent of the accepted architecture safety gate. Final merge recommendation must reflect the remaining actual failure, not automated counts or noblock toggles.
+
+
+## Package15 control-loop retest
+
+Matched package15 was installed while stopped on 2026-10-10, all19 hashes verified, current backup `ZEPVE_Backup/v0.3-20261010-145634-1925240`. Executable provenance: suitebe90d23 / nativefcf3e66 / Navigationee0eb48. Native documentation-only follow-up df67e21 is not a new executable. Core/BotAI/legacy/shared were deployed together; no helper or private shared ABI was added. Server started, one Human and10 Bots observed, RecoveryEnabled=False, LegacyMovementDisabled=True, PerceptionWrites=0.
+
+Actual control observation: bot1 exhausted its grounded run-up, retired lease12 and then held fresh lease19; historical LastCommit must not be treated as a live old intent. Native mode later preserved forward0/side0/duckTrue with empty/transient Enemy. This separates an observed tactical Native hold from dropped Navigation input; ObserveOnly does not restore native aggro. The bounded timeout actually executed. No broad physical traversal PASS is inferred; awaiting user's package15 result. Previous package14 failures remain the acceptance blocker until verified resolved.
+
+The backup restores the preceding matched candidate, not automatically the accepted v0.2 baseline. For full baseline rollback, restore complete verified chain in reverse deployment order while stopped; never mix native, Core/BotAI/legacy/shared/Navigation files from different packages. Earlier actual baseline rollback remains historical evidence. Current server is running package15, not restored v0.2.
