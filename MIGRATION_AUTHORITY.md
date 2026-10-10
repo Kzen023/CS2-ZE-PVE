@@ -54,6 +54,8 @@ Recovery point selection/teleport, legacy Trail recording, HUD presentation and 
 
 ## v0.2d new-capability boundary
 
+PR #11 is now merged at `main @ 7cf389157f7f09f08c399ba5ca6a33b5ccbf4d46`, the owner-accepted v0.2 complete baseline. The v0.3 movement execution audit found no application-time suite-lifetime/exclusive-owner gate in the installed persistent BotController movement API. No Navigation runtime handoff or deployment occurs: current writer rows remain unchanged, legacy Trail/Recovery stays active and the Navigation pin remains a design reference. See `docs/NAVIGATION_BACKEND_SAFETY_GATE.md` for exact evidence and the prerequisite for resuming.
+
 PR #10 merged to `main @ ed480bd500ca01e5ed4da6a61a7391944d38905c`, the new matched-runtime baseline. v0.2c remaining deferred acceptance is unchanged. No Core/legacy gameplay authority is moved by BotAI. Existing bot quota/team, infection, external respawn execution, recovery, Trail, weapons and HUD writers remain unchanged. The only new writer is BotAI's suite-owned AssignedTarget/reacquisition policy.
 
 BotController v0.7.1 source/log revision `0ae8f18` was audited: lock/replay/usercmd/view/weapon/buy/profile controls are separate from BotAI's read-only schema observation. BotAI calls none of them and writes no native perception/movement field. Native locks/replay may impair observed reacquisition; BotAI never overrides them. Future Navigation remains the only final movement-intent writer; its current design pin is not an active runtime.

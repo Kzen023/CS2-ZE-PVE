@@ -92,6 +92,8 @@ See `BOT_AI_DESIGN.md`, `MIGRATION_AUTHORITY.md` and `docs/CODE_RESEARCH_FINDING
 
 ### v0.3 — ZEPVE-Navigation component baseline
 
+PR #11 merged at `7cf3891` establishes the accepted v0.2 complete baseline. Lab PR #1 subsequently proved the existing-dispatcher lease/validator mechanism and real managed detach/drain under a process-resident native model; the backend research gate is PASS. Production v0.3 implementation may resume in its owning components. Original ABI22 remains unsuitable for new persistent movement; no production pin or legacy writer has changed in this research closeout. See `docs/NAVIGATION_BACKEND_SAFETY_GATE.md`; production Navigation remains unimplemented / NOT TESTED until its matched handoff is verified.
+
 Navigation repository:
 
 - [ ] TrailRecorder with one bounded Trail per human identity/generation
