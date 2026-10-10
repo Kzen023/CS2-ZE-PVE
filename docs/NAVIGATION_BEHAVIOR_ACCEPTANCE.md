@@ -102,3 +102,12 @@ Next correction scopes generic jump validation to a bounded local supported land
 ## Package20 current deployment
 
 Whole19-file stopped-server backup/installation/hash verification PASS on 2026-10-10. Current rollback `ZEPVE_Backup/v0.3-20261010-191556-1240612/restore.ps1` restores prior package19. Executables suite12a6a1c60d679f7a24952d8ec56656e3b2e3db92 / Navigationf22d987c286a8f10eb4587b6d68b8b74b42d6146 / unchanged nativefcf3e66 (df67e21 docs pin). Release build, Navigation91/91 and retained127/127 PASS. Startup/shared gate observed, RecoveryEnabled=False, LegacyMovementDisabled=True, PerceptionWrites=0. Local-obstacle/slope/staged physical efficacy remains NOT TESTED until actual observation. Earlier package19 slope PASS and low-obstacle regression remain historical. No baseline promotion or merge.
+
+
+## Package20 user results / ordered stage and target proximity
+
+Actual user feedback: slope normal PASS; extremely few Bots reach A-short (PARTIAL/FAIL), collider/approach snagging, weak attack/pursuit while a Human stands nearby, low-obstacle standstill crouch-jump about three times before moving forward (PARTIAL), complex jumps still FAIL. User also reports out-of-order jumping and scraping walls while finding takeoff. No complete acceptance.
+
+Next correction: periodically validate a nearby current AssignedTarget's full supported walk corridor; if reachable, retire old Trail/box traversal, cancel/version-invalid old intent, reset launch state and request bounded ObserveOnly NavigationRequest from BotAI. Revalidate nearby reachability to suppress re-entry into obsolete jumps while the Human remains directly reachable; unreachable nearby target cannot bypass a stage. Entry chooses the nearest recorded takeoff at current support height, with a full supported approach rather than truncated ClearPath. Mandatory detour stages are no longer discarded by a direct target-distance improvement heuristic. Human sequence order remains authoritative within the selected route; no map coordinates hardcoded and no target selection moved to Navigation.
+
+95/95 models PASS, including proximity interruption/stale packet, no inaccessible-stage bypass, lower-ground versus later upper takeoff, necessary detour entry and reentry suppression/coalescing. Real proximity/order efficacy NOT TESTED for new source until matched retest. Collider bounds/physical timing fidelity remain unproven; no perfect-reproduction claim.
