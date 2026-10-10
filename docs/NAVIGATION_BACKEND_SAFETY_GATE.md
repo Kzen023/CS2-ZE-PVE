@@ -1,5 +1,15 @@
 # v0.3 Navigation execution safety gate
 
+## 2026-10-10 Lab follow-up: mechanism gate cleared
+
+**Backend production safety: PASS under process-resident native + hot-reloadable managed consumer. v0.3 implementation may resume; no Navigation runtime or authority handoff occurs here.** [Lab PR#1](https://github.com/Kzen023/ZEPVE-Lab/pull/1) now contains the actual existing PlayerRunCommand hook adapter and sanitized runtime drain evidence (`experiments/movement-hook/README.md` / `DETACH_RUNTIME_EVIDENCE.json`). Original audit below is historical.
+
+The owner authorized using their real server. One dedicated process stayed running throughout the accepted20/20 detach records: actual CSS context unload during validator, after complete validation/before commit, actively applying reload, replace/cancel-before-unload, worker detach, immediate reload, real Core/BotAI replacement while a conservative pending-root release fence held, fresh lease/lifetime rejection and10 repeated reload cycles. Retired owners release only at nativeDrained=true/frame0/callback0; no old callback/application/resurrection or context lookup failure. Separate native44/44 and interop35/35 regression PASS.
+
+The native router/hook and shared callback adapter are process resident. Physical native hot unload is **unsupported by design**, not a NOT TESTED blocker; replacement requires stopped server. Actual managed CSS Unload/Dispose/Load is verified; CSS loader/assembly-memory retention remains host-owned and is not claimed to be immediate physical ALC reclamation. The patch uses the existing dispatcher, with prior real owner/old-API arbitration evidence retained rather than repeated.
+
+This is evidence for a patched candidate, not a declaration that installed ABI22 became safe. Implement the production backend independently in its owning native repository, then the clean Navigation consumer and matched handoff. Lab is never a release dependency. Test package was rolled back while stopped: original native restored, temporary Lab modules archived,15 baseline hashes verified. Production Core/BotAI/legacy source, shared ABI, native/component pins and MIGRATION_AUTHORITY current writers remain unchanged; existing deferred acceptance remains deferred. No Trail/Recovery/stuck/Navigation runtime begins in this follow-up.
+
 ## Baseline and disposition
 
 PR #11 was merged with owner authorization. New accepted v0.2 complete source baseline: `main @ 7cf389157f7f09f08c399ba5ca6a33b5ccbf4d46`. Its installed matched package remains source `238b98c`; no DLL or native module was changed during this audit. Existing v0.2 deferred acceptance remains unchanged. Baseline model/source checks rerun: **127/127 PASS**.

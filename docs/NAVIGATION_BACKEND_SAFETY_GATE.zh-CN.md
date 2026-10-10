@@ -1,5 +1,15 @@
 # v0.3 Navigation movement backend 安全门槛
 
+## 2026-10-10 Lab 后续：mechanism gate 解除
+
+**Production safety：PASS（native 进程常驻 + managed consumer hot reload）。v0.3 可继续独立实现；本 PR 没有 Navigation runtime 或 authority handoff。** [Lab PR#1](https://github.com/Kzen023/ZEPVE-Lab/pull/1)包含 actual existing PlayerRunCommand adapter 与 `experiments/movement-hook/DETACH_RUNTIME_EVIDENCE.json`。下文原审查保留为历史记录。
+
+用户授权使用自己的真实服务端，同一 dedicated 进程在20/20 accepted detach 记录期间保持运行：validator 内 actual CSS unload；完整 managed 校验后/native commit 前 unload；正在 applying 时 reload；replace/cancel 后 unload；worker detach；立即 reload；pending root 保守 release fence 期间真实 Core/BotAI provider replacement；fresh lease/lifetime 与旧 token 拒绝；10 次连续重载。旧 owner 仅在 nativeDrained=true/frame0/callback0 时释放一次，没有旧 callback/application/resurrection 或 context lookup failure。独立自动化回归 native44/44、interop35/35 PASS。
+
+native router/hook 与 shared callback adapter 进程常驻；**native DLL 物理热卸载 unsupported-by-design，不是 NOT TESTED blocker**，native replacement 必须停服。managed actual CSS Unload/Dispose/Load 已验证；不宣称 CSS 历史 loader/assembly 内存立即释放。旧 movement/ownership/API 仲裁采用此前真实证据，本轮没有重复。
+
+这是 patched candidate 的证据，原版 ABI22 不会因此变安全。下一步仍须在 owning native repo 独立实现 backend，再做 Navigation consumer 与 matched handoff，Lab 不成为 release 依赖。实验结束后停服回滚：原版 native 恢复、Lab 模块移出 addons、15 baseline 文件 hash 一致。Core/BotAI/legacy 源码、共享 ABI、native/component pin、MIGRATION_AUTHORITY current writers 不变，原 deferred 项目继续 deferred。本轮到此停止，不开始 Trail/Recovery/stuck/Navigation runtime。
+
 PR #11 已按用户授权合并。新的 v0.2 complete baseline：`main @ 7cf389157f7f09f08c399ba5ca6a33b5ccbf4d46`。现有 matched 安装仍对应 `238b98c`，本轮没有部署 DLL/native 模块。baseline 127/127 模型/source checks 复跑 PASS，原 deferred acceptance 保持。
 
 **v0.3 未实现，尚不能 Ready。** 在 movement 执行前提处停止；没有禁用 legacy Trail/Recovery，也没有添加第二个 movement writer。Navigation gitlink 保持 `14cda1f`。这是 source/ABI 审查，不是 runtime PASS。
