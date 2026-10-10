@@ -72,3 +72,10 @@ Server launched, shared ABI/provider/gates observed with RecoveryEnabled=False, 
 User explicitly reported A-short→CT still failed and Bots did not appear to run forward then jump. This remains FAIL. Package17 current-curve retirement was observed with worldent rejection, but that control exit is not passage completion.
 
 Source diagnosis: ProbeRecordedJump derived standing takeoff clearance from whether the Human ever ducked during flight. That conflated airborne duck with grounded launch posture. It now checks the actual standing hull at the Bot's launch position. With standing clearance, a running launch presses jump only and preserves that posture for its bounded grounded pulse; airborne flight can then duck. A real low ceiling still permits the existing crouch launch. Pulse cancellation/reset and all native lifetime/owner gates are unchanged. Model73/73 PASS, including grounded jump-only pulse, airborne duck transition, low ceiling and bounded retirement. Real launch/route efficacy for this new source remains NOT TESTED. No view/Enemy/position/velocity writes or authority changes.
+
+
+## Matched package18 launch posture deployment
+
+2026-10-10 stopped-server whole-set installation/hash verification PASS, current-state backup `ZEPVE_Backup/v0.3-20261010-181108-0027450/restore.ps1` restores package17. Package18 executable provenance: suitec6ff4c2de09484ea2d00103a40fa6de5a82d7a0a / Navigationf6115764e3c67f14ab3572d33865fb97fd1ec5fd / unchanged nativefcf3e66 executable (df67e21 documentation pin). Release build, retained127/127 and Navigation73/73 PASS. Core/BotAI/legacy/shared/Navigation/native deployed as19 verified files after previous dedicated process exited. No helper or private shared ABI.
+
+Server load and shared gates observed, RecoveryEnabled=False, LegacyMovementDisabled=True, PerceptionWrites=0. Physical A-short descent and A-long ascent remain NOT TESTED for package18 until actual observation; prior failures are not automatically cleared by build/deployment. Matched rollout remains merge NO. Native/backend/Core/BotAI/respawn ownership unchanged; no physical state replay.
