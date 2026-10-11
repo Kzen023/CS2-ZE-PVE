@@ -12,7 +12,7 @@ namespace KzenZrPve;
 public sealed class ZrPvePlugin : BasePlugin
 {
     public override string ModuleName => "Kzen ZR PvE";
-    public override string ModuleVersion => "1.0.0";
+    public override string ModuleVersion => "1.1.0-navigation-adapter";
     public override string ModuleAuthor => "Maxsun + Codex";
     public override string ModuleDescription => "PvE adapter for CS2Fixes Zombie:Reborn on ZE maps.";
 
@@ -20,18 +20,9 @@ public sealed class ZrPvePlugin : BasePlugin
     private bool _enabled = true;
     private ZrPveConfig _config = new();
     private LegacyBridge? _bridge;
-    private ICoreLifecycle? _workProvider;
     private bool _infectionReleased => SuiteRuntime.Current is { State.Loaded: true, GameplayAuthorityActive: true } core && core.Round.InfectionReleased;
-    private ICoreWorkScope? _coreWork;
     private readonly List<CounterStrikeSharp.API.Modules.Timers.Timer> _mapTimers = new();
-    private long _pathSequence;
-    private readonly List<PathPoint> _pathHistory = new();
-    private readonly Dictionary<int, BotWatchState> _botWatch = new();
-    private readonly Dictionary<int, EscortState> _escorts = new();
-    private readonly HashSet<int> _pendingRecoveries = new();
-    private readonly HashSet<int> _cancelledRecoveries = new();
     private readonly Dictionary<int, string> _botStatuses = new();
-    private readonly Dictionary<long, float> _reservedRecoveryPoints = new();
 
     public override void Load(bool hotReload)
     {
@@ -45,35 +36,18 @@ public sealed class ZrPvePlugin : BasePlugin
     private void OnMapStart(string mapName)
     {
         StopMapTimers();
-        StopAllEscorts();
-        _pathHistory.Clear();
-        _botWatch.Clear();
-        _escorts.Clear();
-        _pendingRecoveries.Clear();
-        _cancelledRecoveries.Clear();
         _botStatuses.Clear();
-        _reservedRecoveryPoints.Clear();
-        _pathSequence = 0;
         StartMapServices();
     }
 
     private void StartMapServices()
     {
-        StartMapTimer(Math.Max(0.1f, _config.RecordInterval), RecordHumanPath, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
-        StartMapTimer(Math.Max(0.25f, _config.WatchdogInterval), CheckZombieBots, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
         StartMapTimer(Math.Max(0.5f, _config.StatusHudInterval), ShowBotStatusHud, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
     }
 
     private void ResetRound()
     {
-        StopAllEscorts();
-        _pathHistory.Clear();
-        _botWatch.Clear();
-        _pendingRecoveries.Clear();
-        _cancelledRecoveries.Clear();
         _botStatuses.Clear();
-        _reservedRecoveryPoints.Clear();
-        _pathSequence = 0;
     }
 
     private void ShowInfectionCountdown(int seconds)
@@ -84,57 +58,16 @@ public sealed class ZrPvePlugin : BasePlugin
 
     private void ObserveSpawn(int slot)
     {
+        // Respawn execution remains external. No movement or recovery scheduler in this adapter.
         var player = Utilities.GetPlayerFromSlot(slot);
-        if (_infectionReleased && IsZombieBot(player))
-        {
-            SetBotStatus(player!, "复活等待回位");
-            QueueBotRecovery(player!.Slot, "respawn", _config.RespawnRecoveryDelay);
-        }
-    }
-
-    [GameEventHandler]
-    public HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
-    {
-        var victim = @event.Userid;
-        if (victim is { IsValid: true, IsBot: true })
-        {
-            StopEscort(victim.Slot);
-            _botWatch.Remove(victim.Slot);
-        }
-
-        return HookResult.Continue;
-    }
-
-    [GameEventHandler]
-    public HookResult OnPlayerHurt(EventPlayerHurt @event, GameEventInfo info)
-    {
-        var victim = @event.Userid;
-        var attacker = @event.Attacker;
-        if (IsZombieBot(victim) && attacker is { IsValid: true, IsBot: false, IsHLTV: false, Team: CsTeam.CounterTerrorist })
-        {
-            var pawn = victim!.PlayerPawn.Value;
-            if (pawn is { IsValid: true, AbsOrigin: not null })
-            {
-                _botWatch[victim.Slot] = new BotWatchState(
-                    CopyVector(pawn.AbsOrigin),
-                    0.0f,
-                    Server.CurrentTime + _config.RecoveryRetryDelay,
-                    Server.CurrentTime);
-            }
-        }
-
-        return HookResult.Continue;
+        if (_infectionReleased && IsZombieBot(player)) SetBotStatus(player!, "正在搜索玩家");
     }
 
     public override void Unload(bool hotReload)
     {
         if (_bridge is not null) SuiteRuntime.DetachLegacy(_bridge);
         _bridge = null;
-        _coreWork?.Dispose();
-        _coreWork = null;
-        _workProvider = null;
         StopMapTimers();
-        _pendingRecoveries.Clear();
     }
 
     private void StartMapTimer(float seconds, Action action, TimerFlags flags)
@@ -156,6 +89,7 @@ public sealed class ZrPvePlugin : BasePlugin
 
     private sealed class LegacyBridge(ZrPvePlugin plugin) : ILegacyPveBridge
     {
+        public bool MovementWriterDisabled => true;
         public LegacyPveSettings Settings => new(
             plugin._config.Enabled, plugin._config.SoloBotQuota, plugin._config.DuoBotQuota,
             plugin._config.CoopMinBotQuota, plugin._config.CoopMaxBotQuota, plugin._config.GroupMinBotQuota,
@@ -181,344 +115,25 @@ public sealed class ZrPvePlugin : BasePlugin
         return !string.IsNullOrWhiteSpace(mapName) && !mapName.Equals("<empty>", StringComparison.OrdinalIgnoreCase);
     }
 
-    private void RecordHumanPath()
-    {
-        if (!_enabled || !IsRealPlayableMap())
-        {
-            return;
-        }
 
-        foreach (var player in Utilities.GetPlayers())
-        {
-            if (!player.IsValid || player.IsBot || player.IsHLTV || player.Team != CsTeam.CounterTerrorist)
-            {
-                continue;
-            }
 
-            var pawn = player.PlayerPawn.Value;
-            if (pawn is not { IsValid: true, LifeState: (byte)LifeState_t.LIFE_ALIVE } ||
-                pawn.AbsOrigin == null ||
-                (pawn.Flags & (uint)PlayerFlags.FL_ONGROUND) == 0)
-            {
-                continue;
-            }
 
-            var origin = pawn.AbsOrigin;
-            if (_pathHistory.Count > 0 && GetDistance(origin, _pathHistory[^1].Position) < _config.RecordDistance)
-            {
-                continue;
-            }
 
-            _pathHistory.Add(new PathPoint(++_pathSequence, CopyVector(origin), Server.CurrentTime));
-            if (_pathHistory.Count > _config.MaxPathPoints)
-            {
-                _pathHistory.RemoveAt(0);
-            }
-        }
-    }
 
-    private void CheckZombieBots()
-    {
-        if (!_infectionReleased || !IsRealPlayableMap())
-        {
-            return;
-        }
 
-        foreach (var player in Utilities.GetPlayers())
-        {
-            if (!IsZombieBot(player))
-            {
-                continue;
-            }
 
-            var pawn = player!.PlayerPawn.Value;
-            if (pawn is not { IsValid: true, LifeState: (byte)LifeState_t.LIFE_ALIVE } || pawn.AbsOrigin == null)
-            {
-                _botWatch.Remove(player.Slot);
-                SetBotStatus(player, "等待复活");
-                continue;
-            }
 
-            var origin = pawn.AbsOrigin;
-            if (!_botWatch.TryGetValue(player.Slot, out var state))
-            {
-                _botWatch[player.Slot] = new BotWatchState(CopyVector(origin), 0.0f, 0.0f, Server.CurrentTime);
-                SetBotStatus(player, "正在搜索玩家");
-                continue;
-            }
 
-            if (GetDistance(origin, state.LastPosition) >= _config.StuckDistance)
-            {
-                state.LastPosition = CopyVector(origin);
-                state.StuckSeconds = 0.0f;
-                SetBotStatus(player, "正在搜索玩家");
-            }
-            else
-            {
-                state.StuckSeconds += _config.WatchdogInterval;
-                SetBotStatus(player, $"疑似卡住 {state.StuckSeconds:0}/{_config.ForceRecoveryTime:0} 秒");
-            }
 
-            if (Server.CurrentTime - state.LastHumanHitTime >= _config.NoDamageRecoveryTime &&
-                Server.CurrentTime >= state.NextRecoveryTime)
-            {
-                SetBotStatus(player, "长时间未受击，准备回位");
-                QueueBotRecovery(player.Slot, "no_damage", 0.0f);
-                state.LastHumanHitTime = Server.CurrentTime;
-                state.NextRecoveryTime = Server.CurrentTime + _config.RecoveryRetryDelay;
-                state.StuckSeconds = 0.0f;
-                continue;
-            }
 
-            if (state.StuckSeconds >= _config.ForceRecoveryTime && Server.CurrentTime >= state.NextRecoveryTime)
-            {
-                SetBotStatus(player, "卡住，准备安全回位");
-                QueueBotRecovery(player.Slot, "stuck", 0.0f);
-                state.NextRecoveryTime = Server.CurrentTime + _config.RecoveryRetryDelay;
-                state.StuckSeconds = 0.0f;
-            }
-        }
-    }
 
-    private void QueueBotRecovery(int slot, string reason, float delay, int attempt = 0)
-    {
-        if (!_pendingRecoveries.Add(slot)) return;
-        var core = SuiteRuntime.Current;
-        if (core is not { State.Loaded: true } || !core.TryCapture(slot, out var token))
-        {
-            _pendingRecoveries.Remove(slot);
-            return;
-        }
-        if (!ReferenceEquals(_workProvider, core))
-        {
-            _coreWork?.Dispose();
-            _workProvider = core;
-            _coreWork = core.CreateWorkScope();
-        }
-        if (!_coreWork!.TrySchedulePlayer(token, Math.Max(0, delay), current =>
-            {
-                _pendingRecoveries.Remove(current.Slot);
-                TryRecoverZombieBot(current.Slot, reason, attempt);
-            }, out _, canceled: _ => _pendingRecoveries.Remove(slot)))
-            _pendingRecoveries.Remove(slot);
-    }
 
-    private void QueueInitialRecoveries()
-    {
-        if (!_infectionReleased)
-        {
-            return;
-        }
 
-        foreach (var player in Utilities.GetPlayers())
-        {
-            if (IsZombieBot(player))
-            {
-                SetBotStatus(player!, "开局等待回位");
-                QueueBotRecovery(player!.Slot, "initial", 0.0f);
-            }
-        }
-    }
 
-    private void TryRecoverZombieBot(int slot, string reason, int attempt)
-    {
-        var player = Utilities.GetPlayerFromSlot(slot);
-        if (!IsZombieBot(player))
-        {
-            _botStatuses.Remove(slot);
-            return;
-        }
 
-        var pawn = player!.PlayerPawn.Value;
-        if (pawn is not { IsValid: true, LifeState: (byte)LifeState_t.LIFE_ALIVE } || pawn.AbsOrigin == null)
-        {
-            SetBotStatus(player, "等待复活");
-            return;
-        }
 
-        if (!TryFindRecoveryPoint(out var recoveryPoint))
-        {
-            SetBotStatus(player, "回位失败：没有有效路径");
-            ShowDebugHud($"recovery skipped: no route point ({reason})");
-            return;
-        }
 
-        if (!TryStartEscort(player, pawn, recoveryPoint, reason))
-        {
-            SetBotStatus(player, "回位取消：落点不安全");
-            return;
-        }
 
-        _reservedRecoveryPoints[recoveryPoint.Sequence] = Server.CurrentTime + _config.RecoveryPointReservationTime;
-
-        _botWatch[slot] = new BotWatchState(
-            CopyVector(pawn.AbsOrigin!),
-            0.0f,
-            Server.CurrentTime + _config.RecoveryCooldown,
-            Server.CurrentTime);
-        SetBotStatus(player, "已安全回位，搜索玩家");
-    }
-
-    private bool TryFindRecoveryPoint(out PathPoint recoveryPoint)
-    {
-        recoveryPoint = default!;
-        if (_pathHistory.Count == 0)
-        {
-            return false;
-        }
-
-        var humans = GetLiveHumanPawns();
-        if (humans.Count == 0)
-        {
-            return false;
-        }
-
-        foreach (var sequence in _reservedRecoveryPoints.Where(entry => entry.Value <= Server.CurrentTime).Select(entry => entry.Key).ToArray())
-        {
-            _reservedRecoveryPoints.Remove(sequence);
-        }
-
-        var closestDistance = float.MaxValue;
-        for (var i = _pathHistory.Count - 1; i >= 0; i--)
-        {
-            if (Server.CurrentTime - _pathHistory[i].Timestamp > _config.RecoveryPathMaxAge)
-            {
-                break;
-            }
-
-            var nearestHumanDistance = float.MaxValue;
-            foreach (var human in humans)
-            {
-                var origin = human.AbsOrigin;
-                if (origin != null)
-                {
-                    nearestHumanDistance = Math.Min(nearestHumanDistance, GetDistance(origin, _pathHistory[i].Position));
-                }
-            }
-
-            if (nearestHumanDistance >= _config.RecoveryMinBehind &&
-                nearestHumanDistance <= _config.RecoveryMaxBehind &&
-                nearestHumanDistance < closestDistance)
-            {
-                if (_reservedRecoveryPoints.Keys.Any(sequence =>
-                    Math.Abs(sequence - _pathHistory[i].Sequence) < Math.Max(1, _config.RecoveryLaneNodeGap)))
-                {
-                    continue;
-                }
-
-                recoveryPoint = _pathHistory[i];
-                closestDistance = nearestHumanDistance;
-            }
-        }
-
-        if (closestDistance == float.MaxValue)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    private bool TryStartEscort(CCSPlayerController player, CCSPlayerPawn pawn, PathPoint recoveryPoint, string reason)
-    {
-        // Do one safe recovery placement only. Breadcrumb stepping caused rapid teleport
-        // traffic and could release bots directly beside a player.
-        var pointDistance = GetNearestHumanDistance(recoveryPoint.Position, GetLiveHumanPawns());
-        if (pointDistance < _config.RecoveryMinBehind || pointDistance > _config.RecoveryMaxBehind)
-        {
-            ShowDebugHud($"recovery skipped: lane point out of range ({player.PlayerName})");
-            return false;
-        }
-
-        pawn.Teleport(CopyVector(recoveryPoint.Position), pawn.AbsRotation, new Vector(0.0f, 0.0f, 0.0f));
-        ShowDebugHud($"recovery placed: {player.PlayerName} ({reason}) at {FormatVector(recoveryPoint.Position)}");
-        return true;
-    }
-
-    private void UpdateEscorts()
-    {
-        if (_escorts.Count == 0)
-        {
-            return;
-        }
-
-        var humans = GetLiveHumanPawns();
-        foreach (var entry in _escorts.ToArray())
-        {
-            var slot = entry.Key;
-            var state = entry.Value;
-            var player = Utilities.GetPlayerFromSlot(slot);
-            var pawn = player?.PlayerPawn.Value;
-            if (!IsZombieBot(player) || pawn is not { IsValid: true, LifeState: (byte)LifeState_t.LIFE_ALIVE } || pawn.AbsOrigin == null)
-            {
-                StopEscort(slot);
-                continue;
-            }
-
-            var origin = pawn.AbsOrigin;
-            var nearestHumanDistance = GetNearestHumanDistance(origin, humans);
-            if (nearestHumanDistance <= _config.EscortReleaseDistance)
-            {
-                StopEscort(slot);
-                SetBotRecoveryCooldown(slot);
-                ShowDebugHud($"escort released: {player!.PlayerName} near human ({nearestHumanDistance:0})");
-                continue;
-            }
-
-            if (!TryGetPathPoint(state.TargetSequence, out var target))
-            {
-                continue;
-            }
-
-            if (Server.CurrentTime < state.NextStepTime)
-            {
-                continue;
-            }
-
-            // Bot-Controller's analog movement conflicts with native bot avoidance on recent CS2 builds.
-            // Advance through actual human ground positions instead, keeping the bot locked until it is nearby.
-            pawn.Teleport(CopyVector(target.Position), pawn.AbsRotation, new Vector(0.0f, 0.0f, 0.0f));
-            state.TargetSequence = target.Sequence + 1;
-            state.LastProgressPosition = CopyVector(target.Position);
-            state.NextStepTime = Server.CurrentTime + _config.EscortStepInterval;
-        }
-    }
-
-    private bool TryGetPathPoint(long sequence, out PathPoint point)
-    {
-        point = default!;
-        if (_pathHistory.Count == 0)
-        {
-            return false;
-        }
-
-        var index = _pathHistory.BinarySearch(new PathPoint(sequence, new Vector(0.0f, 0.0f, 0.0f), 0.0f), PathPointSequenceComparer.Instance);
-        if (index < 0)
-        {
-            index = ~index;
-        }
-
-        if (index >= _pathHistory.Count)
-        {
-            return false;
-        }
-
-        point = _pathHistory[index];
-        return true;
-    }
-
-    private void SetBotRecoveryCooldown(int slot)
-    {
-        var pawn = Utilities.GetPlayerFromSlot(slot)?.PlayerPawn.Value;
-        if (pawn is { IsValid: true, AbsOrigin: not null })
-        {
-            _botWatch[slot] = new BotWatchState(
-                CopyVector(pawn.AbsOrigin),
-                0.0f,
-                Server.CurrentTime + _config.RecoveryCooldown,
-                Server.CurrentTime);
-        }
-    }
 
     private static float GetNearestHumanDistance(Vector origin, IReadOnlyList<CCSPlayerPawn> humans)
     {
@@ -535,22 +150,9 @@ public sealed class ZrPvePlugin : BasePlugin
         return distance;
     }
 
-    private void StopEscort(int slot)
-    {
-        if (!_escorts.Remove(slot))
-        {
-            return;
-        }
 
-    }
 
-    private void StopAllEscorts()
-    {
-        foreach (var slot in _escorts.Keys.ToArray())
-        {
-            StopEscort(slot);
-        }
-    }
+
 
     private static List<CCSPlayerPawn> GetLiveHumanPawns()
     {
