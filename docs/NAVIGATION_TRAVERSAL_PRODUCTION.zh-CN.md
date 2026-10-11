@@ -56,3 +56,6 @@ package5 于2026-10-11 11:51停服整套安装：实际二进制suite2c0a90e/Nav
 
 
 package5 用户无跳行走复测仍出现跳跃；实服bounded事件明确是Navigation marker=None局部蹲跳，非clip播放。T出生下坡及其他坡地/平地路线有记录。地面直线hull可能拒绝普通接缝；新增完整18单位抬脚/跨过/落回hull检查，保留连续支撑地面/坡度/高度/端点约束；跳跃事件带具体地面失败项。130/130模型PASS，真实engine结果待package6复测，native/Core/BotAI不改，Recovery不掩盖。
+
+
+package6 于2026-10-11 11:56停服整套安装：实际二进制suite026c79e/Nav575f111/nativeaa42948；安装器验证19项live hash，22项备份VerifyOnly PASS。备份v0.3-20261011-115639-8550254恢复package5，实际rollback NOT TESTED。PID9192、六插件、无Lab/helper、ABI2 profile可用，真人连接前owner1/leases0/pending0；Recovery/测试攻击关闭。130/130模型、保留suite、构建PASS；新增step hull、入场与连续跳实服结果等待复测，不标PASS。

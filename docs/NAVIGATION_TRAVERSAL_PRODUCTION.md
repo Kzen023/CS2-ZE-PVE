@@ -69,3 +69,6 @@ Package5 stopped-server matched install at2026-10-11 11:51 (Asia/Shanghai): exec
 
 
 Package5 owner walking retest confirms excess jumping. Real bounded events identify Navigation-owned marker=None local crouch-jump, no clip active, at T-spawn descent and ramp/flat-route locations. Ground corridor direct hull can reject ordinary step seams. New fallback requires complete18-unit lift/cross/settle hull with existing supported/continuous floor and endpoint constraints; exact walk-reject reason is surfaced on jump events.130/130 models PASS; engine result NOT TESTED pending package6 retest. No native/Core/BotAI changes, no Recovery masking.
+
+
+Package6 installed stopped at2026-10-11 11:56 Asia/Shanghai: executable suite026c79e / Navigation575f111 / nativeaa42948. Matched19 live payload hashes verified by installer,22-entry backup VerifyOnly PASS. Backup v0.3-20261011-115639-8550254 restores package5; actual rollback NOT TESTED. Dedicated9192 loaded six plugins/no Lab/helper; ABI2 exact profile available, owner1/leases0/pending0 before Human. Recovery and test attack disabled.130/130 models/retained suite/build PASS; new step hull and entry/continuous traversal results remain NOT TESTED pending retest.
