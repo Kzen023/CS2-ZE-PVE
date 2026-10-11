@@ -35,3 +35,18 @@ Recovery 关闭，测试临时 sv_cheats=1 / bot_dont_shoot=1，原值均0已记
 08:42 package3 已整套安装启动（suite15d7b98/Navbebc4ff/nativeaa42948），19 payload 校验通过，回滚 v0.3-20261011-084219-5649154 恢复 package2；VerifyOnly 通过，实际本轮回滚未测。PID22360、六插件、无 Lab/helper、capability2 已启用，Recovery/攻击关闭用于 B 点复测。实际入场、单跳时机、连续跳结果继续待反馈，不新增 PASS。
 
 实服 package3 抓到 clip13 距离起点52.3、已越过移动入场平面、wish=0，TimedPlaying=False；clip12/13 超时后交替重选，单个失败ID覆盖了前一段冷却。修补为越过不可逆移动入口立即退出、最多八段独立冷却，并让可达近身真人打断起点对齐。126/126 模型通过；不把这次入场失败解释为 subtick 失真，也未宣布物理跳跃已通过。
+
+
+## package4 实服 B 点复测（2026-10-11 08:49–08:54）
+
+实际运行包 suite23f3a77 / Nav66bd278 / nativeaa42948，ABI2。停服整套安装19 payload 校验、六插件加载、无 Lab/helper、Core Released、1真人/1Bot、legacy movement disabled；备份 v0.3-20261011-084918-3340115 恢复 package3，VerifyOnly PASS，实际本轮 rollback NOT TESTED。Recovery 关闭，测试攻击关闭，不代表普通 PvE 条件。
+
+实服 clip1 越过移动入口后0.10秒退出，随后距离356.5→77.7，没有继续四秒零输入等待。后来 clip8 在 t238.44选定、t238.58启动38帧、t239.20记录 grounded physical endpoint accepted。起点Z108.03125→终点Z2.7847567，是下落高差，不是向上箱子/旋转连续跳 PASS。同一 lease15/revision1，完整 command + grounded近端点 + 几何验证才接受，没有回放位置/速度/perception写入。
+
+clip9 起点Z73.16078→终点Z127.578514，t243.45开始对齐、t243.65越过入口立即退出；没有clip-start，因此向上动作未播放，不能推断subtick失真。之后目标距离约586仍Native fallback，完整向上/连续跳与可靠追逐仍PARTIAL，用户视觉确认待反馈。owner1/lease1、drain pending0/lookup failures0仅是当前快照，不替代新timed卸载回归。原始样本仅保留本地，不提交身份或凭据。
+
+
+后续 clip19：t310.79对齐、t311.53启动105帧、t313.20 physical endpoint accepted；静止起点Z86.89904→终点Z116.5977。这次向上动作也有自动播放/端点检查实服证据，但具体障碍通过的用户视觉确认、重复性与连续跳仍未验收。t317.09 Bot落在Z3.49，cursor369指向Z108.03，本地arc拒绝、Recovery仍关闭；单段成功不等于整条路径可靠，落地/掉下后的路线重新入场仍是已知未解决问题，不宣称完美KZ复刻。
+
+
+用户 package4 视觉验收仍FAIL/PARTIAL：B门及其他入场卡住、起跳常失败、平地斜坡多余跳跃、连续/旋转跳不可靠；单段端点事件不能替代这个结果。新增仅已选定、距起点64单位内的OnTick入场检查；250单位/秒在50ms内走12.5单位，大于6单位窗口。普通规划/采样仍50ms、几何仍低频，当前Core/BotAI身份/provider/permission及最终native校验保留，原始timing/起点阈值不修改；播放中的clip不被刷新。bounded jump-command记录Navigation起跳原因/clearance，区分Valve保留输入。130/130模型PASS，新运行包仍待整套复测，未改变nativeABI/Core/BotAI权威。
