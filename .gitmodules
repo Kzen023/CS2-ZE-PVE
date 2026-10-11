@@ -2,3 +2,6 @@
 	path = components/ZEPVE-Navigation
 	url = https://github.com/Kzen023/ZEPVE-Navigation.git
 	branch = main
+[submodule "components/ZEPVE-BotController"]
+	path = components/ZEPVE-BotController
+	url = https://github.com/Kzen023/ZEPVE-BotController.git

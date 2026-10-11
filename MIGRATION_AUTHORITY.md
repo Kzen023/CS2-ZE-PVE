@@ -22,6 +22,17 @@ Keeping legacy source as a regression baseline does **not** mean loading two pro
 
 ## Current authority matrix
 
+### v0.3 candidate source / deployment distinction
+
+2026-10-11 candidate adds production-owned timed traversal capability1: only Navigation's active exclusive traversal or explicit FacingDirection lease owns temporary view and movement; Valve resumes view in Native/unowned/retired scope. Optional capability is now ABI2; no anonymous view writer. Both use the existing native router/final validator/revision check. Lab does not ship. Core identity/quota/team/round, BotAI AssignedTarget/ObserveOnly, external ZR respawn, HUD/Weapon writers are unchanged. New production timed/view runtime acceptance is NOT TESTED until matched validation; this does not promote main or conceal earlier traversal failures. See `docs/NAVIGATION_TRAVERSAL_PRODUCTION.md`.
+
+
+The v0.3 PR candidate physically removes legacy RecordHumanPath/CheckZombieBots/QueueBotRecovery/TryRecoverZombieBot/TryStartEscort/UpdateEscorts and every legacy Teleport call. Matched Navigation becomes the only ZEPVE movement/Trail/Recovery writer, gated by the adapter's MovementWriterDisabled capability and one shared Navigation provider. Production native execution is ZEPVE-BotController ABI1 in the existing dispatcher, process resident, with explicit rejection of old anonymous movement/replay/locks. Lab is evidence only.
+
+**The earlier v0.3 matched candidate had actual one-human smoke verification and whole-set rollback. Later behavior retests redeployed the v0.3 candidate and reproduced advanced traversal/crouch-jump failures; candidate promotion is BLOCKED. See `docs/NAVIGATION_BEHAVIOR_ACCEPTANCE.md` for current evidence.** Candidate deployment/testing must be the entire stopped-server matched package; source presence alone does not claim runtime acceptance or main authority handoff. Actual PASS/NOT TESTED and rollback are recorded in `docs/NAVIGATION_VERIFICATION.md`. The matrix below describes the accepted main v0.2 baseline; a matched v0.3 test deployment does not promote it. In the tested v0.3 candidate, Navigation exclusively owns movement/Trail/Recovery and legacy corresponding code is absent. Candidate promotion requires component and suite review/merge; runtime evidence is in `docs/NAVIGATION_MATCHED_RUNTIME.md`. This deployment distinction is intentional, not two simultaneous writers.
+
+Core identity/lifecycle/round/quota/team, BotAI AssignedTarget/ObserveOnly and external ZR/CS2Fixes respawn execution remain their exact writers. No authority handoff for those responsibilities. Candidate Recovery cancels intent and reserves exclusive ownership before geometric placement/route synchronization/reacquire. Missing Navigation/backend does not re-enable old legacy writer; whole-set rollback restores the accepted baseline only while stopped.
+
 The Core/legacy rows preserve the **accepted paired v0.2c authority**, originally installed from `1cf6aa2` and now merged at baseline `ed480bd` (PR #10). The matched v0.2d package `238b98c` adds only suite-owned AssignedTarget/reacquire policy; fixed-package single-human smoke passed, with limits in `docs/BOTAI_VERIFICATION.md`. Core gameplay authority and the v0.2c deferred acceptance remain unchanged. Never mix Core with the old monolithic legacy writer. Historical Core evidence/limits are in `docs/CORE_MATCHED_RUNTIME_VERIFICATION.md`; matched installation/rollback is in `docs/BOTAI_RUNTIME.md`.
 
 | Behavior / state | Current writer / executor | Migration rule | Final owner |
