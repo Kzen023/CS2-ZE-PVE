@@ -2,7 +2,7 @@
 
 Keep this file short. Detailed design belongs in `docs/` and component repositories.
 
-Research-driven architecture priorities are summarized in `docs/CODE_RESEARCH_FINDINGS.md`. Migration-time execution authority is defined in `MIGRATION_AUTHORITY.md`. The current Navigation/traversal version split is recorded in `docs/VERSION_SCOPE_RESET.md`.
+Research-driven architecture priorities are summarized in `docs/CODE_RESEARCH_FINDINGS.md`. Migration-time execution authority is defined in `MIGRATION_AUTHORITY.md`. The current Navigation/traversal version split is recorded in `docs/VERSION_SCOPE_RESET.md`; the 2026-10-11 full-project audit and execution handoff are recorded in `docs/PROJECT_AUDIT_20261011.md`.
 
 ## Current
 
@@ -48,9 +48,9 @@ Do not add a second respawn scheduler, change infection timing, introduce new AI
 - [x] add bounded lifecycle diagnostics / Core status queries
 - [x] add tests for delayed-action validity and slot reuse
 
-Implementation and deterministic model tests are complete; real CS2 runtime scenarios remain **NOT TESTED**. See `docs/CORE_OBSERVER_VERIFICATION.md` before any authority handoff.
+The observer-only v0.2b stage originally completed deterministic/model verification before authority handoff. Subsequent accepted v0.2c matched runtime exercised the same Core identity/lifecycle foundation on the real server; deferred cases remain documented separately. See `docs/CORE_OBSERVER_VERIFICATION.md` and `docs/CORE_MATCHED_RUNTIME_VERIFICATION.md`.
 
-At the end of v0.2b, legacy remains the gameplay writer. Core first proves that it can observe identity/lifecycle correctly without changing verified gameplay.
+At the end of v0.2b, legacy remained the gameplay writer. Core first proved that it could observe identity/lifecycle correctly without changing verified gameplay.
 
 #### v0.2c — Core lifecycle authority handoff
 
@@ -78,7 +78,7 @@ Do not introduce dynamic Director logic, a new respawn gameplay model or a compl
 - [x] bounded target/awareness/combat FlightRecorder
 - [x] add admin status/events/reacquire/binding-probe commands
 
-127 model/source checks pass. Matched single-human runtime smoke passed after repairing the startup native-clock defect, with actual initial whole rollback verified. Detailed PASS/PARTIAL/NOT TESTED is separate in `docs/BOTAI_VERIFICATION.md`. Native perception writes are absent, Recovery handshake awaits the owning Navigation runtime, no Navigation implementation/pin change. v0.2d ready for review, no automatic merge/Navigation. See bilingual `docs/BOTAI_RUNTIME.md`.
+127 model/source checks pass. Matched single-human runtime smoke passed after repairing the startup native-clock defect, with actual initial whole rollback verified. Detailed PASS/PARTIAL/NOT TESTED is separate in `docs/BOTAI_VERIFICATION.md`. Native perception writes are absent and ObserveOnly is not a causal aggro repair mechanism. The v0.2d BotAI baseline was accepted and merged in PR #11; broader multiplayer/awareness work remains deferred. See bilingual `docs/BOTAI_RUNTIME.md`.
 
 Lab work:
 
@@ -92,9 +92,9 @@ See `BOT_AI_DESIGN.md`, `MIGRATION_AUTHORITY.md` and `docs/CODE_RESEARCH_FINDING
 
 ### v0.3 — Navigation baseline
 
-PR #11 merged at `7cf3891` establishes the accepted v0.2 complete baseline. Lab PR #1 proved the existing-dispatcher lease/validator and managed detach/drain safety model. Production implementation then advanced beyond the original milestone into timed traversal experiments; those advanced capabilities are now explicitly deferred to v0.4 rather than remaining v0.3 merge blockers.
+PR #11 establishes the accepted v0.2 complete baseline. Lab PR #1 proved the existing-dispatcher lease/validator and managed detach/drain safety model. Production implementation then advanced beyond the original milestone into timed traversal experiments; those advanced capabilities are explicitly deferred to v0.4 rather than remaining v0.3 merge blockers.
 
-Historical pre-timed-motion audit cuts are Navigation `aa50134`, BotController `df67e21`, and suite candidate `b8f156a`. These are reference cuts only; they are not automatically accepted release pins. See `docs/VERSION_SCOPE_RESET.md`.
+Historical clean isolation cuts are Navigation `aa50134`, BotController `df67e21`, and suite reference `b8f156a`. The Astra audit confirms these are valid **pre-timed isolation points**, not release-ready revisions. See `docs/PROJECT_AUDIT_20261011.md`.
 
 Navigation baseline:
 
@@ -102,46 +102,51 @@ Navigation baseline:
 - [x] TrailSegment/discontinuity semantics and important marker capture
 - [x] consume BotAI-owned `AssignedTarget` through narrow suite contracts
 - [x] target rebind invalidates old route/recovery state
-- [x] progress-based stuck detection with legitimate waiting states
-- [x] Native / Trail driver switching and hysteresis
-- [x] layered Recovery implementation with separate permission and geometry checks
-- [x] post-Recovery route invalidation / BotAI reacquire handshake
+- [x] progress-based stuck detection with legitimate waiting states implemented
+- [x] Native / Trail driver switching and hysteresis implemented
+- [x] layered Recovery implementation and BotAI reacquire boundary implemented
 - [x] structured Navigation state/events and movement authority diagnostics
-- [x] safe leased movement backend with application-time validation and managed drain
-- [ ] isolate a reviewable v0.3 baseline package from the mixed-history v0.4 experiment branches
+- [x] safe leased UserCmd movement backend with application-time validation and managed drain
+- [x] isolate clean v0.3 review lines: BotController #3, Navigation #3, Suite #15
+- [ ] correct/isolate baseline pursuit defects in the clean Navigation line: failed-action cooldown scope, near-target yield, false action-state advance and oscillation/progress cases
+- [ ] unknown Recovery map permission fails closed; geometry alone is not permission
+- [ ] bind suite gitlink, component checkout, source revision, ABI/build profile, produced native artifact, manifest hashes and install inventory
 - [ ] basic real runtime acceptance: flat ground, normal ramps, distant/stationary target pursuit and no-NAV Trail fallback
 - [ ] basic two-Human target/Trail isolation smoke
 - [ ] matched death/respawn, disconnect/reconnect, round/map and reload/drain acceptance
 - [ ] stopped-server install/hash validation and actual whole-package rollback
 - [ ] identify the first runtime-verified v0.3 component revisions suitable for production pinning
 
-v0.3 does **not** require precise box jumps, crouch-jump parity, rotational jumps, timed Human command replay, scoped traversal view or automatic MotionClip capture. Those belong to v0.4 even where experimental code already exists.
+v0.3 already uses UserCmd movement axes/buttons through the leased backend. It does **not** require timed/signed-subtick traversal payloads, precise box/crouch/rotational jumps, scoped traversal view or automatic MotionClip capture. Those belong to v0.4 even where experimental code already exists.
 
 Integration repository:
 
-- [ ] choose feature-gated baseline vs clean pre-timed component PRs after capability isolation review
+- [x] choose clean pre-timed component PRs instead of a release-time advanced-traversal feature gate
+- [ ] synchronize clean candidate ADR/documentation with current main without changing authority ownership
 - [ ] validate the matched v0.3 package with current Core + BotAI
 - [ ] bump component gitlinks only through reviewed component/integration PRs
-- [ ] record exact revisions, acceptance evidence and rollback in release metadata
+- [ ] record exact revisions, build provenance, acceptance evidence and rollback in release metadata
 
 ### v0.4 — Advanced traversal + awareness recovery
 
 Lab / evidence already established:
 
 - [x] movement takeover PoC in the existing dispatcher/router
-- [x] bounded Human UserCmd capture and W/A/D/JUMP/duck replay PoC
-- [x] signed subtick timing preservation for tested Windows/64Hz profile
+- [x] bounded Human command capture and W/A/D/JUMP/duck replay PoC
+- [x] signed subtick timing preservation for the tested Windows/64Hz profile
 - [x] scoped leased traversal-view PoC through the same owner/router
 - [x] cancel/replace/lifecycle/drain safety for bounded playback experiments
 
 Production traversal work:
 
 - [ ] keep ordinary Native/Trail steering separate from exceptional traversal execution
-- [ ] UserCmd-driven traversal where ordinary steering is insufficient
+- [ ] typed local traversal action with Entry / Execute / Exit / Abort and local failure scope
+- [ ] timed/signed-subtick command playback only for actions that require it
 - [ ] jump and crouch-jump assistance with explicit geometry/entry conditions
-- [ ] short bounded `MotionClip` executor for isolated maneuvers; never a full route planner/replay system
-- [ ] scoped view/facing ownership only while an active traversal action needs it
-- [ ] entry/exit conditions and retry/cancel rules that do not depend on one exact recorded start point
+- [ ] short bounded `MotionClip` executor for isolated maneuvers; never a route planner or general replay system
+- [ ] scoped view/facing ownership only while an explicitly authorized traversal action needs it; ordinary pursuit must not acquire view
+- [ ] entry conditions include relevant position/velocity/ground/support/collision/facing state instead of one exact recorded point
+- [ ] playback completion and obstacle/action success are separate results
 - [ ] continuous traversal handoff without stale replay or global route cooldowns
 - [ ] resolve current experimental failures: 180-degree yaw oscillation, low-wall stalls, early/late takeoff and start-state sensitivity
 - [ ] real complex-terrain acceptance on representative ZE obstacles with Recovery disabled during traversal proof
@@ -163,7 +168,7 @@ Navigation repository:
 - [ ] persistent `RecordedRoute` schema and validation
 - [ ] `RecordedRouteSource` compatible with the runtime Trail/progress/recovery stack
 - [ ] `RouteGraph` / route-node representation for persistent difficult sections
-- [ ] typed traversal edges such as Walk, Jump, CrouchJump, Drop, Ladder, Door, Elevator and Wait
+- [ ] typed persistent traversal edges such as Walk, Jump, CrouchJump, Drop, Ladder, Door, Elevator and Wait
 - [ ] spatial Entry/Exit volumes or equivalent bounded conditions for special traversal edges
 - [ ] admin-only in-game route recording/authoring commands
 - [ ] route visualization and test mode
