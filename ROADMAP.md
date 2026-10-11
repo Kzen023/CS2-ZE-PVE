@@ -2,7 +2,7 @@
 
 Keep this file short. Detailed design belongs in `docs/` and component repositories.
 
-Research-driven architecture priorities are summarized in `docs/CODE_RESEARCH_FINDINGS.md`. Migration-time execution authority is defined in `MIGRATION_AUTHORITY.md`.
+Research-driven architecture priorities are summarized in `docs/CODE_RESEARCH_FINDINGS.md`. Migration-time execution authority is defined in `MIGRATION_AUTHORITY.md`. The current Navigation/traversal version split is recorded in `docs/VERSION_SCOPE_RESET.md`.
 
 ## Current
 
@@ -90,70 +90,82 @@ Lab work:
 
 See `BOT_AI_DESIGN.md`, `MIGRATION_AUTHORITY.md` and `docs/CODE_RESEARCH_FINDINGS.md`.
 
-### v0.3 — ZEPVE-Navigation component baseline
+### v0.3 — Navigation baseline
 
-PR #11 merged at `7cf3891` establishes the accepted v0.2 complete baseline. Lab PR #1 subsequently proved the existing-dispatcher lease/validator mechanism and real managed detach/drain under a process-resident native model; the backend research gate is PASS. Production v0.3 implementation may resume in its owning components. Original ABI22 remains unsuitable for new persistent movement; no production pin or legacy writer has changed in this research closeout. See `docs/NAVIGATION_BACKEND_SAFETY_GATE.md`; production Navigation remains unimplemented / NOT TESTED until its matched handoff is verified.
+PR #11 merged at `7cf3891` establishes the accepted v0.2 complete baseline. Lab PR #1 proved the existing-dispatcher lease/validator and managed detach/drain safety model. Production implementation then advanced beyond the original milestone into timed traversal experiments; those advanced capabilities are now explicitly deferred to v0.4 rather than remaining v0.3 merge blockers.
 
-Navigation repository:
+Historical pre-timed-motion audit cuts are Navigation `aa50134`, BotController `df67e21`, and suite candidate `b8f156a`. These are reference cuts only; they are not automatically accepted release pins. See `docs/VERSION_SCOPE_RESET.md`.
 
-- [ ] TrailRecorder with one bounded Trail per human identity/generation
-- [ ] monotonic Trail node sequence semantics suitable for ring-buffer eviction
-- [ ] TrailSegment transitions using explicit discontinuity signals plus movement-context heuristics
-- [ ] capture important movement markers even when normal positional sampling would skip the node
-- [ ] consume BotAI-owned `AssignedTarget` through suite-defined narrow contracts
-- [ ] invalidate old route/recovery/reacquire state after target rebinding
-- [ ] progress-based stuck detection with legitimate waiting states
-- [ ] driver-switch hysteresis / observation windows to avoid Native/Trail/Recovery oscillation
-- [ ] layered Recovery pipeline
-- [ ] separate recovery permission/map semantics from geometric destination validation
-- [ ] native navigation / Trail mode switching
-- [ ] post-recovery BotAI reacquisition handshake
-- [ ] publish structured navigation state/events for suite diagnostics
-- [ ] identify the first component revision suitable for runtime-verified production pinning
+Navigation baseline:
+
+- [x] bounded per-Human Trail identity/generation/sequence model
+- [x] TrailSegment/discontinuity semantics and important marker capture
+- [x] consume BotAI-owned `AssignedTarget` through narrow suite contracts
+- [x] target rebind invalidates old route/recovery state
+- [x] progress-based stuck detection with legitimate waiting states
+- [x] Native / Trail driver switching and hysteresis
+- [x] layered Recovery implementation with separate permission and geometry checks
+- [x] post-Recovery route invalidation / BotAI reacquire handshake
+- [x] structured Navigation state/events and movement authority diagnostics
+- [x] safe leased movement backend with application-time validation and managed drain
+- [ ] isolate a reviewable v0.3 baseline package from the mixed-history v0.4 experiment branches
+- [ ] basic real runtime acceptance: flat ground, normal ramps, distant/stationary target pursuit and no-NAV Trail fallback
+- [ ] basic two-Human target/Trail isolation smoke
+- [ ] matched death/respawn, disconnect/reconnect, round/map and reload/drain acceptance
+- [ ] stopped-server install/hash validation and actual whole-package rollback
+- [ ] identify the first runtime-verified v0.3 component revisions suitable for production pinning
+
+v0.3 does **not** require precise box jumps, crouch-jump parity, rotational jumps, timed Human command replay, scoped traversal view or automatic MotionClip capture. Those belong to v0.4 even where experimental code already exists.
 
 Integration repository:
 
-- [ ] validate the first runtime-ready Navigation revision with current Core + BotAI
-- [ ] bump the suite gitlink only through a component integration PR when needed
-- [ ] record its commit/version and verification evidence in release metadata
+- [ ] choose feature-gated baseline vs clean pre-timed component PRs after capability isolation review
+- [ ] validate the matched v0.3 package with current Core + BotAI
+- [ ] bump component gitlinks only through reviewed component/integration PRs
+- [ ] record exact revisions, acceptance evidence and rollback in release metadata
 
-### v0.4 — No-NAV TrailDriver + awareness recovery
+### v0.4 — Advanced traversal + awareness recovery
 
-Lab first:
+Lab / evidence already established:
 
-- [ ] movement takeover PoC
-- [ ] UserCmd W/A/D/JUMP injection PoC
-- [ ] jump/duck/forced-movement edge-case tests
-- [ ] record Valve enemy/visibility/alert/look-around state before and after recovery teleport
-- [ ] test look-around reset after teleport
-- [ ] test wake/allow-active + clear IgnoreEnemies + short Alert window
-- [ ] verify Valve native sound investigation remains useful
-- [ ] test whether temporary navigation assistance toward `AssignedTarget` restores normal enemy acquisition
-- [ ] test explicit Enemy-state writes only if normal reacquisition remains unreliable
+- [x] movement takeover PoC in the existing dispatcher/router
+- [x] bounded Human UserCmd capture and W/A/D/JUMP/duck replay PoC
+- [x] signed subtick timing preservation for tested Windows/64Hz profile
+- [x] scoped leased traversal-view PoC through the same owner/router
+- [x] cancel/replace/lifecycle/drain safety for bounded playback experiments
 
-BotAI production work after evidence:
+Production traversal work:
+
+- [ ] keep ordinary Native/Trail steering separate from exceptional traversal execution
+- [ ] UserCmd-driven traversal where ordinary steering is insufficient
+- [ ] jump and crouch-jump assistance with explicit geometry/entry conditions
+- [ ] short bounded `MotionClip` executor for isolated maneuvers; never a full route planner/replay system
+- [ ] scoped view/facing ownership only while an active traversal action needs it
+- [ ] entry/exit conditions and retry/cancel rules that do not depend on one exact recorded start point
+- [ ] continuous traversal handoff without stale replay or global route cooldowns
+- [ ] resolve current experimental failures: 180-degree yaw oscillation, low-wall stalls, early/late takeoff and start-state sensitivity
+- [ ] real complex-terrain acceptance on representative ZE obstacles with Recovery disabled during traversal proof
+
+BotAI awareness work after evidence:
 
 - [ ] event-triggered AwarenessAssist for spawn/respawn/recovery/rebind
 - [ ] smallest validated look-around/ignore-enemies/alert state reset
 - [ ] bounded reacquisition window with success/failure diagnostics
-- [ ] avoid custom footstep/gunshot hate tables unless native hearing proves insufficient
+- [ ] preserve Valve native hearing/perception where useful
+- [ ] explicit Enemy/visibility writes only if narrower validated approaches fail
 
-Navigation production work after evidence:
+Advanced traversal PRs remain Draft until their own production acceptance; failures here do not reopen v0.3 baseline scope.
 
-- [ ] UserCmd-driven Trail movement backend
-- [ ] jump assist
-- [ ] TrailSkip
-- [ ] segment-transition recovery
-- [ ] Recovery TP -> route/navigation rebind -> BotAI reacquire request
-- [ ] continue pursuing BotAI `AssignedTarget` while Valve Enemy is null/stale
-
-### v0.5 — Recorded Routes and authoring tools
+### v0.5 — Recorded Routes, RouteGraph and authoring
 
 Navigation repository:
 
 - [ ] persistent `RecordedRoute` schema and validation
-- [ ] `RecordedRouteSource` compatible with TrailDriver
-- [ ] admin-only in-game route recording commands
+- [ ] `RecordedRouteSource` compatible with the runtime Trail/progress/recovery stack
+- [ ] `RouteGraph` / route-node representation for persistent difficult sections
+- [ ] typed traversal edges such as Walk, Jump, CrouchJump, Drop, Ladder, Door, Elevator and Wait
+- [ ] spatial Entry/Exit volumes or equivalent bounded conditions for special traversal edges
+- [ ] admin-only in-game route recording/authoring commands
 - [ ] route visualization and test mode
 - [ ] safe save/load, schema versioning and backup behavior
 - [ ] route simplification and segment preservation
@@ -164,7 +176,7 @@ Main repository:
 - [ ] review/export flow from local recordings to version-controlled route data
 - [ ] include curated route schema/version in release validation
 
-Runtime Trail remains the default no-NAV route source. Recorded Routes are optional supplements for difficult sections and repeatable testing.
+Runtime Trail remains the default no-NAV route source. Recorded Routes/RouteGraph supplement difficult sections and repeatable testing; they do not create a second normal locomotion authority. Route selection and traversal execution remain separate responsibilities.
 
 ### v0.6 — MapPlan + CS2Fixes integration
 
