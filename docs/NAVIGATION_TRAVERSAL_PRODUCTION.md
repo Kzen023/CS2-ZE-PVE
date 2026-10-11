@@ -72,3 +72,6 @@ Package5 owner walking retest confirms excess jumping. Real bounded events ident
 
 
 Package6 installed stopped at2026-10-11 11:56 Asia/Shanghai: executable suite026c79e / Navigation575f111 / nativeaa42948. Matched19 live payload hashes verified by installer,22-entry backup VerifyOnly PASS. Backup v0.3-20261011-115639-8550254 restores package5; actual rollback NOT TESTED. Dedicated9192 loaded six plugins/no Lab/helper; ABI2 exact profile available, owner1/leases0/pending0 before Human. Recovery and test attack disabled.130/130 models/retained suite/build PASS; new step hull and entry/continuous traversal results remain NOT TESTED pending retest.
+
+
+Package6 owner still observes jumping beside avoidable obstacles. Diagnostics distinguish real all-solid floor samples from assumed ramp seam; no blanket floor PASS. Deterministic bugs repaired: local arc availability alone no longer overrides a progressing Native detour; local jump escalation requires Native blocked>=1s or Trail. Native-preserved frames reset jump helper rather than advancing unsubmitted preparation/pulse.132/132 models PASS including detour and phantom-pulse cases; next executable physical effect NOT TESTED. B-door/continuous/rotational acceptance still unresolved.

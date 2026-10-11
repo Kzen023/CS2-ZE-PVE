@@ -59,3 +59,6 @@ package5 用户无跳行走复测仍出现跳跃；实服bounded事件明确是N
 
 
 package6 于2026-10-11 11:56停服整套安装：实际二进制suite026c79e/Nav575f111/nativeaa42948；安装器验证19项live hash，22项备份VerifyOnly PASS。备份v0.3-20261011-115639-8550254恢复package5，实际rollback NOT TESTED。PID9192、六插件、无Lab/helper、ABI2 profile可用，真人连接前owner1/leases0/pending0；Recovery/测试攻击关闭。130/130模型、保留suite、构建PASS；新增step hull、入场与连续跳实服结果等待复测，不标PASS。
+
+
+package6 用户仍反馈可绕障碍旁跳/蹲跳，floor all-solid诊断不能解释为所有地面已修复。确定性修补：仅存在local arc不再抢占正在前进的Native绕行，Native至少blocked1秒或Trail才启用局部跳；Native保留帧不再推进未提交的辅助起跳状态，避免后续幻影pulse。132/132模型PASS含绕行及幻影pulse回归；新包真实效果待复测，B门/连续/旋转跳仍未验收。
