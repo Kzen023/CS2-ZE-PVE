@@ -50,3 +50,6 @@ clip9 起点Z73.16078→终点Z127.578514，t243.45开始对齐、t243.65越过�
 
 
 用户 package4 视觉验收仍FAIL/PARTIAL：B门及其他入场卡住、起跳常失败、平地斜坡多余跳跃、连续/旋转跳不可靠；单段端点事件不能替代这个结果。新增仅已选定、距起点64单位内的OnTick入场检查；250单位/秒在50ms内走12.5单位，大于6单位窗口。普通规划/采样仍50ms、几何仍低频，当前Core/BotAI身份/provider/permission及最终native校验保留，原始timing/起点阈值不修改；播放中的clip不被刷新。bounded jump-command记录Navigation起跳原因/clearance，区分Valve保留输入。130/130模型PASS，新运行包仍待整套复测，未改变nativeABI/Core/BotAI权威。
+
+
+package5 于2026-10-11 11:51停服整套安装：实际二进制suite2c0a90e/Nav972c767/nativeaa42948。live19/19 hash、22项备份VerifyOnly PASS；回滚根v0.3-20261011-115127-4147527恢复package4，实际restore仍NOT TESTED。PID26076、六插件、无Lab/helper、ABI2精确profile启用，真人连接前owner1/leases0/frames0/pending0；Core Unbound无真人时不写movement。Recovery关闭，sv_cheats1/bot_dont_shoot1用于取样，普通PvE前恢复0/0。构建0警告/错误、保留suite及Navigation130/130模型PASS；新逐帧入场/物理结果和timed lifecycle实服回归待测试。后续仅文档commit不改变这里记录的二进制manifest。
