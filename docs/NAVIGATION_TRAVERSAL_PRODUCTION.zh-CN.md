@@ -71,3 +71,6 @@ package7 用户在“不主动跳、平地/斜坡绕可绕障碍”的提问中�
 
 
 用户确认B入场/连续旋转仍失败并要求直接看窗口。实际CS2画面看到Bot在隧道外墙上沿、真人在下方；完整72帧下落clip4起点被拒未播放，之后marker助跑超时。新增播放前仅一次地面staging，沿完整支撑通路走到source朝向后方64单位；旧approach lease退休、新route/lease，原4秒deadline/数据/起点容差/最终validator不变。第二次错过或通路不支持即退出冷却；不传送、不改速度、不retime、不恢复旧回放。135/135模型PASS，真实墙沿/连续跳效果待整套复测。
+
+
+恢复只读CS2窗口后，agent看到Bot已在B点，但在玩家所在箱子/高处下方移动，未跟上跳跃链；仅证明B点位置，不认证B门通过/第一跳/下一跳PASS。实服Native/Blocked↔Progressing反复切换，小步清零失败计时；package8 staging也在回放前超时。新增每binding内bounded净追逐进展：至少16单位接近才续期，8秒无净进展可降级Trail；平台/梯子/forced/wait/combat保护、腾空暂停不清零、目标大幅变化重置，timed期间暂停；高处静止真人不被当成近身同处等待。143/143模型PASS，新包真实效果待测试，native/Core/BotAI不变。
