@@ -62,3 +62,6 @@ package6 于2026-10-11 11:56停服整套安装：实际二进制suite026c79e/Nav
 
 
 package6 用户仍反馈可绕障碍旁跳/蹲跳，floor all-solid诊断不能解释为所有地面已修复。确定性修补：仅存在local arc不再抢占正在前进的Native绕行，Native至少blocked1秒或Trail才启用局部跳；Native保留帧不再推进未提交的辅助起跳状态，避免后续幻影pulse。132/132模型PASS含绕行及幻影pulse回归；新包真实效果待复测，B门/连续/旋转跳仍未验收。
+
+
+package7 于2026-10-11 12:01停服整套安装：实际suite5f05f6c/Nav05a50f8/nativeaa42948。安装器验证19 payload hash、22项备份VerifyOnly PASS；备份v0.3-20261011-120109-2260123恢复package6，实际rollback NOT TESTED。PID16372，六插件、无Lab/helper、ABI2可用，连接前owner1/leases0/pending0；Recovery/测试攻击关闭。132/132模型/保留suite/构建PASS；绕行及未提交pulse真实回归待用户复测，B门/连续/旋转跳仍未验收，无merge。

@@ -75,3 +75,6 @@ Package6 installed stopped at2026-10-11 11:56 Asia/Shanghai: executable suite026
 
 
 Package6 owner still observes jumping beside avoidable obstacles. Diagnostics distinguish real all-solid floor samples from assumed ramp seam; no blanket floor PASS. Deterministic bugs repaired: local arc availability alone no longer overrides a progressing Native detour; local jump escalation requires Native blocked>=1s or Trail. Native-preserved frames reset jump helper rather than advancing unsubmitted preparation/pulse.132/132 models PASS including detour and phantom-pulse cases; next executable physical effect NOT TESTED. B-door/continuous/rotational acceptance still unresolved.
+
+
+Package7 installed stopped2026-10-11 12:01 Asia/Shanghai: executable suite5f05f6c / Navigation05a50f8 / nativeaa42948. Installer verified19 payload hashes and22-entry backup VerifyOnly PASS. Backup v0.3-20261011-120109-2260123 restores package6; actual rollback NOT TESTED. Dedicated16372 loaded six plugins/no Lab/helper; optionalABI2 available, owner1/leases0/pending0 before connection. Recovery/test attack disabled.132/132 models/retained suite/build PASS. Native-detour/phantom-pulse physical regression NOT TESTED until owner retest. B-door access and continuous/rotational traversal remain unaccepted; no production merge.
