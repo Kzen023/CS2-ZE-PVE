@@ -74,3 +74,6 @@ package7 用户在“不主动跳、平地/斜坡绕可绕障碍”的提问中�
 
 
 恢复只读CS2窗口后，agent看到Bot已在B点，但在玩家所在箱子/高处下方移动，未跟上跳跃链；仅证明B点位置，不认证B门通过/第一跳/下一跳PASS。实服Native/Blocked↔Progressing反复切换，小步清零失败计时；package8 staging也在回放前超时。新增每binding内bounded净追逐进展：至少16单位接近才续期，8秒无净进展可降级Trail；平台/梯子/forced/wait/combat保护、腾空暂停不清零、目标大幅变化重置，timed期间暂停；高处静止真人不被当成近身同处等待。143/143模型PASS，新包真实效果待测试，native/Core/BotAI不变。
+
+
+package9 实际suite7f2ed5a/Navb3c5b1f/nativeaa42948，2026-10-11 12:21:53停服整套安装，19 payload hash/22项备份VerifyOnly PASS；备份v0.3-20261011-122153-3803834恢复package8，实际rollback NOT TESTED。PID4312、六插件、无Lab/helper、ABI2启用，当前owner1/lease1/pending0/lookup0，Recovery/测试攻击关闭，143/143模型/保留suite/构建PASS。已检查用户23.77秒录像：T出生/隧道外箱沿停留，6–8秒走远，10–12秒真人下墙，13–19秒Bot在上层移动，约19.25–20秒下落，21–23秒再靠近。最终追上可见，但路线/操作复刻FAIL/PARTIAL，不是B点/旋转跳PASS。没有录像时段逐command快照，不能由画面断言native mode/AssignedTarget改变/perception原因/net budget生效。独立取样仍见入场距起点11–19单位、forward0.2–0.4速度0后超时，不宣称新增clip-complete。timing/stale/drain/实际rollback待验；录像/帧仅本地保留，不上传。
