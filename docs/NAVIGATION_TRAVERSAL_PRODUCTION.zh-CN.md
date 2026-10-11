@@ -53,3 +53,6 @@ clip9 起点Z73.16078→终点Z127.578514，t243.45开始对齐、t243.65越过�
 
 
 package5 于2026-10-11 11:51停服整套安装：实际二进制suite2c0a90e/Nav972c767/nativeaa42948。live19/19 hash、22项备份VerifyOnly PASS；回滚根v0.3-20261011-115127-4147527恢复package4，实际restore仍NOT TESTED。PID26076、六插件、无Lab/helper、ABI2精确profile启用，真人连接前owner1/leases0/frames0/pending0；Core Unbound无真人时不写movement。Recovery关闭，sv_cheats1/bot_dont_shoot1用于取样，普通PvE前恢复0/0。构建0警告/错误、保留suite及Navigation130/130模型PASS；新逐帧入场/物理结果和timed lifecycle实服回归待测试。后续仅文档commit不改变这里记录的二进制manifest。
+
+
+package5 用户无跳行走复测仍出现跳跃；实服bounded事件明确是Navigation marker=None局部蹲跳，非clip播放。T出生下坡及其他坡地/平地路线有记录。地面直线hull可能拒绝普通接缝；新增完整18单位抬脚/跨过/落回hull检查，保留连续支撑地面/坡度/高度/端点约束；跳跃事件带具体地面失败项。130/130模型PASS，真实engine结果待package6复测，native/Core/BotAI不改，Recovery不掩盖。
