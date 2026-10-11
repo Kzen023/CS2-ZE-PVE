@@ -10,57 +10,80 @@ The project is ZE-first: it aims to keep Zombie Escape maps playable with small 
 
 - Bot-only zombie PvE gameplay
 - Valve navigation when a usable NAV mesh is available
-- Player Trail navigation for maps without usable NAV
-- Stuck detection and recovery for zombie Bots
+- per-Human Runtime Trail navigation when native navigation is unavailable or not progressing
+- stuck detection and layered Recovery
+- explicit BotAI `AssignedTarget` authority
 - CS2Fixes / ZombieReborn compatibility
-- Low server overhead and small-group operation
-- Optional HUD and WeaponSystem components
-- Extensible boundaries for navigation, map and Bot integrations
+- one validated final movement writer
+- optional HUD and WeaponSystem components
 
 ## Project Family
 
 | Repository | Purpose | Status |
 | --- | --- | --- |
-| **CS2-ZE-PVE** | Main runtime, Core/BotAI integration, legacy migration baseline, configuration, documentation and releases | Active integration repository |
-| **[ZEPVE-Navigation](https://github.com/Kzen023/ZEPVE-Navigation)** | Zombie navigation and movement for NAV and no-NAV maps | Registered integration/design component; runtime baseline under development |
-| **[ZEPVE-HUD](https://github.com/Kzen023/ZEPVE-HUD)** | Optional player-facing HUD/presentation component | Migration target; not yet pinned |
-| **[ZEPVE-WeaponSystem](https://github.com/Kzen023/ZEPVE-WeaponSystem)** | Optional PvE weapon balance and purchase component | Migration target; not yet pinned |
-| **[ZEPVE-Lab](https://github.com/Kzen023/ZEPVE-Lab)** | Isolated experiments for engine, Bot and movement behavior | Experimental only |
+| **CS2-ZE-PVE** | Main runtime, Core/BotAI, integration, migration authority, packaging and releases | Active integration repository |
+| **[ZEPVE-Navigation](https://github.com/Kzen023/ZEPVE-Navigation)** | Runtime Trails, route/traversal selection, locomotion orchestration and Recovery | v0.3 baseline + v0.4 traversal development |
+| **[ZEPVE-BotController](https://github.com/Kzen023/ZEPVE-BotController)** | Low-level leased movement backend, command capture/application and scoped traversal execution | Backend component; advanced traversal remains experimental |
+| **[ZEPVE-Lab](https://github.com/Kzen023/ZEPVE-Lab)** | Isolated engine/Bot/movement experiments and evidence | Experimental only; never ships |
+| **[ZEPVE-HUD](https://github.com/Kzen023/ZEPVE-HUD)** | Optional player-facing presentation | v0.7 migration target; not yet pinned |
+| **[ZEPVE-WeaponSystem](https://github.com/Kzen023/ZEPVE-WeaponSystem)** | Optional PvE weapon/purchase policy | v0.7 migration target; not yet pinned |
 
-Independent repositories are integrated only after their ownership boundary, build and runtime behavior are verified. Creating a repository or pinning a design revision does not automatically make it a release-ready dependency.
+Independent repositories are integrated only after their ownership boundary, build and runtime behavior are verified. Creating a repository or pinning an experimental revision does not make it release-ready.
+
+## Current version boundaries
+
+The roadmap is intentionally split so advanced movement research does not keep expanding the v0.3 merge gate:
+
+```text
+v0.3  Navigation baseline
+      AssignedTarget -> Native -> Trail -> Recovery
+
+v0.4  Advanced traversal
+      UserCmd/timed payloads, jump/crouch-jump, scoped view, MotionClip
+
+v0.5  Persistent routes
+      RecordedRoute, RouteGraph, typed TraversalEdge, Entry/Exit volumes
+```
+
+Complex jump imitation, rotational replay and exact Human physics parity are v0.4 work, not v0.3 baseline requirements.
+
+## Recorder / replay ownership
+
+ZEPVE does not currently need a separate production Recorder repository.
+
+```text
+ZEPVE-BotController -> how bounded command data is captured/applied
+ZEPVE-Navigation    -> what maneuver/route data means and when it is used
+ZEPVE-Lab           -> experiments/evidence only
+```
+
+Persistent route authoring stays in Navigation unless future offline tooling becomes independently useful enough to justify its own tool repository.
 
 ## Legacy Baseline
 
-The existing working plugins are preserved under [`legacy/`](legacy/README.md) while their responsibilities are migrated into the new ZEPVE ownership model.
-
-The current legacy set includes the main PvE runtime, weapon-balance plugin and ZE assist/HUD plugin. Legacy code is treated as a regression baseline rather than discarded prototype code.
+Working pre-split plugins are preserved under [`legacy/`](legacy/README.md) while responsibilities are migrated into the new ownership model.
 
 Migration keeps exactly one active writer for each state-changing responsibility; handoff rules are tracked in [`MIGRATION_AUTHORITY.md`](MIGRATION_AUTHORITY.md).
 
 ## Installation
 
-ZEPVE is currently in private early development and does not have a public release package yet.
+ZEPVE does not yet publish a general public release. Test and future release packages are assembled from exact matched component revisions by this repository and are intended for deployment under `game/csgo`.
 
-When releases begin, install-ready packages will be published from this repository and structured for deployment under `game/csgo`.
+Do not manually mix component DLLs/revisions from different experimental PRs.
 
 ## Status
 
-v0.2c matched runtime baseline is merged at `ed480bd` (PR #10). v0.2d introduces the separate BotAI target-authority DLL with bounded ObserveOnly reacquisition: [architecture/install/commands](docs/BOTAI_RUNTIME.md), [separate verification](docs/BOTAI_VERIFICATION.md). Navigation and native awareness writes are not enabled by this capability.
+The accepted v0.2 Core/BotAI foundation remains the stable baseline. Current engineering work is reconciling the v0.3 Navigation baseline with already-completed v0.4 traversal research, then producing a clean matched v0.3 acceptance/test package without treating advanced traversal failures as baseline blockers.
 
-Current work focuses on reproducing the legacy baseline, documenting migration authority, establishing safe Core identity/lifecycle foundations, and integrating independently developed components without changing verified gameplay unnecessarily.
-
-See [ROADMAP.md](ROADMAP.md) for milestones.
+See [ROADMAP.md](ROADMAP.md) and [docs/VERSION_SCOPE_RESET.md](docs/VERSION_SCOPE_RESET.md).
 
 ## Documentation
 
 - [Simplified Chinese README](README.zh-CN.md)
 - [Legacy migration baseline](legacy/README.md)
 - [Migration authority](MIGRATION_AUTHORITY.md)
-- [Core observer: build, commands and validation](docs/CORE_OBSERVER.md)
-- [Core lifecycle migration: paired build, handoff and runtime acceptance](docs/CORE_LIFECYCLE_MIGRATION.md)
+- [Version scope reset](docs/VERSION_SCOPE_RESET.md)
 - [Roadmap](ROADMAP.md)
 - [Contributing](CONTRIBUTING.md)
 - [Repository and release management](GITHUB_MANAGEMENT.md)
 - [Architecture decisions](DECISIONS.md)
-
-Developer and repository-management details are intentionally kept outside this README.

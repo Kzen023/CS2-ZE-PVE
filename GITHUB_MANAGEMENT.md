@@ -21,11 +21,19 @@ Main product and integration repository. It owns:
 
 ### `ZEPVE-Navigation`
 
-Independent production-target component for zombie navigation, Trail handling, movement and recovery.
+Independent production-target component for zombie navigation, Runtime Trail handling, route/traversal selection, movement orchestration and Recovery.
 
 The suite may pin an exact design/integration revision before runtime readiness, but a pinned gitlink is not by itself proof of a production-verified implementation.
 
 When Navigation becomes runtime-ready, the main suite consumes an exact tested Git revision rather than automatically following the latest component branch.
+
+### `ZEPVE-BotController`
+
+Low-level native/managed movement backend used by ZEPVE.
+
+It owns final `PlayerRunCommand` arbitration, exclusive movement leases, bounded command capture/application, timed traversal transport and scoped traversal view execution. It does not own `AssignedTarget`, route selection, Runtime Trail, MotionClip semantics, RecordedRoute/RouteGraph semantics or map-stage decisions.
+
+ZEPVE-specific movement/traversal capability versions are separate from the upstream/general BotController API ABI. Production use must pin an exact tested fork revision.
 
 ### `ZEPVE-HUD`
 
@@ -54,6 +62,16 @@ Lab is not a production dependency and is never shipped as part of a ZEPVE relea
 ### Future repositories
 
 Create another production repository only when a component has a clear independent responsibility and lifecycle. A separate DLL alone is not a reason to create another repository.
+
+Do not create a separate production Recorder/Replay repository for the current design:
+
+```text
+ZEPVE-BotController -> how bounded command data is captured/applied
+ZEPVE-Navigation    -> what maneuver/route data means and when it is used
+ZEPVE-Lab           -> experiments/evidence only
+```
+
+A future offline route-authoring/tool repository is justified only if it becomes independently useful tooling with its own lifecycle and release/test value.
 
 ## Legacy Baseline
 
