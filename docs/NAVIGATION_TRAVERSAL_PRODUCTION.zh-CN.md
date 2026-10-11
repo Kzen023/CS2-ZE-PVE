@@ -65,3 +65,6 @@ package6 用户仍反馈可绕障碍旁跳/蹲跳，floor all-solid诊断不能�
 
 
 package7 于2026-10-11 12:01停服整套安装：实际suite5f05f6c/Nav05a50f8/nativeaa42948。安装器验证19 payload hash、22项备份VerifyOnly PASS；备份v0.3-20261011-120109-2260123恢复package6，实际rollback NOT TESTED。PID16372，六插件、无Lab/helper、ABI2可用，连接前owner1/leases0/pending0；Recovery/测试攻击关闭。132/132模型/保留suite/构建PASS；绕行及未提交pulse真实回归待用户复测，B门/连续/旋转跳仍未验收，无merge。
+
+
+package7 用户在“不主动跳、平地/斜坡绕可绕障碍”的提问中明确回复“正常了”：这一具体症状记为用户报告实服PASS。agent随后静止快照为距离38.3、Native、jump/duck=False、同一lease、Recovery关闭；静止快照本身不证明整段行走。B门/第一跳/下一跳/旋转跳另行待验，不扩大为完整ZE/物理复刻/timed生命周期PASS。

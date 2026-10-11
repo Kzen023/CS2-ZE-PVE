@@ -78,3 +78,6 @@ Package6 owner still observes jumping beside avoidable obstacles. Diagnostics di
 
 
 Package7 installed stopped2026-10-11 12:01 Asia/Shanghai: executable suite5f05f6c / Navigation05a50f8 / nativeaa42948. Installer verified19 payload hashes and22-entry backup VerifyOnly PASS. Backup v0.3-20261011-120109-2260123 restores package6; actual rollback NOT TESTED. Dedicated16372 loaded six plugins/no Lab/helper; optionalABI2 available, owner1/leases0/pending0 before connection. Recovery/test attack disabled.132/132 models/retained suite/build PASS. Native-detour/phantom-pulse physical regression NOT TESTED until owner retest. B-door access and continuous/rotational traversal remain unaccepted; no production merge.
+
+
+Package7 owner ordinary-ground retest: user explicitly replied "正常了" to non-jumping flat/ramp/avoidable-obstacle route. Record user-reported runtime PASS for this specific symptom only. Agent follow-up snapshots show live Bot near Human38.3units, Native mode, final jumpFalse/duckFalse, one lease and Recovery disabled; stationary snapshots do not independently prove the whole walking route. B-door/first jump/next jump/rotation remains pending separate acceptance. Do not extend this PASS to general ZE traversal, physical parity or timed lifecycle regression.
