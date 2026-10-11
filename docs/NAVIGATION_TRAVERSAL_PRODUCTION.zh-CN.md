@@ -68,3 +68,6 @@ package7 于2026-10-11 12:01停服整套安装：实际suite5f05f6c/Nav05a50f8/n
 
 
 package7 用户在“不主动跳、平地/斜坡绕可绕障碍”的提问中明确回复“正常了”：这一具体症状记为用户报告实服PASS。agent随后静止快照为距离38.3、Native、jump/duck=False、同一lease、Recovery关闭；静止快照本身不证明整段行走。B门/第一跳/下一跳/旋转跳另行待验，不扩大为完整ZE/物理复刻/timed生命周期PASS。
+
+
+用户确认B入场/连续旋转仍失败并要求直接看窗口。实际CS2画面看到Bot在隧道外墙上沿、真人在下方；完整72帧下落clip4起点被拒未播放，之后marker助跑超时。新增播放前仅一次地面staging，沿完整支撑通路走到source朝向后方64单位；旧approach lease退休、新route/lease，原4秒deadline/数据/起点容差/最终validator不变。第二次错过或通路不支持即退出冷却；不传送、不改速度、不retime、不恢复旧回放。135/135模型PASS，真实墙沿/连续跳效果待整套复测。

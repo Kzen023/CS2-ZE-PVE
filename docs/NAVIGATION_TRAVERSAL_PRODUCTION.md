@@ -81,3 +81,6 @@ Package7 installed stopped2026-10-11 12:01 Asia/Shanghai: executable suite5f05f6
 
 
 Package7 owner ordinary-ground retest: user explicitly replied "正常了" to non-jumping flat/ramp/avoidable-obstacle route. Record user-reported runtime PASS for this specific symptom only. Agent follow-up snapshots show live Bot near Human38.3units, Native mode, final jumpFalse/duckFalse, one lease and Recovery disabled; stationary snapshots do not independently prove the whole walking route. B-door/first jump/next jump/rotation remains pending separate acceptance. Do not extend this PASS to general ZE traversal, physical parity or timed lifecycle regression.
+
+
+Owner reports B access/continuous/rotational failure and requests direct view. Actual CS2 view shows Bot above Tunnel Outside wall, Human below;72-frame descending clip4 was rejected at moving entry before playback, then marker run-up timed out. New once-only grounded staging64units behind source heading uses complete supported walking corridors, fresh approach lease/route, original4s deadline/data/tolerances and final validator. Second miss or unsupported staging retires; no teleport/velocity copy/retiming/resurrected playback.135/135 model PASS; physical ledge/chain effect NOT TESTED.
