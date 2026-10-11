@@ -77,3 +77,10 @@ package7 用户在“不主动跳、平地/斜坡绕可绕障碍”的提问中�
 
 
 package9 实际suite7f2ed5a/Navb3c5b1f/nativeaa42948，2026-10-11 12:21:53停服整套安装，19 payload hash/22项备份VerifyOnly PASS；备份v0.3-20261011-122153-3803834恢复package8，实际rollback NOT TESTED。PID4312、六插件、无Lab/helper、ABI2启用，当前owner1/lease1/pending0/lookup0，Recovery/测试攻击关闭，143/143模型/保留suite/构建PASS。已检查用户23.77秒录像：T出生/隧道外箱沿停留，6–8秒走远，10–12秒真人下墙，13–19秒Bot在上层移动，约19.25–20秒下落，21–23秒再靠近。最终追上可见，但路线/操作复刻FAIL/PARTIAL，不是B点/旋转跳PASS。没有录像时段逐command快照，不能由画面断言native mode/AssignedTarget改变/perception原因/net budget生效。独立取样仍见入场距起点11–19单位、forward0.2–0.4速度0后超时，不宣称新增clip-complete。timing/stale/drain/实际rollback待验；录像/帧仅本地保留，不上传。
+
+
+## Package10 全链检查候选（2026-10-11）
+
+Navigation e28d230；native/SDK aa42948 不变。检查了采集、起点入场、marker 降级、回放提交/结束与 drain。修复无仇恨时近距离交回 Valve、失败跳跃冻结全部路线并反复续期、入场输入过小、回放结束处理延迟以及缺失 command 时无托管超时退出。入场使用全量输入与速度反馈滑停，原始回放输入/timing 不变；新增 applied/total、结果与终点误差诊断。
+
+Navigation 模型149/149 PASS；保留 native router26/26、traversal33/33 PASS。打包时新包真实跳跃与实际 rollback 为 NOT TESTED。Package9 视频中的失败仍须实测复验，不能用模型测试抹去。authority/ABI 不变、无 Lab、无 merge；行为验收继续关闭 Recovery。
