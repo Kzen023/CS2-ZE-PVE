@@ -21,3 +21,7 @@ Bot 正常走到起点，检查位置、落地、速度，再通过同一个独�
 六个正式/保留插件加载，Lab 未加载；Core Released、1 真人/1 ZombieBot、LegacyMovementDisabled=True、一个 owner/lease，drain pending/lookup failure 为0。只读临时 inspector 确认 Human command 连续有效且 origin=tick-1、站定 prelude 已 armed；随后已卸载并移出 loader 路径，不随包提供。当前没有观察到新 clip 动作，W 跳、蹲跳、旋转跳和 timed reload/drain 仍待实际测试，未标 PASS。
 
 Recovery 关闭，测试临时 sv_cheats=1 / bot_dont_shoot=1，原值均0已记录；普通 PvE 验收前恢复。服务端 PID23516 保持运行，三个 PR 为 Draft，没有 merge。
+
+## 朝向/起点对齐修补
+
+用户反馈无原生 aggro 时倒走、锁定玩家后无法旋转跳。实服只读取样看到 clip-approach，没有 clip-start，不能据此宣称 active clip 的 view lease 被抢。已修复确定性问题：寻找新 clip 的间隔不能绕过已选定的起点对齐。traversal ABI2 新增同一 lease 中的 FacingDirection，普通受控移动朝向当前移动目标并输出向前；Native/combat 保留 Valve，clip 内继续忠实录制视角。没有新增 hook、Enemy/visibility、flags 或 Upkeep bypass。117/117 Navigation、26+33 native 与 interop/安装回滚 fixture 通过；修补版真实朝向与旋转跳仍待 matched retest，未标 PASS。

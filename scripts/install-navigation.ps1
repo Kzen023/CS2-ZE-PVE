@@ -3,7 +3,7 @@ param([Parameter(Mandatory=$true)][string]$ServerRoot,[Parameter(Mandatory=$true
 $root=(Resolve-Path -LiteralPath $ServerRoot).Path.TrimEnd('\','/');$package=(Resolve-Path -LiteralPath $PackageDirectory).Path
 Assert-NavigationServerStopped $root ([bool]$AllowUnmoddedClient)
 $manifest=Get-Content -LiteralPath (Join-Path $package 'manifest.json') -Raw|ConvertFrom-Json
-if($manifest.TraversalABI-ne 1 -or $manifest.Stage-ne 'v0.3 matched Navigation authority' -or $manifest.WorkingTreeChanges.Count -or $manifest.NativeWorkingTreeChanges.Count -or $manifest.NavigationWorkingTreeChanges.Count){throw 'Require clean committed matched component manifests'}
+if($manifest.TraversalABI-ne 2 -or $manifest.Stage-ne 'v0.3 matched Navigation authority' -or $manifest.WorkingTreeChanges.Count -or $manifest.NativeWorkingTreeChanges.Count -or $manifest.NavigationWorkingTreeChanges.Count){throw 'Require clean committed matched component manifests'}
 if((Get-FileHash -LiteralPath (Join-Path $root 'game/csgo/addons/counterstrikesharp/api/CounterStrikeSharp.API.dll')).Hash-ne $manifest.ApiSHA256){throw 'CSS API mismatch'}
 $allowed=@(Get-NavigationPackagePaths)
 if($manifest.Files.Count-ne $allowed.Count -or @($manifest.Files.Path|Select-Object -Unique).Count-ne $allowed.Count){throw 'Incomplete/duplicate matched package'}

@@ -19,7 +19,7 @@ foreach($path in (Get-NavigationLabPaths)){
  $old=Join-Path $root $path;New-Item -ItemType Directory -Path (Split-Path -Parent $old) -Force|Out-Null
  [IO.File]::WriteAllText($old,'old-lab-'+$path);$original[$path]=(Get-FileHash -LiteralPath $old).Hash
 }
-$manifest=[ordered]@{Stage='v0.3 matched Navigation authority';TraversalABI=1;SourceRevision='fixture';NativeRevision='fixture';NavigationRevision='fixture';WorkingTreeChanges=@();NativeWorkingTreeChanges=@();NavigationWorkingTreeChanges=@();ApiSHA256=(Get-FileHash -LiteralPath $api).Hash;Files=$payload}
+$manifest=[ordered]@{Stage='v0.3 matched Navigation authority';TraversalABI=2;SourceRevision='fixture';NativeRevision='fixture';NavigationRevision='fixture';WorkingTreeChanges=@();NativeWorkingTreeChanges=@();NavigationWorkingTreeChanges=@();ApiSHA256=(Get-FileHash -LiteralPath $api).Hash;Files=$payload}
 $manifestPath=Join-Path $package 'manifest.json';$manifest|ConvertTo-Json -Depth 6|Set-Content -LiteralPath $manifestPath
 & (Join-Path $PSScriptRoot 'install-navigation.ps1') -ServerRoot $root -PackageDirectory $package
 $backup=(Get-ChildItem (Join-Path $root 'ZEPVE_Backup') -Directory|Sort-Object Name|Select-Object -Last 1).FullName
