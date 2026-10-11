@@ -31,3 +31,5 @@ Recovery 关闭，测试临时 sv_cheats=1 / bot_dont_shoot=1，原值均0已记
 ## B 点起跳/连续跳修补候选
 
 用户真实反馈：起跳点卡住、近身才追、单跳时机不对、第一落点来回转头；本轮取样为有效目标约302单位、Native输入0、未进入 timed playback。保持这些 FAIL/PARTIAL，不以模型伪造通过。新增减速对齐/惯性停稳，移动入场不跨到达平面反向；waypoint 不再因96单位距离就无限 Waiting。失败入场有明确事件与退出。第二跳允许从两条连续落地移动 command 起步，不再要求重新站定，也不重放已发布第一段的 command。原始 timing/when 不变，native ABI2/Core/BotAI/Recovery 边界不改。123/123 模型通过，B 点实际过障碍、真实单跳 timing 和连续跳仍需复测。
+
+08:42 package3 已整套安装启动（suite15d7b98/Navbebc4ff/nativeaa42948），19 payload 校验通过，回滚 v0.3-20261011-084219-5649154 恢复 package2；VerifyOnly 通过，实际本轮回滚未测。PID22360、六插件、无 Lab/helper、capability2 已启用，Recovery/攻击关闭用于 B 点复测。实际入场、单跳时机、连续跳结果继续待反馈，不新增 PASS。
