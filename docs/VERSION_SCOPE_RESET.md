@@ -87,23 +87,45 @@ Runtime Trail remains the default no-NAV route source. Persistent routes supplem
 
 The historical cut points above are audit references, not automatic production pins. A v0.3 release still requires a clean matched build, acceptance and actual rollback.
 
-## Split vs feature gate decision
+## Baseline isolation decision
 
-Do not force-push or rewrite the existing mixed-history PRs.
+Decision: **use clean v0.3 baseline PRs instead of carrying the advanced traversal layer behind a release-time feature gate.**
 
-Before creating the final v0.3 component PRs, inspect whether the advanced traversal layer can remain in-tree while being fully default-off and absent from v0.3 runtime acceptance. If the baseline can be built and packaged without activating ABI2/timed traversal/view ownership, a feature-gated baseline is acceptable.
+Reasoning:
 
-If the advanced layer cannot be cleanly disabled without carrying runtime/API risk, create clean v0.3 baseline PRs from the pre-timed cut points and preserve the current PRs as v0.4 history.
+- the pre-timed cut points are already known and auditable;
+- a clean branch makes it impossible for ABI2/timed/view traversal code to activate accidentally in a v0.3 package;
+- existing mixed-history PRs remain valuable as v0.4 development history and do not need force-push/rewrite;
+- component/suite review stays aligned with the repository promotion rule.
 
-Either path must preserve the one-writer rule, exact component pinning and rollback evidence.
+Clean baseline review lines created:
+
+```text
+ZEPVE-BotController#3  -> df67e21
+ZEPVE-Navigation#3     -> aa50134
+CS2-ZE-PVE#15          -> b8f156a matched suite reference
+```
+
+These PRs are Draft and are **not** automatically accepted just because they are cleanly split. They still require refreshed matched v0.3 acceptance and actual rollback.
+
+The advanced traversal implementation remains in:
+
+```text
+ZEPVE-BotController#1
+ZEPVE-Navigation#1
+CS2-ZE-PVE#13
+```
+
+No force-push or history rewrite is used.
 
 ## PR disposition
 
-- Keep `ZEPVE-BotController#1`, `ZEPVE-Navigation#1` and `CS2-ZE-PVE#13` Draft/unmerged while they remain mixed-history advanced-traversal branches.
-- Keep `ZEPVE-Lab#2` Draft/evidence-only.
-- Do not relabel old FAIL/PARTIAL runtime evidence as PASS.
-- Do not make white-car/B-box/doghole/rotational-jump tuning a v0.3 completion condition.
-- Next v0.3 work is baseline isolation, matched packaging, acceptance and actual rollback.
+- `ZEPVE-BotController#3`, `ZEPVE-Navigation#3`, `CS2-ZE-PVE#15`: clean v0.3 Draft baseline review lines; next work is refreshed baseline acceptance.
+- `ZEPVE-BotController#1`, `ZEPVE-Navigation#1`, `CS2-ZE-PVE#13`: keep Draft/unmerged as v0.4 experimental/mixed history.
+- `ZEPVE-Lab#2`: keep Draft/evidence-only.
+- documentation reconciliation lives in `CS2-ZE-PVE#14` plus component documentation PRs.
+- do not relabel old FAIL/PARTIAL runtime evidence as PASS.
+- do not make white-car/B-box/doghole/rotational-jump tuning a v0.3 completion condition.
 
 ## v0.3 acceptance gate
 
