@@ -37,13 +37,18 @@ Roadmap 已重新切分，避免 advanced movement research 无限扩大 v0.3 me
 ```text
 v0.3  Navigation baseline
       AssignedTarget -> Native -> Trail -> Recovery
+      leased UserCmd movement、lifecycle、matched install/rollback
 
 v0.4  Advanced traversal
-      UserCmd/timed payload、jump/crouch-jump、scoped view、MotionClip
+      timed/signed-subtick payload、typed local action、
+      jump/crouch-jump、scoped view、MotionClip
 
 v0.5  Persistent routes
-      RecordedRoute、RouteGraph、typed TraversalEdge、Entry/Exit volume
+      RecordedRoute、RouteGraph、persistent typed TraversalEdge、
+      Entry/Exit volume 与 authoring
 ```
+
+clean v0.3 cuts 已确认是正确的隔离起点，但**不能原样视为 release-ready**。普通追逐缺陷、Recovery permission、artifact provenance 和 fresh real-server acceptance 仍必须在 merge 前完成。
 
 复杂跳箱复刻、旋转 replay、精确 Human physics parity 都属于 v0.4，不是 v0.3 baseline 必须项。
 
@@ -73,9 +78,9 @@ ZEPVE 目前尚未提供通用公开 Release。测试包和未来 Release 都由
 
 ## 当前状态
 
-已接受的 v0.2 Core/BotAI foundation 继续作为稳定基线。当前工作重点是把 v0.3 Navigation baseline 与已经提前完成的大量 v0.4 traversal research 重新分层，然后产出一个干净的 matched v0.3 acceptance/test package，而不是继续把 advanced traversal 失败当成 baseline blocker。
+已接受的 v0.2 Core/BotAI foundation 继续作为稳定基线。当前工程阶段是审计后的 Phase 1：收口 BotController #3、Navigation #3、Suite #15 这条 clean v0.3 baseline，制作 provenance-bound matched Test Preview，完成真实 baseline acceptance 与 actual whole-package rollback，然后停止，不在同一阶段继续做 v0.4 traversal。
 
-见 [ROADMAP.md](ROADMAP.md) 与 [docs/VERSION_SCOPE_RESET.md](docs/VERSION_SCOPE_RESET.md)。
+见 [ROADMAP.md](ROADMAP.md)、[docs/VERSION_SCOPE_RESET.md](docs/VERSION_SCOPE_RESET.md) 与 [docs/PROJECT_AUDIT_20261011.md](docs/PROJECT_AUDIT_20261011.md)。
 
 ## 文档
 
@@ -83,6 +88,7 @@ ZEPVE 目前尚未提供通用公开 Release。测试包和未来 Release 都由
 - [旧版迁移 baseline](legacy/README.md)
 - [迁移 authority](MIGRATION_AUTHORITY.md)
 - [版本 scope reset](docs/VERSION_SCOPE_RESET.md)
+- [项目审计与 Phase 1 handoff](docs/PROJECT_AUDIT_20261011.md)
 - [开发路线](ROADMAP.md)
 - [贡献指南](CONTRIBUTING.md)
 - [仓库与发布管理](GITHUB_MANAGEMENT.md)
