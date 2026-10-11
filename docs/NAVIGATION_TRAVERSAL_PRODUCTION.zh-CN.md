@@ -25,3 +25,5 @@ Recovery 关闭，测试临时 sv_cheats=1 / bot_dont_shoot=1，原值均0已记
 ## 朝向/起点对齐修补
 
 用户反馈无原生 aggro 时倒走、锁定玩家后无法旋转跳。实服只读取样看到 clip-approach，没有 clip-start，不能据此宣称 active clip 的 view lease 被抢。已修复确定性问题：寻找新 clip 的间隔不能绕过已选定的起点对齐。traversal ABI2 新增同一 lease 中的 FacingDirection，普通受控移动朝向当前移动目标并输出向前；Native/combat 保留 Valve，clip 内继续忠实录制视角。没有新增 hook、Enemy/visibility、flags 或 Upkeep bypass。117/117 Navigation、26+33 native 与 interop/安装回滚 fixture 通过；修补版真实朝向与旋转跳仍待 matched retest，未标 PASS。
+
+08:21 整套 ABI2 修补包已安装并启动（suite9989d30/nativeaa42948/Navd6650d9），19 payload hash 由安装器验证。回滚根 v0.3-20261011-082105-7849465，恢复上一套 production ABI1 候选；VerifyOnly 通过，实际本轮 rollback 仍未测。PID24416，六个插件、无临时 inspector、capability2 已启用。Recovery/攻击关闭用于复测；向前朝向、起点入场与旋转跳物理结果继续 NOT TESTED，等待用户反馈。
