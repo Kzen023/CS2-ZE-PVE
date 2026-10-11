@@ -37,13 +37,18 @@ The roadmap is intentionally split so advanced movement research does not keep e
 ```text
 v0.3  Navigation baseline
       AssignedTarget -> Native -> Trail -> Recovery
+      leased UserCmd movement, lifecycle, matched install/rollback
 
 v0.4  Advanced traversal
-      UserCmd/timed payloads, jump/crouch-jump, scoped view, MotionClip
+      timed/signed-subtick payloads, typed local actions,
+      jump/crouch-jump, scoped view, MotionClip
 
 v0.5  Persistent routes
-      RecordedRoute, RouteGraph, typed TraversalEdge, Entry/Exit volumes
+      RecordedRoute, RouteGraph, persistent typed TraversalEdge,
+      Entry/Exit volumes and authoring
 ```
+
+The clean v0.3 cuts are valid isolation points but are **not release-ready unchanged**. Baseline pursuit defects, Recovery permission, artifact provenance and fresh real-server acceptance still have to be closed before merge.
 
 Complex jump imitation, rotational replay and exact Human physics parity are v0.4 work, not v0.3 baseline requirements.
 
@@ -73,9 +78,9 @@ Do not manually mix component DLLs/revisions from different experimental PRs.
 
 ## Status
 
-The accepted v0.2 Core/BotAI foundation remains the stable baseline. Current engineering work is reconciling the v0.3 Navigation baseline with already-completed v0.4 traversal research, then producing a clean matched v0.3 acceptance/test package without treating advanced traversal failures as baseline blockers.
+The accepted v0.2 Core/BotAI foundation remains the stable baseline. Current engineering work is Phase 1 of the audited plan: close the clean v0.3 baseline on BotController #3, Navigation #3 and Suite #15, produce a provenance-bound matched Test Preview, complete real baseline acceptance and actual whole-package rollback, then stop before v0.4 traversal work.
 
-See [ROADMAP.md](ROADMAP.md) and [docs/VERSION_SCOPE_RESET.md](docs/VERSION_SCOPE_RESET.md).
+See [ROADMAP.md](ROADMAP.md), [docs/VERSION_SCOPE_RESET.md](docs/VERSION_SCOPE_RESET.md) and [docs/PROJECT_AUDIT_20261011.md](docs/PROJECT_AUDIT_20261011.md).
 
 ## Documentation
 
@@ -83,6 +88,7 @@ See [ROADMAP.md](ROADMAP.md) and [docs/VERSION_SCOPE_RESET.md](docs/VERSION_SCOP
 - [Legacy migration baseline](legacy/README.md)
 - [Migration authority](MIGRATION_AUTHORITY.md)
 - [Version scope reset](docs/VERSION_SCOPE_RESET.md)
+- [Project audit and Phase 1 handoff](docs/PROJECT_AUDIT_20261011.md)
 - [Roadmap](ROADMAP.md)
 - [Contributing](CONTRIBUTING.md)
 - [Repository and release management](GITHUB_MANAGEMENT.md)
