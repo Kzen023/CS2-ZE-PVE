@@ -2,7 +2,7 @@
 
 Keep this file short. Detailed design belongs in `docs/` and component repositories.
 
-Research-driven architecture priorities are summarized in `docs/CODE_RESEARCH_FINDINGS.md`. Migration-time execution authority is defined in `MIGRATION_AUTHORITY.md`. The current Navigation/traversal version split is recorded in `docs/VERSION_SCOPE_RESET.md`; the 2026-10-11 full-project audit and execution handoff are recorded in `docs/PROJECT_AUDIT_20261011.md`.
+Research-driven architecture priorities are summarized in `docs/CODE_RESEARCH_FINDINGS.md`. Migration-time execution authority is defined in `MIGRATION_AUTHORITY.md`. The current Navigation/traversal version split is recorded in `docs/VERSION_SCOPE_RESET.md`; the 2026-10-11 full-project audit and execution handoff are recorded in `docs/PROJECT_AUDIT_20261011.md`. Persistent ZE/ZR map knowledge is defined in `docs/MAP_TRAVERSAL_GRAPH.md`; Bot-Improver research and future interoperability are recorded in `docs/CS2_BOT_IMPROVER_RESEARCH_20261014.md`.
 
 ## Current
 
@@ -147,7 +147,8 @@ Production traversal work:
 - [ ] scoped view/facing ownership only while an explicitly authorized traversal action needs it; ordinary pursuit must not acquire view
 - [ ] entry conditions include relevant position/velocity/ground/support/collision/facing state instead of one exact recorded point
 - [ ] playback completion and obstacle/action success are separate results
-- [ ] continuous traversal handoff without stale replay or global route cooldowns
+- [ ] continuous traversal handoff without stale replay or global cooldowns
+- [ ] expose bounded movement/view ownership state so optional cooperating enhancers can yield rather than fight traversal
 - [ ] resolve current experimental failures: 180-degree yaw oscillation, low-wall stalls, early/late takeoff and start-state sensitivity
 - [ ] real complex-terrain acceptance on representative ZE obstacles with Recovery disabled during traversal proof
 
@@ -159,29 +160,55 @@ BotAI awareness work after evidence:
 - [ ] preserve Valve native hearing/perception where useful
 - [ ] explicit Enemy/visibility writes only if narrower validated approaches fail
 
+Bot-Improver source review may supply candidate mechanisms, but broad process-wide AI patches/direct velocity writes/permanent visibility forcing are not implicitly authorized. Validate one operation/domain at a time.
+
 Advanced traversal PRs remain Draft until their own production acceptance; failures here do not reopen v0.3 baseline scope.
 
-### v0.5 — Recorded Routes, RouteGraph and authoring
+### v0.5 — Persistent Routes & Traversal Graph
 
-Navigation repository:
+Canonical design: `docs/MAP_TRAVERSAL_GRAPH.md`; Navigation implementation plan: `ZEPVE-Navigation/RECORDED_ROUTES.md` and `BOT_IMPROVER_INTEGRATION.md`.
 
-- [ ] persistent `RecordedRoute` schema and validation
-- [ ] `RecordedRouteSource` compatible with the runtime Trail/progress/recovery stack
-- [ ] `RouteGraph` / route-node representation for persistent difficult sections
-- [ ] typed persistent traversal edges such as Walk, Jump, CrouchJump, Drop, Ladder, Door, Elevator and Wait
-- [ ] spatial Entry/Exit volumes or equivalent bounded conditions for special traversal edges
-- [ ] admin-only in-game route recording/authoring commands
-- [ ] route visualization and test mode
+Shared graph/runtime:
+
+- [ ] versioned `MapTraversalGraph` with stable Region / Route / RouteNode / TraversalEdge identity
+- [ ] typed persistent traversal edges such as Walk, Jump, CrouchJump, Drop, Ladder, Door, Elevator, Wait and exceptional MotionClip
+- [ ] spatial Entry/Exit volumes with direction/availability/cost and stage/branch identity
+- [ ] bounded spatial lookup for nearby Regions/EntryVolumes rather than global per-Bot edge scans
+- [ ] entry latch/hysteresis and edge-local failure/cooldown
 - [ ] safe save/load, schema versioning and backup behavior
-- [ ] route simplification and segment preservation
+
+ZE:
+
+- [ ] curated `RecordedRoute` / stage / branch progress as persistent map knowledge
+- [ ] bounded local backtracking; never reverse forbidden boundaries or `ForwardOnly` edges
+- [ ] report route-unavailable to BotAI when AssignedTarget leaves the legal graph
+
+ZR:
+
+- [ ] target localization into reachability Regions
+- [ ] dynamic graph path from Bot Region to target Region
+- [ ] persistent movement-skill links for camp/high-ground access
+- [ ] Native NAV for ordinary sections where useful; Runtime Trail fallback for unknown/unrecorded sections
+
+Authoring / visualization:
+
+- [ ] chat-first admin route/section recording (`record/stop/cancel/show/test/save/list` equivalents)
+- [ ] temporary rich capture -> simplification/classification -> semantic graph draft
+- [ ] optional bounded recent authoring buffer for `save last maneuver` style capture
+- [ ] in-world Regions/nodes/edge arrows/types/Entry/Exit volumes/test state
+- [ ] single-edge and route test
+- [ ] safe local drafts plus explicit export/review into curated suite data
+- [ ] runtime Bot graph/action diagnostics explaining current edge/state/failure
 
 Main repository:
 
 - [ ] define curated map-route storage under `maps/routes/`
 - [ ] review/export flow from local recordings to version-controlled route data
-- [ ] include curated route schema/version in release validation
+- [ ] include curated graph schema/version in release validation
 
-Runtime Trail remains the default no-NAV route source. Recorded Routes/RouteGraph supplement difficult sections and repeatable testing; they do not create a second normal locomotion authority. Route selection and traversal execution remain separate responsibilities.
+A minimal versioned read-only graph/runtime ownership context capability may be designed if it does not delay core graph acceptance. Generic Bot-Improver compatibility is **not** part of the v0.5 release gate.
+
+Runtime Trail remains useful for unknown/unrecorded maps and dynamic fallback. Persistent graph data does not create a second locomotion authority. Route selection and traversal execution remain separate responsibilities.
 
 ### v0.6 — MapPlan + CS2Fixes integration
 
@@ -190,6 +217,7 @@ Runtime Trail remains the default no-NAV route source. Recorded Routes/RouteGrap
 - [ ] define selector AND/OR semantics, zero/multiple matches and entity rebind behavior
 - [ ] add public map/Boss state contracts so HUD never owns entity discovery
 - [ ] preserve required ZR map semantics
+- [ ] feed canonical stage/entity state into graph edge availability rather than generic Navigator hard-codes
 - [ ] prevent Bot knife infection of humans
 - [ ] synchronize respawn/nuke state with ZEPVE authority
 - [ ] add the minimum trustworthy round/nuke signals needed by Core before broader map automation
@@ -202,7 +230,7 @@ Runtime Trail remains the default no-NAV route source. Recorded Routes/RouteGrap
 `ZEPVE-HUD`:
 
 - [ ] extract presentation behavior from legacy `Kzen-ZEAssist`
-- [ ] consume stable Core/Map/Boss state APIs instead of independently discovering map state
+- [ ] consume stable Core/Map/Boss/Navigation read-only state APIs instead of independently discovering map state
 - [ ] establish reproducible build and component tests
 - [ ] verify HUD lifecycle, center-channel arbitration and update cadence on map change/hot reload
 
@@ -211,6 +239,7 @@ Runtime Trail remains the default no-NAV route source. Recorded Routes/RouteGrap
 - [ ] extract verified behavior from legacy `Kzen-WeaponBalance`
 - [ ] separate config/catalog, purchase policy, runtime weapon application and damage policy
 - [ ] preserve CS2Fixes compatibility boundaries
+- [ ] allow later read-only Region/Stage context to inform policy without gaining Navigation authority
 - [ ] verify legacy pricing/settlement, delayed-action identity and zombie-only damage semantics before claiming behavioral equivalence
 - [ ] establish reproducible build and component tests
 
@@ -222,10 +251,12 @@ Suite integration:
 ## Later
 
 ```text
-v0.8  Director / difficulty through Core spawn pressure + BotAI profile policy
-v0.9  map compatibility matrix + offline MapAnalyzer + packaging/update/rollback hardening
+v0.8  Director / difficulty through Core spawn pressure + BotAI stable profile/perception policy
+v0.9  map compatibility matrix + optional Bot-Improver adapters + offline MapAnalyzer + packaging/update/rollback hardening
 v1.0  stable ZE-first PvE suite
 ```
+
+Bot-Improver interoperability remains optional. Supported combinations require a mutation-domain matrix proving no competing movement/view/perception authority. `MapTraversalGraph` may provide read-only knowledge and Navigation-owned traversal requests; external plugins do not receive a bypass around MovementBridge.
 
 ## Repository Promotion Rule
 
