@@ -4,6 +4,8 @@ Status: **planned architecture for v0.4/v0.5**. This document does not change th
 
 This is the canonical cross-repository plan for persistent route recording, ZE route planning, ZR reachability planning, typed traversal and in-game visualization.
 
+Related research: `docs/CS2_BOT_IMPROVER_RESEARCH_20261014.md`. Navigation-side compatibility details: `ZEPVE-Navigation/BOT_IMPROVER_INTEGRATION.md`.
+
 ## 1. Why this exists
 
 ZEPVE should not use full Human command replay as its route planner.
@@ -224,6 +226,8 @@ The simplifier may remove redundant straight-line samples but must preserve mean
 
 Automatic classification creates **candidates**, not unquestioned truth. For example, a detected airborne height transition may propose `Jump` or `CrouchJump`; an admin may correct the edge type or bind a MotionClip later.
 
+A short bounded recent-authoring buffer may support a NadeLauncher-style “save last maneuver” workflow. It is authoring evidence only and must never become permanent full-route replay history.
+
 ## 6. MotionClip rule
 
 Prefer the simplest reliable executor:
@@ -287,23 +291,23 @@ Recovery remains a final fallback. Geometry safety does not grant ZE map/stage p
 
 ## 9. In-game authoring and visualization
 
-The first production authoring surface should be in-game and admin-only. Do not require hand-editing hundreds of coordinates.
+The first production authoring surface should be **chat-first + world-visible**, admin-only and usable without a custom HUD or offline editor.
 
 Expected workflow:
 
 ```text
-record
+!zepath record [name]
 → Human runs the section/map normally
-→ stop
+→ !zepath stop
 → auto-simplify and propose graph
-→ show
+→ !zepath show
 → correct a few nodes/edges/volumes
 → test one edge or route
 → save local draft
 → review/export curated data into suite
 ```
 
-Exact commands are not API contracts yet, but the capability should cover:
+Exact commands are not API contracts yet, but the capability should cover the equivalent of:
 
 ```text
 record start / stop / cancel
@@ -316,6 +320,25 @@ route test
 save / load / list / delete local draft
 export for suite review
 ```
+
+A richer `custom_hud_layout` author panel may be added later as presentation, but it must not be required for the first useful route recorder.
+
+### Spatial lookup and trigger discipline
+
+EntryVolume lookup should use a bounded spatial index/grid or equivalent local query instead of scanning every edge against every Bot every tick.
+
+Conceptually:
+
+```text
+Bot position
+→ nearby EntryVolume candidates
+→ geometry/state entry check
+→ edge availability/policy check
+→ final lifecycle/ownership validation
+→ one selected traversal commit
+```
+
+Use entry latching/hysteresis so remaining inside an EntryVolume does not repeatedly retrigger the same action. Edge failure/cooldown remains local to that edge/action.
 
 ### Author visualization
 
@@ -352,7 +375,68 @@ The goal is that an operator can answer “why is this Bot not moving?” from c
 
 Visualization is disabled by default and must remain bounded to avoid server/client spam.
 
-## 10. Storage and promotion
+## 10. External Bot-improver linkage
+
+`MapTraversalGraph` may later improve other Bot systems, but the graph exposes **knowledge and ownership context**, not shared movement mutation.
+
+### Read-only graph context
+
+After the model is stable, Navigation may expose a versioned capability conceptually like:
+
+```text
+IMapTraversalContext
+
+MapGeneration
+SchemaVersion
+LocateRegion(position)
+TryGetRouteContext(position / bot)
+EstimateReachability(fromRegion, toRegion, constraints)
+QueryEdge(edgeId)
+QueryNearbyEntryVolumes(position, radius)
+Get canonical Stage/Branch context when available
+```
+
+Return immutable snapshots/IDs rather than mutable internal references.
+
+Useful consumers include Nade/ability policy, WeaponSystem/Director, HUD/debug and later generic Bot compatibility adapters.
+
+### Runtime ownership context
+
+Cooperating aim/FOV/movement helpers need to know when to yield:
+
+```text
+NavigationMovementOwned
+TraversalActive
+TraversalState
+ScopedViewOwned
+RecoveryActive
+CurrentEdgeId / CurrentEdgeType
+```
+
+Examples:
+
+- generic stuck/velocity logic yields during active traversal;
+- aim/custom FOV yields while scoped traversal owns view;
+- `Wait`, `Door` and `Elevator` are not misclassified as generic stuck states;
+- normal enhancement resumes immediately after Exit/Abort.
+
+### Optional traversal request
+
+If ordinary Bots later need a curated special edge, they submit a lifecycle-bound request to Navigation. Navigation validates graph legality and acquires the sole movement lease. Consumers must not write BotController movement directly while Navigation is authoritative.
+
+This enables a later generic mode:
+
+```text
+Valve/native movement on ordinary path
+→ reach known special EntryVolume
+→ Navigation temporarily executes typed edge
+→ Exit/Abort
+→ release movement/view back to native Bot AI
+```
+
+This reverse linkage is a compatibility feature, not a v0.5 release requirement.
+
+## 11. Storage and promotion
 
 `ZEPVE-Navigation` owns schema, validation, recording, simplification, authoring behavior, visualization and runtime graph consumption.
 
@@ -370,7 +454,7 @@ Server-local recordings are drafts and never silently overwrite curated data. Pr
 
 Do not create a production Recorder repository. Consider a separate offline route-tool repository only if a real standalone GUI/import/export/compiler workflow later justifies its own lifecycle.
 
-## 11. Version staging
+## 12. Version staging
 
 ### v0.3
 
@@ -386,6 +470,8 @@ Entry -> Execute -> Exit -> Abort
 
 Prove primitive traversal, edge-local failure scope, physical success checks and scoped view authorization. MotionClip remains optional and exceptional.
 
+Research from Bot-Improver may inform ownership/arbitration and bounded native-assist experiments, but broad AI patches or external movement writers are not v0.4 scope.
+
 ### v0.5 — Persistent Routes & Traversal Graph
 
 Implement the first persistent graph slice:
@@ -397,14 +483,18 @@ Implement the first persistent graph slice:
 - typed persistent TraversalEdges;
 - Entry/Exit volumes;
 - raw Human route capture -> simplification -> draft graph;
+- chat-first authoring + in-game world visualization;
+- spatial EntryVolume/Region lookup and local trigger hysteresis;
 - safe save/load/versioning/backups;
-- in-game author visualization and runtime debug visualization;
+- runtime graph/action diagnostics;
 - single-edge and route testing;
 - curated suite export/review flow.
 
+A minimal read-only graph/runtime context contract may be designed if it does not delay the graph itself. Generic Bot-Improver compatibility is not part of the v0.5 acceptance gate.
+
 Do not build a large offline editor, general scripting engine or automatic AI map-understanding system in the first slice.
 
-## 12. Agent guardrails
+## 13. Agent guardrails
 
 Future agents should treat these as hard boundaries unless a later ADR explicitly changes them:
 
@@ -418,19 +508,30 @@ Future agents should treat these as hard boundaries unless a later ADR explicitl
 - no reverse traversal across a forward-only ZE edge.
 - no automatic target reassignment inside Navigation.
 - no map-specific special case should be hard-coded into the generic Navigator when it belongs in map graph/override data.
+- external Bot enhancers consume context or submit Navigation requests; they do not become second movement/view writers.
 - no Lab runtime dependency.
 
-## 13. Expected end state
+## 14. Expected end state
 
 The intended operator experience is:
 
 ```text
-run a map/section once
+chat command to record a map/section once
 → graph appears in-world
 → fix a few special edges and Entry/Exit volumes
 → test edges/routes with Bots
 → save/export curated map data
 → runtime Bots plan through the graph and explain their current state
+```
+
+The intended compatibility experience later is:
+
+```text
+Bot improver keeps normal combat/tactical behavior
+→ graph supplies region/reachability/special-edge knowledge
+→ cooperating enhancers yield on movement/view ownership
+→ Navigation temporarily executes difficult local traversal
+→ control returns cleanly
 ```
 
 The system should behave like persistent navigation knowledge plus typed off-route traversal, not like a long prerecorded movie that Bots attempt to mimic exactly.
