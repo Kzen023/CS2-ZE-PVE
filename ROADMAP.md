@@ -4,7 +4,7 @@ Keep this file short. Detailed design belongs in `docs/` and component repositor
 
 Research-driven architecture priorities are summarized in `docs/CODE_RESEARCH_FINDINGS.md`. Migration-time execution authority is defined in `MIGRATION_AUTHORITY.md`. The current Navigation/traversal version split is recorded in `docs/VERSION_SCOPE_RESET.md`; the 2026-10-11 full-project audit and execution handoff are recorded in `docs/PROJECT_AUDIT_20261011.md`. Persistent ZE/ZR map knowledge is defined in `docs/MAP_TRAVERSAL_GRAPH.md`; Bot-Improver research and future interoperability are recorded in `docs/CS2_BOT_IMPROVER_RESEARCH_20261014.md`.
 
-## Current
+## Completed foundations
 
 ### v0.1 — Integration baseline
 
@@ -14,26 +14,26 @@ Research-driven architecture priorities are summarized in `docs/CODE_RESEARCH_FI
 - [x] Establish ZEPVE project-family repositories
 - [x] Preserve the current working plugin sources under `legacy/` as the migration/regression baseline
 - [x] Register a pinned `ZEPVE-Navigation` design/integration revision in the suite
-- [ ] Reproduce the legacy build and record dependency/runtime requirements
-- [ ] Establish a known-good rollback package tied to exact source/config/dependency evidence
-- [ ] Establish reproducible suite + component builds
-- [ ] Create release staging under `game/csgo`
-- [ ] Generate a release manifest with exact dependency/component revisions
+- [x] Reproduce the legacy source builds and record known dependency/runtime requirements, including unresolved deployed-ZRPVE provenance
+- [x] Establish a known-good deployed/rollback baseline tied to recorded source/config/dependency evidence
+- [x] Establish reproducible suite/component build entry points for the completed baseline components
+- [x] Create release staging under `game/csgo`
+- [x] Generate release-manifest foundations with source/API/file hashes and recorded revisions
 
-The currently pinned Navigation revision is an integration/design reference. It is not considered a runtime-verified production Navigation implementation until the component baseline is implemented and tested.
-
-## Next
+v0.1 is closed as the historical integration baseline. Exact matched component/native artifact provenance for the production Navigation package is intentionally carried forward as a v0.3 release gate rather than left as unfinished v0.1 work.
 
 ### v0.2 — Safe Core/BotAI migration foundation
 
 #### v0.2a — Baseline + authority contract
 
-- [ ] document a reproducible build entry point and exact dependency/runtime inputs for all legacy projects
-- [ ] record the known-good deployed/rollback baseline and any source-vs-deployed uncertainty
-- [ ] maintain `MIGRATION_AUTHORITY.md` with current writer, migration writer, disable path and rollback rule for state-changing behavior
-- [ ] distinguish active, dormant and currently-unused legacy configuration/features
-- [ ] define the minimum CS2Fixes/ZombieReborn compatibility adapter boundary for round/respawn policy
-- [ ] keep legacy as the only gameplay writer while this baseline is being established
+- [x] document reproducible legacy build entry points, known dependency/runtime inputs and unresolved provenance gaps
+- [x] record the known-good deployed/rollback baseline and source-vs-deployed uncertainty
+- [x] maintain `MIGRATION_AUTHORITY.md` with current writer, migration writer, disable path and rollback rule for state-changing behavior
+- [x] distinguish active, dormant and currently-unused legacy configuration/features
+- [x] define the minimum CS2Fixes/ZombieReborn compatibility adapter boundary for round/respawn policy
+- [x] keep legacy as the only gameplay writer while the observer/baseline contract was being established
+
+v0.2a is closed as the historical authority baseline. `docs/LEGACY_ARCHITECTURE.md` records the legacy build/dependency evidence and source/runtime uncertainty; `MIGRATION_AUTHORITY.md` records the writer handoff and rollback contract.
 
 Do not add a second respawn scheduler, change infection timing, introduce new AI behavior or rewrite Trail/recovery in this stage.
 
@@ -80,15 +80,19 @@ Do not introduce dynamic Director logic, a new respawn gameplay model or a compl
 
 127 model/source checks pass. Matched single-human runtime smoke passed after repairing the startup native-clock defect, with actual initial whole rollback verified. Detailed PASS/PARTIAL/NOT TESTED is separate in `docs/BOTAI_VERIFICATION.md`. Native perception writes are absent and ObserveOnly is not a causal aggro repair mechanism. The v0.2d BotAI baseline was accepted and merged in PR #11; broader multiplayer/awareness work remains deferred. See bilingual `docs/BOTAI_RUNTIME.md`.
 
-Lab work:
+Deferred research, not a v0.2 completion gate:
 
-- [ ] validate which Valve BotProfile fields materially improve ZE zombie behavior
-- [ ] prove the minimum safe BotProfile adapter path and its failure behavior
-- [ ] validate candidate awareness operations one at a time rather than changing all fields together
+- Valve BotProfile field experiments remain evidence work for later difficulty/Director integration.
+- A BotProfile adapter is added only if a later phase proves a concrete missing capability and safe mutation boundary.
+- Candidate awareness operations remain v0.4/Lab evidence work and must be validated one operation at a time.
 
 `AssignedTarget` did not exist in the legacy baseline; it is a new capability, not behavior-preserving extraction. BotAI should preserve useful Valve native perception and use bounded/event-triggered awareness assistance rather than permanent per-tick AI-state forcing.
 
 See `BOT_AI_DESIGN.md`, `MIGRATION_AUTHORITY.md` and `docs/CODE_RESEARCH_FINDINGS.md`.
+
+The accepted v0.2 baseline is complete. Remaining broader multiplayer, BotProfile and awareness experiments are explicitly deferred and do not reopen v0.2.
+
+## Current
 
 ### v0.3 — Navigation baseline
 
@@ -126,6 +130,8 @@ Integration repository:
 - [ ] validate the matched v0.3 package with current Core + BotAI
 - [ ] bump component gitlinks only through reviewed component/integration PRs
 - [ ] record exact revisions, build provenance, acceptance evidence and rollback in release metadata
+
+## Next
 
 ### v0.4 — Advanced traversal + awareness recovery
 
