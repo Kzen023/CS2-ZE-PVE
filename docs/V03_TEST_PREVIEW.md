@@ -34,19 +34,27 @@ These records establish the trusted local source/build/artifact chain; they are 
 
 | Check | Current result |
 | --- | --- |
-| Navigation automated/model cases | PASS 104/104 |
+| Navigation automated/model cases | PASS 108/108 on Navigation c80eeec; earlier candidate was 105/105 |
 | Retained Core/BotAI/source cases | PASS 127/127 |
 | Native router / synthetic managed-native interop | PASS 26/26 and 14/14 |
-| Final matched Release build and receipt | Pending |
-| Package mismatch and actual fixture rollback | Pending |
-| Actual installation and whole-package rollback | Pending |
-| Current candidate server load | NOT TESTED |
-| Flat ground / ramps / distant stationary Human | NOT TESTED |
+| Final matched Release build and receipt | Previous d540ab8 build PASS; refreshed candidate pending |
+| Package mismatch and actual fixture rollback | PASS; install/whole rollback and 7 rejection cases |
+| Actual installation and whole-package rollback | PASS; 169 original inventory entries restored and verified, then candidate reinstalled |
+| Current candidate server load | Previous d540ab8 load PASS with upstream CS2Fixes PR 471 CI; refreshed build NOT TESTED |
+| Infection / Bot generation | PASS user-reported on d540ab8 with CS2Fixes development dependency |
+| Flat ground / ramps / distant stationary Human | FAIL user-reported jumping, intermittent pursuit/wall sticking on d540ab8; refreshed correction NOT TESTED |
+| Initial combat aggression | FAIL user-reported; existing BotAI is ObserveOnly; no forced Enemy/visibility writes added |
 | No-NAV Trail / Native→Trail / failed-action fallback | NOT TESTED |
 | Two real Human targets and Trails | NOT TESTED |
 | Death/respawn/rebind / disconnect/reconnect | NOT TESTED |
-| Round/map / managed reload/detach/drain | NOT TESTED |
-| Legacy writer disabled in loaded candidate | NOT TESTED (source absence confirmed) |
+| Round/map / managed reload/detach/drain | Empty isolated-host managed reload PASS; active lease drain and full lifecycle acceptance NOT TESTED |
+| Legacy writer disabled in loaded candidate | PASS source absence, 20/20 matched artifacts and runtime LegacyMovementDisabled=True; gameplay coverage incomplete |
 | Unknown Recovery permission / intentional map waits | NOT TESTED in CS2 (model permission/hold checks PASS) |
 
-Required human observations and final disk/runtime evidence will be appended after the exact package is built and exercised. No model PASS implies gameplay PASS. Complex jumps/full ZE certification/long endurance are outside this preview's current acceptance claim.
+See [recorded evidence](evidence/v03-20261018/validation-snapshot.json), [matched manifest](evidence/v03-20261018/matched-manifest.json), [native receipt](evidence/v03-20261018/native-provenance.json), and [external CS2Fixes compatibility](CS2FIXES_COMPAT_20261018.md). Human observations remain pending. No model PASS implies gameplay PASS. Complex jumps/full ZE certification/long endurance are outside this preview's current acceptance claim.
+
+The previous built source was exactly `d540ab8ed3f2e7aad6980751ef23194050992940`, with Navigation `0b4b1a989ca00c5057e45800dd3b8e9734c4e3cf` and BotController `0627aefc4860e09c114f776c23f944877157fdef`. Local package `.codex/v03-test-preview-4` and its archived evidence describe that **failed gameplay candidate**, not an accepted preview. Follow-up Navigation is `c80eeecad48aab1a3b020c04f35f27d3c3434597`; the refreshed Suite build revision will be recorded by its own manifest. Later evidence-only commits never replace the manifest source revision. Current rollback root: `ZEPVE_Backup/v0.3-20261018-110148-7399984`; the first actual original restoration used sibling `v0.3-20261018-110125-6911450`.
+
+After server use, scoped native logs may be new or changed. Preserve them under the same backup root before invoking the strict rollback preflight; do not discard runtime evidence or bypass preserved-file checks. Host-control originals (gameinfo, start batch, server.cfg) and external CS2Fixes snapshots are retained separately under that root. The original installation's byte restoration is proven; successful boot of that old mixed baseline is not claimed.
+
+An isolated-host `quit` produced a separate `tier0.dll + 0x6a58e` dump. Its cause is unresolved; shutdown/native detach safety is **FAIL / investigate**, and physical native hot unload remains unsupported. This is separate from the reproduced CS2Fixes startup fault and cannot be called a passed drain test.

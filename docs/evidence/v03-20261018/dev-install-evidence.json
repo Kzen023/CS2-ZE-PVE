@@ -1,0 +1,22 @@
+{
+  "Release": "dev-68504a1",
+  "SourceRevision": "b5a33f579743f7fa73e54648ace33746774e93d5",
+  "ArchiveSHA256": "a7f8b7738df060c13418d9a384ea509bc7edda7ff49ca2fb1c7d9311b7d70c2e",
+  "Backup": "D:\\SteamLibrary\\steamapps\\common\\Counter-Strike Global Offensive\\ZEPVE_Backup\\v0.3-20261018-110148-7399984\\cs2fixes-dev-68504a1",
+  "FileCount": 48,
+  "ActualRestore": "PASS",
+  "PreservedConfig": [
+    "cfg/cs2fixes/cs2fixes.cfg"
+  ],
+  "Time": "2026-10-18T11:23:17.594925+08:00",
+  "Reinstall": "PASS",
+  "VerifiedOfficialFiles": 47,
+  "PRHeadRevision": "68504a135fae431060992f32c58249b8b1840ce5",
+  "SourceTree": "0b45ee7fc9011bb26effabdcd43afe6761a1111d",
+  "WorkflowRunId": "38845338316",
+  "ArtifactId": "12022274138",
+  "WorkflowEvent": "pull_request",
+  "BinarySHA256": "A90CED49B6F35B6888BBF89DB70BDC74820EE3E33B89C446E1B0CA450B8AE53B",
+  "LoadedVersion": "v2.0-8-b5a33f5",
+  "SourceExplanation": "actions/checkout default pull-request merge ref; verified merge commit and identical source tree to PR head"
+}

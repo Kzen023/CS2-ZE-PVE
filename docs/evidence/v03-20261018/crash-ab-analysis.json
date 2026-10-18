@@ -1,0 +1,10 @@
+{
+  "ExceptionCode": "0xc0000005",
+  "Fault": {
+    "Module": "D:\\SteamLibrary\\steamapps\\common\\Counter-Strike Global Offensive\\game\\csgo\\addons\\cs2fixes\\bin\\win64\\cs2fixes.dll",
+    "Offset": "0x11e2b5"
+  },
+  "BotControllerLoaded": false,
+  "IsolatedManagedGameplayPlugins": true,
+  "Conclusion": "Same external CS2Fixes fault with BotController and managed gameplay plugins absent"
+}
