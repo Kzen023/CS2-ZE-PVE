@@ -1,0 +1,31 @@
+{
+  "Schema": 1,
+  "SourceRevision": "0627aefc4860e09c114f776c23f944877157fdef",
+  "SourceTree": "72beba432cc4d18f97548b2ed67743f6b74c672d",
+  "SourceRoot": "D:\\SteamLibrary\\steamapps\\common\\Counter-Strike Global Offensive\\.codex\\v03-closeout\\components\\ZEPVE-BotController",
+  "Profile": "windows-x64-msvc14.44-sdk22621-release-mt-v1",
+  "MovementABI": 1,
+  "CompatibilityABI": 24,
+  "Configure": [
+    "-S",
+    "D:\\SteamLibrary\\steamapps\\common\\Counter-Strike Global Offensive\\.codex\\v03-closeout\\components\\ZEPVE-BotController",
+    "-B",
+    "D:\\SteamLibrary\\steamapps\\common\\Counter-Strike Global Offensive\\.codex\\v03-native-final-6",
+    "-G",
+    "Ninja",
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+    "-DCMAKE_TRY_COMPILE_CONFIGURATION=Release",
+    "-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded",
+    "-DCMAKE_CXX_COMPILER=D:\\SteamLibrary\\steamapps\\common\\Counter-Strike Global Offensive\\.codex\\ZEPVE-Lab\\.tools\\native-build\\msvc\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+    "-DCMAKE_MAKE_PROGRAM=D:\\SteamLibrary\\steamapps\\common\\Counter-Strike Global Offensive\\.codex\\ZEPVE-Lab\\.tools\\native-build\\python-build\\bin\\ninja.exe"
+  ],
+  "CompilerVersion": "Microsoft (R) C/C++ Optimizing Compiler Version 19.44.35229 for x64",
+  "SpdlogRevision": "d6c93f38a08b4ea0f8ffcfd7f7857307d5d5c3fa",
+  "BinarySHA256": "931A1CADF0EE541C135A6BB2A0F2A836BC44C3462AB7FFC1AECB9E42C7A2720B",
+  "GamedataSHA256": "B126A312EF19C937941D1D50595E6089FDAC14CC18EF6F414C7803BF3985D102",
+  "InputsSHA256": "1905FE20BB0B9ABEEEE69AB4596D2D662A274D801C047831BC5815CCE0DCD1FD",
+  "CommandsSHA256": "6224503C30C58F9514AC2BA31F2701BA9394E6EF2343DC579BE301C29D347506",
+  "BuildLogSHA256": "20771D5B69C4714B76398572EB17B95B40A1DA0A9E46E9CD364ECEFCDF58988B",
+  "Runtime": "NOT TESTED"
+}

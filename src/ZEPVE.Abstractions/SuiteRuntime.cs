@@ -4,6 +4,7 @@ namespace ZEPVE.Abstractions;
 public static class SuiteRuntime
 {
     public static ICoreLifecycle? Current { get; private set; }
+    public static bool LegacyMovementDisabled => Legacy?.MovementWriterDisabled == true;
     internal static ILegacyPveBridge? Legacy { get; private set; }
     internal static event Action? LegacyChanged;
     internal static PveResumePlan? ResumePlan { get; set; }
@@ -35,6 +36,7 @@ public static class SuiteRuntime
 // Temporary migration boundary. Only Core and the adapted legacy assembly can access it.
 internal interface ILegacyPveBridge
 {
+    bool MovementWriterDisabled => false; // Old compatible adapters remain legacy writers; Navigation must refuse them.
     LegacyPveSettings Settings { get; }
     void ShowInfectionCountdown(int seconds);
     void ObserveSpawn(int slot);

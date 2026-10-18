@@ -1,0 +1,19 @@
+{
+  "Time": "2026-10-18T11:26:04.0673783+08:00",
+  "MatchedArtifactCount": 20,
+  "NavigationModel": "PASS 105/105",
+  "CoreBotAIModel": "PASS 127/127",
+  "NativeRouter": "PASS 26/26",
+  "SyntheticManagedNativeInterop": "PASS 14/14",
+  "PackageFixture": "PASS install/actual rollback and 7 rejection cases",
+  "ActualExistingInstallationRollback": "PASS 169 entries",
+  "CurrentServerLoad": "PASS with CS2Fixes PR 471 CI package",
+  "PursuitAndInfectionAcceptance": "User-reported infection/spawn PASS; flat/ramp pursuit and initial aggression FAIL",
+  "ClientCleanRestart": "FAIL preflight: client still loads BotController/CSS/CS2Fixes",
+  "TwoHumanIsolation": "NOT TESTED",
+  "RealMapRecoveryAndIntentionalHolds": "NOT TESTED",
+  "ActiveLeaseReloadDetachDrain": "NOT TESTED",
+  "IsolatedEmptyHostManagedReload": "PASS; no active intents",
+  "IsolatedHostQuit": "FAIL tier0.dll + 0x6a58e; root cause unresolved",
+  "SourceRevision": "d540ab8ed3f2e7aad6980751ef23194050992940"
+}

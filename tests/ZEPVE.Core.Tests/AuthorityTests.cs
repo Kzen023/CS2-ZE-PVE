@@ -321,9 +321,10 @@ static class AuthorityTests
         start.ArgumentList.Add("show"); start.ArgumentList.Add("89b5c0c0722d630ad5b9ce75b1234414d7f873d3:" + path);
         using var git = Process.Start(start)!; var baseline = git.StandardOutput.ReadToEnd().Replace("\r\n", "\n"); git.WaitForExit();
         Check(git.ExitCode == 0, "accepted baseline Git object unavailable");
-        foreach (var signature in new[] { "private void RecordHumanPath()", "private void CheckZombieBots()", "private void TryRecoverZombieBot(",
-            "private bool TryFindRecoveryPoint(", "private bool TryStartEscort(", "private void UpdateEscorts()", "private static List<CCSPlayerPawn> GetLiveHumanPawns()" })
-            Check(Method(baseline, signature) == Method(current, signature), "recovery/Trail algorithm changed: " + signature);
+        foreach (var removed in new[] { "RecordHumanPath(", "CheckZombieBots(", "TryRecoverZombieBot(", "TryFindRecoveryPoint(", "TryStartEscort(", "UpdateEscorts(", "QueueBotRecovery(", ".Teleport(" })
+            Check(!current.Contains(removed), "legacy Navigation writer remains: " + removed);
+        Check(current.Contains("MovementWriterDisabled => true"), "matched adapter has no explicit movement disable capability");
+        Check(Method(baseline, "private static List<CCSPlayerPawn> GetLiveHumanPawns()") == Method(current, "private static List<CCSPlayerPawn> GetLiveHumanPawns()"), "retained HUD human view changed");
         var baselineConfig = baseline[baseline.IndexOf("    private sealed class ZrPveConfig")..baseline.IndexOf("    private sealed record PathPoint")];
         var currentConfig = current[current.IndexOf("    private sealed class ZrPveConfig")..current.IndexOf("    private sealed record PathPoint")];
         Check(baselineConfig == currentConfig, "legacy config parser/defaults changed");

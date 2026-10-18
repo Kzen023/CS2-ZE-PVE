@@ -1,0 +1,10 @@
+{
+  "Dump": "game\\bin\\win64\\cs2_2026_1018_112111_0_accessviolation.mdmp",
+  "ExceptionCode": "0xc0000005",
+  "Fault": {
+    "Module": "D:\\SteamLibrary\\steamapps\\common\\Counter-Strike Global Offensive\\game\\csgo\\addons\\cs2fixes\\bin\\win64\\cs2fixes.dll",
+    "Offset": "0x11e2b5"
+  },
+  "BotControllerLoaded": true,
+  "CS2FixesLoaded": true
+}

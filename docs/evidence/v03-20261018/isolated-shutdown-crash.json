@@ -1,0 +1,10 @@
+{
+  "Dump": "game\\bin\\win64\\cs2_2026_1018_112022_0_accessviolation.mdmp",
+  "ExceptionCode": "0xc0000005",
+  "Fault": {
+    "Module": "D:\\SteamLibrary\\steamapps\\common\\Counter-Strike Global Offensive\\game\\bin\\win64\\tier0.dll",
+    "Offset": "0x6a58e"
+  },
+  "BotControllerLoaded": true,
+  "CS2FixesLoaded": false
+}
