@@ -1,0 +1,165 @@
+{
+  "Schema": 2,
+  "Stage": "v0.3 matched Navigation authority",
+  "SourceRevision": "b59eca4ca9e27b1700bdebd3303170ad20e1189e",
+  "NativeRevision": "0627aefc4860e09c114f776c23f944877157fdef",
+  "NavigationRevision": "c80eeecad48aab1a3b020c04f35f27d3c3434597",
+  "ComponentGitlinks": {
+    "ZEPVE-Navigation": "c80eeecad48aab1a3b020c04f35f27d3c3434597",
+    "ZEPVE-BotController": "0627aefc4860e09c114f776c23f944877157fdef"
+  },
+  "NativeABI": 1,
+  "SharedABI": "ZEPVE.Abstractions + ZEPVE.MovementBridge; install once",
+  "Profile": "windows-x64-msvc14.44-sdk22621-release-mt-v1",
+  "NativeProvenanceSHA256": "29C53961D0BF1F9CB47B2B1A9FED76B3D75531C0AE3368C314AC3F0BE3EBD18F",
+  "ApiSHA256": "E81F05D960C37EE623D552733FC919E206C8C1D16157886342D06A2F4D0DAB17",
+  "DotNetSDK": "10.0.401",
+  "Projects": [
+    "src/ZEPVE.Core/ZEPVE.Core.csproj",
+    "src/ZEPVE.BotAI/ZEPVE.BotAI.csproj",
+    "legacy/CounterStrikeSharp/plugins/Kzen-ZRPVE/Kzen-ZRPVE.csproj",
+    "components/ZEPVE-Navigation/src/ZEPVE.Navigation/ZEPVE.Navigation.csproj"
+  ],
+  "ManagedBuildProperties": [
+    "-p:CounterStrikeSharpApiPath=D:\\SteamLibrary\\steamapps\\common\\Counter-Strike Global Offensive\\game\\csgo\\addons\\counterstrikesharp\\api\\CounterStrikeSharp.API.dll",
+    "-p:SuiteRootPath=D:\\SteamLibrary\\steamapps\\common\\Counter-Strike Global Offensive\\.codex\\v03-closeout",
+    "-p:MovementBridgeRootPath=D:\\SteamLibrary\\steamapps\\common\\Counter-Strike Global Offensive\\.codex\\v03-closeout\\components\\ZEPVE-BotController"
+  ],
+  "WorkingTreeChanges": [],
+  "NativeWorkingTreeChanges": [],
+  "NavigationWorkingTreeChanges": [],
+  "Runtime": "NOT TESTED",
+  "Writer": "Navigation movement/Trail/Recovery; Core identity/policy; BotAI target; external ZR respawn",
+  "Files": [
+    {
+      "Path": "game/csgo/addons/counterstrikesharp/plugins/ZEPVE.Core/ZEPVE.Core.dll",
+      "SHA256": "C69267F1273D1DE5481939F04168FF4DBB830AA779EA155C6FD7D7AFAF33BA9D",
+      "SourceRevision": "b59eca4ca9e27b1700bdebd3303170ad20e1189e"
+    },
+    {
+      "Path": "game/csgo/addons/counterstrikesharp/plugins/ZEPVE.Core/ZEPVE.Core.pdb",
+      "SHA256": "E39ED8A7E4BB45FE8DA099231F742F14F04870FFC5CB5A18CACA68AE96FA7041",
+      "SourceRevision": "b59eca4ca9e27b1700bdebd3303170ad20e1189e"
+    },
+    {
+      "Path": "game/csgo/addons/counterstrikesharp/plugins/ZEPVE.Core/ZEPVE.Core.deps.json",
+      "SHA256": "D5BEBAF318A4C23E5B1E42F2935F121572A5C9E5C84F92D0A0ABB168906D649A",
+      "SourceRevision": "b59eca4ca9e27b1700bdebd3303170ad20e1189e"
+    },
+    {
+      "Path": "game/csgo/addons/counterstrikesharp/plugins/ZEPVE.BotAI/ZEPVE.BotAI.dll",
+      "SHA256": "007498012EEB6C9F30FC3586094D142476BC96A5F8F47EC6BD6FD442F8569A9A",
+      "SourceRevision": "b59eca4ca9e27b1700bdebd3303170ad20e1189e"
+    },
+    {
+      "Path": "game/csgo/addons/counterstrikesharp/plugins/ZEPVE.BotAI/ZEPVE.BotAI.pdb",
+      "SHA256": "32CC185931853FC730D8F7FFBDBAA7AFF9D2B76B29904BC6C172DED5D6073D43",
+      "SourceRevision": "b59eca4ca9e27b1700bdebd3303170ad20e1189e"
+    },
+    {
+      "Path": "game/csgo/addons/counterstrikesharp/plugins/ZEPVE.BotAI/ZEPVE.BotAI.deps.json",
+      "SHA256": "1EF393C60CF2AC359FCDF705B3A4DD2AA97BD5152B26696D01529739834BD048",
+      "SourceRevision": "b59eca4ca9e27b1700bdebd3303170ad20e1189e"
+    },
+    {
+      "Path": "game/csgo/addons/counterstrikesharp/plugins/Kzen-ZRPVE/Kzen-ZRPVE.dll",
+      "SHA256": "E313884401D9C5BB4872E6E53D169A954F93CD3D8ECF8FB0D1A44682A2070FFF",
+      "SourceRevision": "b59eca4ca9e27b1700bdebd3303170ad20e1189e"
+    },
+    {
+      "Path": "game/csgo/addons/counterstrikesharp/plugins/Kzen-ZRPVE/Kzen-ZRPVE.pdb",
+      "SHA256": "4FB413CF5887FE441184DFC7DEBE93A23B88668CAEDFD53B252B272B103C37F8",
+      "SourceRevision": "b59eca4ca9e27b1700bdebd3303170ad20e1189e"
+    },
+    {
+      "Path": "game/csgo/addons/counterstrikesharp/plugins/Kzen-ZRPVE/Kzen-ZRPVE.deps.json",
+      "SHA256": "EA16911324F246A02A1BF823B6245963A3E35AF49940C06062A960F18BCA571A",
+      "SourceRevision": "b59eca4ca9e27b1700bdebd3303170ad20e1189e"
+    },
+    {
+      "Path": "game/csgo/addons/counterstrikesharp/shared/ZEPVE.Abstractions/ZEPVE.Abstractions.dll",
+      "SHA256": "9D854F74EDD995114DD1C093AA2F2D52EA68324FB018ADD1E01BD88F890F59F7",
+      "SourceRevision": "b59eca4ca9e27b1700bdebd3303170ad20e1189e"
+    },
+    {
+      "Path": "game/csgo/addons/counterstrikesharp/shared/ZEPVE.Abstractions/ZEPVE.Abstractions.pdb",
+      "SHA256": "FD0672018190009DE89BCE1EC10798BA67CDCCB2642D56F81F36FC6BF2F0D79B",
+      "SourceRevision": "b59eca4ca9e27b1700bdebd3303170ad20e1189e"
+    },
+    {
+      "Path": "game/csgo/addons/counterstrikesharp/plugins/ZEPVE.Navigation/ZEPVE.Navigation.dll",
+      "SHA256": "54AB7EF636A7420E40C4355D10D9CBE15C379D6C127BC434BA03065ECE6A227E",
+      "SourceRevision": "c80eeecad48aab1a3b020c04f35f27d3c3434597"
+    },
+    {
+      "Path": "game/csgo/addons/counterstrikesharp/plugins/ZEPVE.Navigation/ZEPVE.Navigation.pdb",
+      "SHA256": "CDC36A1E037E4833FA2209AA31DEB80874E727AEBBBD386C8DEB7B238F972CDC",
+      "SourceRevision": "c80eeecad48aab1a3b020c04f35f27d3c3434597"
+    },
+    {
+      "Path": "game/csgo/addons/counterstrikesharp/plugins/ZEPVE.Navigation/ZEPVE.Navigation.deps.json",
+      "SHA256": "BD9F5E7208D8472982ABE1DA8A9278F4EF1745EA61C0026814374EE6800A265F",
+      "SourceRevision": "c80eeecad48aab1a3b020c04f35f27d3c3434597"
+    },
+    {
+      "Path": "game/csgo/addons/counterstrikesharp/shared/ZEPVE.MovementBridge/ZEPVE.MovementBridge.dll",
+      "SHA256": "D259F6C5E25F9070BA94CDDCB399EB94DF83BC5D174C6158814FBFAB3E13BC27",
+      "SourceRevision": "0627aefc4860e09c114f776c23f944877157fdef"
+    },
+    {
+      "Path": "game/csgo/addons/counterstrikesharp/shared/ZEPVE.MovementBridge/ZEPVE.MovementBridge.pdb",
+      "SHA256": "040300CBB9583F5052F46645B2B56245B96B0A8E96BB902F581A1B20581FFD93",
+      "SourceRevision": "0627aefc4860e09c114f776c23f944877157fdef"
+    },
+    {
+      "Path": "game/csgo/addons/counterstrikesharp/shared/ZEPVE.MovementBridge/ZEPVE.MovementBridge.deps.json",
+      "SHA256": "23E8F05F373B6797D62C1B99959E6E2361213F96E2D172B73AA046EE2C61621B",
+      "SourceRevision": "0627aefc4860e09c114f776c23f944877157fdef"
+    },
+    {
+      "Path": "game/csgo/addons/BotController/bin/win64/BotController.dll",
+      "SHA256": "931A1CADF0EE541C135A6BB2A0F2A836BC44C3462AB7FFC1AECB9E42C7A2720B",
+      "SourceRevision": "0627aefc4860e09c114f776c23f944877157fdef"
+    },
+    {
+      "Path": "game/csgo/addons/BotController/gamedata.json",
+      "SHA256": "B126A312EF19C937941D1D50595E6089FDAC14CC18EF6F414C7803BF3985D102",
+      "SourceRevision": "0627aefc4860e09c114f776c23f944877157fdef"
+    },
+    {
+      "Path": "game/csgo/addons/metamod/BotController.vdf",
+      "SHA256": "FF186F07A8A6CB13B7BAFD89048E3533C80CB39C18C3A8F34C858E685748D24F",
+      "SourceRevision": "0627aefc4860e09c114f776c23f944877157fdef"
+    }
+  ],
+  "Evidence": [
+    {
+      "Path": "provenance/build-inputs.json",
+      "SHA256": "1905FE20BB0B9ABEEEE69AB4596D2D662A274D801C047831BC5815CCE0DCD1FD"
+    },
+    {
+      "Path": "provenance/build.log",
+      "SHA256": "20771D5B69C4714B76398572EB17B95B40A1DA0A9E46E9CD364ECEFCDF58988B"
+    },
+    {
+      "Path": "provenance/compile_commands.json",
+      "SHA256": "6224503C30C58F9514AC2BA31F2701BA9394E6EF2343DC579BE301C29D347506"
+    },
+    {
+      "Path": "provenance/native-provenance.json",
+      "SHA256": "29C53961D0BF1F9CB47B2B1A9FED76B3D75531C0AE3368C314AC3F0BE3EBD18F"
+    },
+    {
+      "Path": "provenance/ninja-deps.txt",
+      "SHA256": "AEFCFBFF3BFEE4C8A863895B8802E50E96B93B76109DD52BD3BFA3528C1DCB4E"
+    },
+    {
+      "Path": "provenance/ZEPVE.Core.Tests.log",
+      "SHA256": "5C2E1C82E230EE60148D85DFFAE0B4532FB4592C46AABE1AB6F6408CD66B079F"
+    },
+    {
+      "Path": "provenance/ZEPVE.Navigation.Tests.log",
+      "SHA256": "7E89A63A04A862E28284A819FFED77750D8DC06B2ABB358C3BE576F04408DA25"
+    }
+  ]
+}

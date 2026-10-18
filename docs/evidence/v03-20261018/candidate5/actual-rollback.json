@@ -1,0 +1,11 @@
+{
+  "Result": "PASS",
+  "Kind": "Actual candidate5 whole-package rollback on existing installation; no dedicated process; clean client retained",
+  "OriginalEntries": 169,
+  "Backup": "D:\\SteamLibrary\\steamapps\\common\\Counter-Strike Global Offensive\\ZEPVE_Backup\\v0.3-20261018-114045-5308992",
+  "ManifestSHA256": "6ABAEE5FDAD94D4549943F7A2A7ED026008D2801C347B8F4B12442C4A79CE8E4",
+  "SourceRevision": "b59eca4ca9e27b1700bdebd3303170ad20e1189e",
+  "NavigationRevision": "c80eeecad48aab1a3b020c04f35f27d3c3434597",
+  "OriginalRuntimeBoot": "NOT TESTED",
+  "Time": "2026-10-18T11:41:16.9211260+08:00"
+}
