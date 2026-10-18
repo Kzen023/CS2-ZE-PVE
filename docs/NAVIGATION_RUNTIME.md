@@ -11,3 +11,7 @@ Start server, connect CT, inspect Native ABI1/lifetimes/provider roles and Navig
 Rollback severe regression as a whole: stop server; backup restore.ps1 -VerifyOnly [-AllowUnmoddedClient], then restore.ps1. It requires installed/backup hashes, archives experiment-added files, restores native/Core/BotAI/legacy/shared originals together and verifies them. New Navigation/shared SDK DLLs are removed from loader paths by archive; configs stay untouched. Never restore old legacy recovery while new Navigation runs. Do not live-copy native/SDK or mix ABI packages.
 
 Commands: css_zepve_nav, css_zepve_nav_bot <slot>, css_zepve_nav_events, css_zepve_nav_probe_stale <slot>. CSS reload uses current LOADED numeric ID. Native wrong BindingVersion probe is synthetic packet testing on actual command path; distinguish it from naturally observed rebinding. Runtime PASS requires actual evidence; feature builds/model tests are not server acceptance. Known limits: complex vertical/no-NAV traversal, full ZE trigger/permission semantics, real multi-human isolation and endurance require separate evidence.
+
+### v0.3 2026-10-18 candidate
+
+Current clean baseline remediation and build/install workflow: [V03_TEST_PREVIEW.md](V03_TEST_PREVIEW.md). Build now requires `-ToolchainRoot` and fresh `-NativeBuildRoot`; arbitrary `-NativeComponentRoot` / prebuilt DLL copying is no longer supported. Production Recovery permission is unknown and all TP is rejected. Current runtime acceptance is recorded independently; historical smoke results remain historical.

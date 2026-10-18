@@ -11,3 +11,7 @@
 严重回归整套 rollback：停服，备份 restore.ps1 -VerifyOnly，再 restore.ps1（无插件客户端情况加 AllowUnmoddedClient）。验证安装/备份 hash，归档新 Navigation/SDK 文件并恢复 native/Core/BotAI/legacy/shared originals，最后核验。不得现场混装或在 Navigation 活跃时恢复旧 Recovery。配置不改，native/shared SDK 不热替换。
 
 css_zepve_nav_probe_stale <slot> 提交 synthetic wrong BindingVersion packet 到真实 native frame，不修改 BotAI target。reload 使用 css_plugins list 当前 LOADED 数字 ID。模型/构建不是实际 PASS；真实结果记录 NAVIGATION_VERIFICATION.md。复杂垂直/no-NAV、完整 ZE trigger/permission、真实多真人 isolation、长期性能继续依赖真实证据。
+
+### 2026-10-18 v0.3 候选
+
+本次修复、来源链与验收记录见 [V03_TEST_PREVIEW.md](V03_TEST_PREVIEW.md)。构建需提供 `-ToolchainRoot` 与全新 `-NativeBuildRoot`，不再接受任意外部 DLL 或 `-NativeComponentRoot`。生产适配器未知地图 Recovery 许可时一律拒绝 TP。历史 smoke 不作为当前候选的实服 PASS；所有 native/shared 安装或整包回滚前必须停服，可保留未加载 mod 的客户端。
